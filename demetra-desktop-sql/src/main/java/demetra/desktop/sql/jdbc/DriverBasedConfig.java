@@ -16,17 +16,8 @@
  */
 package demetra.desktop.sql.jdbc;
 
-import com.google.common.base.Strings;
 import demetra.desktop.util.XmlConfig;
 import internal.util.SortedMaps;
-import java.io.IOException;
-import java.util.Map;
-import java.util.Objects;
-import java.util.SortedMap;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 import nbbrd.design.MightBePromoted;
 import nbbrd.design.VisibleForTesting;
 import nbbrd.io.function.IOFunction;
@@ -35,6 +26,15 @@ import nbbrd.io.text.Parser;
 import nbbrd.io.text.TextFormatter;
 import nbbrd.io.text.TextParser;
 import nbbrd.io.xml.bind.Jaxb;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Map;
+import java.util.Objects;
+import java.util.SortedMap;
 
 /**
  *
@@ -114,11 +114,15 @@ public final class DriverBasedConfig {
 
         DriverBasedConfig toId() {
             return new DriverBasedConfig(
-                    Strings.nullToEmpty(driverClass),
-                    Strings.nullToEmpty(databaseUrl),
-                    Strings.nullToEmpty(schema),
-                    Strings.nullToEmpty(displayName),
+                    nullToEmpty(driverClass),
+                    nullToEmpty(databaseUrl),
+                    nullToEmpty(schema),
+                    nullToEmpty(displayName),
                     XmlConfig.ParamBean.toSortedMap(params));
+        }
+
+        private static @NonNull String nullToEmpty(@Nullable String o) {
+            return o == null ? "" : o;
         }
 
         static ConnectionBean of(DriverBasedConfig config) {

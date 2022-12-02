@@ -4,7 +4,6 @@
  */
 package demetra.desktop.ui.processing;
 
-import com.google.common.base.Throwables;
 import demetra.desktop.interfaces.Disposable;
 import demetra.desktop.ui.Disposables;
 import demetra.desktop.util.Pools;
@@ -46,7 +45,7 @@ public abstract class PooledItemUI<D, C extends JComponent> implements ItemUI<D>
         try {
             return clazz.newInstance();
         } catch (InstantiationException | IllegalAccessException ex) {
-            throw Throwables.propagate(ex);
+            throw new RuntimeException(ex);
         }
     }
 

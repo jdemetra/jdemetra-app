@@ -71,6 +71,7 @@ import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -91,13 +92,12 @@ import org.openide.explorer.ExplorerManager;
 import org.openide.explorer.ExplorerUtils;
 import org.openide.util.ImageUtilities;
 import org.openide.util.NbBundle;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author Philippe Charles
  * @author Mats Maggi
  */
+@lombok.extern.java.Log
 public class SaBatchUI extends AbstractSaProcessingTopComponent implements MultiViewElement, HasTsCollection, ExplorerManager.Provider {
 
     private static final String REFRESH_MESSAGE = "Are you sure you want to refresh the data?";
@@ -195,7 +195,6 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
     }
 
     // CONSTANTS
-    private static final Logger LOGGER = LoggerFactory.getLogger(SaBatchUI.class);
     // PROPERTIES DEFINITIONS
     public static final String DEFAULT_SPECIFICATION_PROPERTY = "specificationProperty";
     public static final String PROCESSING_PROPERTY = "processing";
@@ -1285,7 +1284,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
                 executorService.invokeAll(tasks);
             } catch (InterruptedException ex) {
                 Thread.currentThread().interrupt();
-                LOGGER.info("While processing SaItems", ex);
+                log.log(Level.INFO, "While processing SaItems", ex);
             }
 
             if (!tasks.isEmpty()) {
@@ -1298,7 +1297,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
                 }
             }
 
-            LOGGER.info("Task: {} items in {} by {} executors with priority {}", tasks.size(), stopwatch.stop(), nThread, priority);
+            log.log(Level.INFO, String.format("Task: %s items in %s by %s executors with priority %s", tasks.size(), stopwatch.stop(), nThread, priority));
             executorService.shutdown();
             return null;
 

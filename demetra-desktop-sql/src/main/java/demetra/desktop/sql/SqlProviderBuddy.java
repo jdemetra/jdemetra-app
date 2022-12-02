@@ -1,27 +1,27 @@
 /*
  * Copyright 2013 National Bank of Belgium
  *
- * Licensed under the EUPL, Version 1.1 or – as soon they will be approved 
+ * Licensed under the EUPL, Version 1.1 or – as soon they will be approved
  * by the European Commission - subsequent versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
  *
  * http://ec.europa.eu/idabc/eupl
  *
- * Unless required by applicable law or agreed to in writing, software 
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the Licence is distributed on an "AS IS" basis,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the Licence for the specific language governing permissions and 
+ * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
 package demetra.desktop.sql;
 
-import com.google.common.base.Strings;
 import ec.util.completion.AutoCompletionSource;
-import static ec.util.completion.AutoCompletionSource.Behavior.ASYNC;
-import static ec.util.completion.AutoCompletionSource.Behavior.NONE;
-import static ec.util.completion.AutoCompletionSource.Behavior.SYNC;
 import ec.util.completion.ExtAutoCompletionSource;
+import nbbrd.sql.jdbc.SqlColumn;
+import nbbrd.sql.jdbc.SqlConnectionSupplier;
+import nbbrd.sql.jdbc.SqlIdentifierQuoter;
+import nbbrd.sql.jdbc.SqlTable;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -33,10 +33,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import nbbrd.sql.jdbc.SqlColumn;
-import nbbrd.sql.jdbc.SqlConnectionSupplier;
-import nbbrd.sql.jdbc.SqlIdentifierQuoter;
-import nbbrd.sql.jdbc.SqlTable;
+
+import static ec.util.completion.AutoCompletionSource.Behavior.*;
 
 /**
  * An abstract provider buddy that targets Jdbc providers.
@@ -46,10 +44,20 @@ import nbbrd.sql.jdbc.SqlTable;
 @lombok.experimental.UtilityClass
 public class SqlProviderBuddy {
 
+    private static boolean isValidConnectionString(Supplier<String> connectionString) {
+        String value = connectionString.get();
+        return value != null && !value.isEmpty();
+    }
+
+    private static boolean isValidTableName(Supplier<String> tableName) {
+        String value = tableName.get();
+        return value != null && !value.isEmpty();
+    }
+
     public static AutoCompletionSource getTableSource(SqlConnectionSupplier supplier, Supplier<String> connectionString, Supplier<String> tableName) {
         return ExtAutoCompletionSource
                 .builder(o -> getJdbcTables(supplier, connectionString.get()))
-                .behavior(o -> !Strings.isNullOrEmpty(connectionString.get()) ? ASYNC : NONE)
+                .behavior(o -> isValidConnectionString(connectionString) ? ASYNC : NONE)
                 .postProcessor(SqlProviderBuddy::getJdbcTables)
                 .valueToString(SqlTable::getName)
                 .cache(new ConcurrentHashMap<>(), o -> connectionString.get(), SYNC)
@@ -59,7 +67,7 @@ public class SqlProviderBuddy {
     public static AutoCompletionSource getColumnSource(SqlConnectionSupplier supplier, Supplier<String> connectionString, Supplier<String> tableName) {
         return ExtAutoCompletionSource
                 .builder(o -> getJdbcColumns(supplier, connectionString.get(), tableName.get()))
-                .behavior(o -> !Strings.isNullOrEmpty(connectionString.get()) && !Strings.isNullOrEmpty(tableName.get()) ? ASYNC : NONE)
+                .behavior(o -> isValidConnectionString(connectionString) && isValidTableName(tableName) ? ASYNC : NONE)
                 .postProcessor(SqlProviderBuddy::getJdbcColumns)
                 .valueToString(SqlColumn::getName)
                 .cache(new ConcurrentHashMap<>(), o -> connectionString.get() + "/" + tableName.get(), SYNC)

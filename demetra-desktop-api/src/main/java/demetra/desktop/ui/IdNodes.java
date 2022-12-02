@@ -4,7 +4,6 @@
  */
 package demetra.desktop.ui;
 
-import com.google.common.base.Strings;
 import demetra.desktop.DemetraIcons;
 import demetra.util.Id;
 import demetra.util.LinearId;
@@ -42,7 +41,7 @@ public final class IdNodes {
         public void paintIcon(Component c, Graphics g, int x, int y) {
             g.drawImage(DemetraIcons.DOCUMENT_16.getImageIcon().getImage(), x, y, null);
             String tail = id.tail();
-            if (!Strings.isNullOrEmpty(tail)) {
+            if (tail != null && !tail.isEmpty()) {
                 Graphics2D g2 = (Graphics2D) g;
                 Font old = c.getFont();
                 Color oldColor = c.getForeground();

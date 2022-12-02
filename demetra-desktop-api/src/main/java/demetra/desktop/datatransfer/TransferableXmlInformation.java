@@ -4,20 +4,20 @@
  */
 package demetra.desktop.datatransfer;
 
-import com.google.common.base.Throwables;
 import demetra.information.InformationSet;
 import demetra.information.InformationSetSerializer;
 import demetra.toolkit.io.xml.information.XmlInformationSet;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
 
 /**
  *
@@ -124,7 +124,7 @@ public class TransferableXmlInformation<T> implements Transferable {
         try {
             return new DataFlavor(DataFlavor.javaJVMLocalObjectMimeType + ";class=" + clazz.getName());
         } catch (ClassNotFoundException ex) {
-            throw Throwables.propagate(ex);
+            throw new RuntimeException(ex);
         }
     }
 }

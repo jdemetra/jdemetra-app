@@ -35,9 +35,14 @@
     </scm>
 
     <properties>
+        <!-- Java 17 config -->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.release>17</maven.compiler.release>
+        <!-- NetBeans config -->
         <brandingToken>nbdemetra</brandingToken>
-        <netbeans.version>RELEASE150</netbeans.version>
-        <jd2.version>2.2.4-SNAPSHOT</jd2.version>
+        <!-- JD+ versions -->
         <jd3.version>${project.version}</jd3.version>
         <jd3-basic.version>1.0.0-SNAPSHOT</jd3-basic.version>
         <jd3-workspace.version>3.0.0-SNAPSHOT</jd3-workspace.version>
@@ -59,7 +64,6 @@
         <module>demetra-desktop-modelling</module>
         <module>demetra-desktop-x13</module>
         <module>demetra-desktop-sa</module>
-        <!--module>demetra-desktop-sts</module-->
         <module>demetra-desktop-highfreq</module>
         <module>demetra-desktop-stl</module>
         <module>demetra-desktop-benchmarking</module>
@@ -112,136 +116,6 @@
                 <artifactId>assertj-core</artifactId>
                 <version>3.23.1</version>
             </dependency>
-
-            <!-- NetBeans deps > -->
-            <dependency>
-                <groupId>org.netbeans.api</groupId>
-                <artifactId>org-netbeans-api-annotations-common</artifactId>
-                <version>${netbeans.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.netbeans.api</groupId>
-                <artifactId>org-openide-util-lookup</artifactId>
-                <version>${netbeans.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.netbeans.api</groupId>
-                <artifactId>org-openide-modules</artifactId>
-                <version>${netbeans.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.netbeans.api</groupId>
-                <artifactId>org-openide-util</artifactId>
-                <version>${netbeans.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.netbeans.api</groupId>
-                <artifactId>org-openide-windows</artifactId>
-                <version>${netbeans.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.netbeans.api</groupId>
-                <artifactId>org-netbeans-modules-settings</artifactId>
-                <version>${netbeans.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.netbeans.api</groupId>
-                <artifactId>org-netbeans-api-progress</artifactId>
-                <version>${netbeans.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.netbeans.api</groupId>
-                <artifactId>org-openide-awt</artifactId>
-                <version>${netbeans.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.netbeans.api</groupId>
-                <artifactId>org-openide-explorer</artifactId>
-                <version>${netbeans.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.netbeans.api</groupId>
-                <artifactId>org-openide-nodes</artifactId>
-                <version>${netbeans.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.netbeans.api</groupId>
-                <artifactId>org-openide-actions</artifactId>
-                <version>${netbeans.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.netbeans.api</groupId>
-                <artifactId>org-openide-dialogs</artifactId>
-                <version>${netbeans.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.netbeans.api</groupId>
-                <artifactId>org-openide-filesystems</artifactId>
-                <version>${netbeans.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.netbeans.api</groupId>
-                <artifactId>org-openide-loaders</artifactId>
-                <version>${netbeans.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.netbeans.api</groupId>
-                <artifactId>org-netbeans-modules-options-api</artifactId>
-                <version>${netbeans.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.netbeans.api</groupId>
-                <artifactId>org-netbeans-modules-javahelp</artifactId>
-                <version>${netbeans.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.netbeans.api</groupId>
-                <artifactId>org-netbeans-core-multiview</artifactId>
-                <version>${netbeans.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.netbeans.api</groupId>
-                <artifactId>org-openide-io</artifactId>
-                <version>${netbeans.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.netbeans.api</groupId>
-                <artifactId>org-netbeans-modules-projectapi</artifactId>
-                <version>${netbeans.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.netbeans.api</groupId>
-                <artifactId>org-netbeans-swing-outline</artifactId>
-                <version>${netbeans.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.netbeans.api</groupId>
-                <artifactId>org-openide-util-ui</artifactId>
-                <version>${netbeans.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.netbeans.api</groupId>
-                <artifactId>org-openide-filesystems-nb</artifactId>
-                <version>${netbeans.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.netbeans.api</groupId>
-                <artifactId>org-netbeans-api-progress-nb</artifactId>
-                <version>${netbeans.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.netbeans.cluster</groupId>
-                <artifactId>platform</artifactId>
-                <version>${netbeans.version}</version>
-                <type>pom</type>
-            </dependency>
-            <dependency>
-                <groupId>org.netbeans.api</groupId>
-                <artifactId>org-netbeans-modules-nbjunit</artifactId>
-                <version>${netbeans.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <!-- < NetBeans deps -->
         </dependencies>
     </dependencyManagement>
 
@@ -275,11 +149,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.junit.vintage</groupId>
-            <artifactId>junit-vintage-engine</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
             <scope>test</scope>
@@ -287,31 +156,161 @@
     </dependencies>
 
     <profiles>
-        <!-- Base build java17 -->
         <profile>
-            <id>base-java17</id>
+            <id>netbeans-platform-bom</id>
             <activation>
                 <property>
-                    <name>!skipBaseJava17</name>
+                    <name>!netbeansPlatformBom</name>
                 </property>
             </activation>
             <properties>
-                <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-                <maven.compiler.target>17</maven.compiler.target>
-                <maven.compiler.source>17</maven.compiler.source>
-                <maven.compiler.release>17</maven.compiler.release>
+                <netbeans.version>RELEASE150</netbeans.version>
             </properties>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-surefire-plugin</artifactId>
-                        <configuration>
-                            <useModulePath>false</useModulePath>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
+            <dependencyManagement>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.netbeans.api</groupId>
+                        <artifactId>org-netbeans-api-annotations-common</artifactId>
+                        <version>${netbeans.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.netbeans.api</groupId>
+                        <artifactId>org-openide-util-lookup</artifactId>
+                        <version>${netbeans.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.netbeans.api</groupId>
+                        <artifactId>org-openide-modules</artifactId>
+                        <version>${netbeans.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.netbeans.api</groupId>
+                        <artifactId>org-openide-util</artifactId>
+                        <version>${netbeans.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.netbeans.api</groupId>
+                        <artifactId>org-openide-windows</artifactId>
+                        <version>${netbeans.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.netbeans.api</groupId>
+                        <artifactId>org-netbeans-modules-settings</artifactId>
+                        <version>${netbeans.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.netbeans.api</groupId>
+                        <artifactId>org-netbeans-api-progress</artifactId>
+                        <version>${netbeans.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.netbeans.api</groupId>
+                        <artifactId>org-openide-awt</artifactId>
+                        <version>${netbeans.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.netbeans.api</groupId>
+                        <artifactId>org-openide-explorer</artifactId>
+                        <version>${netbeans.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.netbeans.api</groupId>
+                        <artifactId>org-openide-nodes</artifactId>
+                        <version>${netbeans.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.netbeans.api</groupId>
+                        <artifactId>org-openide-actions</artifactId>
+                        <version>${netbeans.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.netbeans.api</groupId>
+                        <artifactId>org-openide-dialogs</artifactId>
+                        <version>${netbeans.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.netbeans.api</groupId>
+                        <artifactId>org-openide-filesystems</artifactId>
+                        <version>${netbeans.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.netbeans.api</groupId>
+                        <artifactId>org-openide-loaders</artifactId>
+                        <version>${netbeans.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.netbeans.api</groupId>
+                        <artifactId>org-netbeans-modules-options-api</artifactId>
+                        <version>${netbeans.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.netbeans.api</groupId>
+                        <artifactId>org-netbeans-modules-javahelp</artifactId>
+                        <version>${netbeans.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.netbeans.api</groupId>
+                        <artifactId>org-netbeans-core-multiview</artifactId>
+                        <version>${netbeans.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.netbeans.api</groupId>
+                        <artifactId>org-openide-io</artifactId>
+                        <version>${netbeans.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.netbeans.api</groupId>
+                        <artifactId>org-netbeans-modules-projectapi</artifactId>
+                        <version>${netbeans.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.netbeans.api</groupId>
+                        <artifactId>org-netbeans-swing-outline</artifactId>
+                        <version>${netbeans.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.netbeans.api</groupId>
+                        <artifactId>org-openide-util-ui</artifactId>
+                        <version>${netbeans.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.netbeans.api</groupId>
+                        <artifactId>org-openide-filesystems-nb</artifactId>
+                        <version>${netbeans.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.netbeans.api</groupId>
+                        <artifactId>org-netbeans-api-progress-nb</artifactId>
+                        <version>${netbeans.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.netbeans.cluster</groupId>
+                        <artifactId>platform</artifactId>
+                        <version>${netbeans.version}</version>
+                        <type>pom</type>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.netbeans.api</groupId>
+                        <artifactId>org-netbeans-modules-nbjunit</artifactId>
+                        <version>${netbeans.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.netbeans.modules</groupId>
+                        <artifactId>org-netbeans-modules-dbapi</artifactId>
+                        <version>${netbeans.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.netbeans.modules</groupId>
+                        <artifactId>org-netbeans-modules-projectapi-nb</artifactId>
+                        <version>${netbeans.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.netbeans.api</groupId>
+                        <artifactId>org-netbeans-modules-db</artifactId>
+                        <version>${netbeans.version}</version>
+                    </dependency>
+                </dependencies>
+            </dependencyManagement>
         </profile>
 
         <!-- Enforce dependency & Maven-central rules -->
@@ -357,10 +356,6 @@
                                         </requireMavenVersion>
                                         <requireNoRepositories>
                                             <allowSnapshotRepositories>true</allowSnapshotRepositories>
-                                            <allowedRepositories>
-                                                <!-- required by JD+ SNAPSHOTS -->
-                                                <allowedRepository>ossrh-snapshots</allowedRepository>
-                                            </allowedRepositories>
                                         </requireNoRepositories>
                                         <requirePluginVersions/>
                                         <requireReleaseDeps>
@@ -427,72 +422,6 @@
                 </plugins>
             </build>
         </profile>
-
-        <!-- Deploy SNAPSHOTS to jfrog with sources -->
-        <profile>
-            <id>deploy-snapshots</id>
-            <distributionManagement>
-                <snapshotRepository>
-                    <id>oss-jfrog-artifactory</id>
-                    <url>https://oss.jfrog.org/artifactory/oss-snapshot-local</url>
-                </snapshotRepository>
-            </distributionManagement>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-deploy-plugin</artifactId>
-                        <version>3.0.0</version>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-source-plugin</artifactId>
-                        <version>3.2.1</version>
-                        <executions>
-                            <execution>
-                                <phase>verify</phase>
-                                <goals>
-                                    <goal>jar-no-fork</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-
-        <!-- Deploy RELEASES to jfrog with sources -->
-        <profile>
-            <id>deploy-releases</id>
-            <distributionManagement>
-                <repository>
-                    <id>oss-jfrog-artifactory</id>
-                    <url>https://oss.jfrog.org/artifactory/oss-release-local</url>
-                </repository>
-            </distributionManagement>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-deploy-plugin</artifactId>
-                        <version>3.0.0</version>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-source-plugin</artifactId>
-                        <version>3.2.1</version>
-                        <executions>
-                            <execution>
-                                <phase>verify</phase>
-                                <goals>
-                                    <goal>jar-no-fork</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
     </profiles>
 
     <build>
@@ -548,6 +477,15 @@
             </plugins>
         </pluginManagement>
         <plugins>
+            <!-- Disable module path for all unit tests -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <useModulePath>false</useModulePath>
+                </configuration>
+            </plugin>
+            <!-- Set branding for all NBM plugins -->
             <plugin>
                 <groupId>org.apache.netbeans.utilities</groupId>
                 <artifactId>nbm-maven-plugin</artifactId>
@@ -561,10 +499,15 @@
         </plugins>
     </build>
 
+    <!-- Custom repositories: order matters! -->
     <repositories>
+        <!-- JD+ snapshots >= v2.2.4 -->
         <repository>
             <id>ossrh-snapshots</id>
             <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
             <snapshots>
                 <enabled>true</enabled>
             </snapshots>

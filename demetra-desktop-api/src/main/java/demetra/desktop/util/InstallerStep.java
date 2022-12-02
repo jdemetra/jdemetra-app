@@ -4,10 +4,9 @@
  */
 package demetra.desktop.util;
 
-import com.google.common.collect.ImmutableList;
 import demetra.desktop.Config;
 
-import java.util.Optional;
+import java.util.*;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 import nbbrd.io.text.Formatter;
@@ -33,9 +32,12 @@ public abstract class InstallerStep {
             case 0:
                 return this;
             case 1:
-                return new AllInstallerStep(ImmutableList.of(this, steps[0]));
+                return new AllInstallerStep(List.of(this, steps[0]));
             default:
-                return new AllInstallerStep(ImmutableList.<InstallerStep>builder().add(this).add(steps).build());
+                List<InstallerStep> result = new ArrayList<>();
+                result.add(this);
+                Collections.addAll(result, steps);
+                return new AllInstallerStep(result);
         }
     }
 
@@ -46,10 +48,10 @@ public abstract class InstallerStep {
     public static final InstallerStep EMPTY = new EmptyInstallerStep();
 
     public static InstallerStep all(InstallerStep... steps) {
-        return all(ImmutableList.copyOf(steps));
+        return all(List.copyOf(Arrays.asList(steps)));
     }
 
-    public static InstallerStep all(ImmutableList<? extends InstallerStep> steps) {
+    public static InstallerStep all(List<? extends InstallerStep> steps) {
         return steps.isEmpty() ? EMPTY : new AllInstallerStep(steps);
     }
 
@@ -151,9 +153,9 @@ public abstract class InstallerStep {
     //<editor-fold defaultstate="collapsed" desc="Implementation details">
     private static final class AllInstallerStep extends InstallerStep {
 
-        private final ImmutableList<? extends InstallerStep> steps;
+        private final List<? extends InstallerStep> steps;
 
-        public AllInstallerStep(ImmutableList<? extends InstallerStep> steps) {
+        public AllInstallerStep(List<? extends InstallerStep> steps) {
             this.steps = steps;
         }
 
@@ -166,8 +168,8 @@ public abstract class InstallerStep {
 
         @Override
         public void close() {
-            for (InstallerStep o : steps.reverse()) {
-                o.close();
+            for (int i = steps.size(); i-- > 0; ) {
+                steps.get(i).close();
             }
         }
     }
@@ -180,9 +182,9 @@ public abstract class InstallerStep {
                 case 0:
                     return this;
                 case 1:
-                    return new AllInstallerStep(ImmutableList.of(steps[0]));
+                    return new AllInstallerStep(List.of(steps[0]));
                 default:
-                    return new AllInstallerStep(ImmutableList.copyOf(steps));
+                    return new AllInstallerStep(List.copyOf(Arrays.asList(steps)));
             }
         }
     }

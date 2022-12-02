@@ -4,19 +4,13 @@
  */
 package demetra.desktop.ui.calendar.actions;
 
-import com.google.common.collect.ImmutableList;
 import demetra.desktop.nodes.SingleNodeAction;
-import demetra.desktop.workspace.CalendarDocumentManager;
 import demetra.desktop.ui.calendar.ChainedGregorianCalendarPanel;
 import demetra.desktop.ui.calendar.CompositeGregorianCalendarPanel;
 import demetra.desktop.ui.calendar.NationalCalendarPanel;
+import demetra.desktop.workspace.CalendarDocumentManager;
 import demetra.desktop.workspace.nodes.ItemWsNode;
-import demetra.timeseries.calendars.Calendar;
-import demetra.timeseries.calendars.CalendarDefinition;
-import demetra.timeseries.calendars.CalendarManager;
-import demetra.timeseries.calendars.ChainedCalendar;
-import demetra.timeseries.calendars.CompositeCalendar;
-import demetra.timeseries.calendars.Holiday;
+import demetra.timeseries.calendars.*;
 import demetra.timeseries.regression.ModellingContext;
 import demetra.util.WeightedItem;
 import org.openide.DialogDescriptor;
@@ -27,6 +21,9 @@ import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle.Messages;
+
+import java.util.Arrays;
+import java.util.List;
 
 @ActionID(category = "Tools", id = "demetra.desktop.ui.calendars.actions.CloneCalendarAction")
 @ActionRegistration(displayName = "#CTL_CloneCalendarAction", lazy = false)
@@ -71,11 +68,11 @@ public final class CloneCalendarAction extends SingleNodeAction<ItemWsNode> {
     })
     static void cloneNationalCalendar(CalendarManager manager, Calendar p, ItemWsNode node) {
         NationalCalendarPanel panel = new NationalCalendarPanel();
-        panel.setHolidays(ImmutableList.copyOf(p.getHolidays()));
+        panel.setHolidays(Arrays.asList(p.getHolidays()));
 
         DialogDescriptor dd = panel.createDialogDescriptor(Bundle.cloneNationalCalendar_dialog_title());
         if (DialogDisplayer.getDefault().notify(dd) == NotifyDescriptor.OK_OPTION) {
-            ImmutableList<Holiday> holidays = panel.getHolidays();
+            List<Holiday> holidays = panel.getHolidays();
             Calendar newObject = new Calendar(holidays.toArray(new Holiday[holidays.size()]));
             AddCalendarAction.add(manager, panel.getCalendarName(), newObject);
         }
@@ -102,12 +99,12 @@ public final class CloneCalendarAction extends SingleNodeAction<ItemWsNode> {
     })
     static void cloneCompositeCalendar(CalendarManager manager, CompositeCalendar p, ItemWsNode node) {
         CompositeGregorianCalendarPanel panel = new CompositeGregorianCalendarPanel("");
-        panel.setWeightedItems(ImmutableList.copyOf(p.getCalendars()));
+        panel.setWeightedItems(Arrays.asList(p.getCalendars()));
 
         DialogDescriptor dd = panel.createDialogDescriptor(Bundle.cloneCompositeCalendar_dialog_title());
         if (DialogDisplayer.getDefault().notify(dd) == NotifyDescriptor.OK_OPTION) {
             String name = panel.getCalendarName();
-            ImmutableList<WeightedItem<String>> weightedItems = panel.getWeightedItems();
+            List<WeightedItem<String>> weightedItems = panel.getWeightedItems();
             CompositeCalendar newObj = new CompositeCalendar(weightedItems.toArray(new WeightedItem[weightedItems.size()]));
             AddCalendarAction.add(manager, name, newObj);
         }

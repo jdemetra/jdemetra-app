@@ -5,25 +5,24 @@
 package demetra.desktop.ui.mru;
 
 import demetra.tsprovider.DataSource;
+import nbbrd.io.text.Formatter;
+import nbbrd.io.text.Parser;
+
 import java.util.Comparator;
 import java.util.Optional;
+import java.util.logging.Level;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 import java.util.stream.Stream;
-import nbbrd.io.text.Formatter;
-import nbbrd.io.text.Parser;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
- *
  * @author Philippe Charles
  */
+@lombok.extern.java.Log
 enum MruPreferences {
 
     INSTANCE;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(MruPreferences.class);
     private static final String DATASOURCE_PROPERTY = "MruDataSource";
     private static final String LABEL_PROPERTY = "MruLabel";
 
@@ -49,7 +48,7 @@ enum MruPreferences {
                         list.add(new SourceId(dataSource.get(), label));
                     });
         } catch (BackingStoreException ex) {
-            LOGGER.warn("Can't get node list", ex);
+            log.log(Level.WARNING, "Can't get node list", ex);
         }
     }
 
@@ -66,7 +65,7 @@ enum MruPreferences {
         try {
             prefs.flush();
         } catch (BackingStoreException ex) {
-            LOGGER.warn("Can't flush storage", ex);
+            log.log(Level.WARNING, "Can't flush storage", ex);
         }
     }
 
@@ -77,7 +76,7 @@ enum MruPreferences {
                 prefs.node(i).removeNode();
             }
         } catch (BackingStoreException ex) {
-            LOGGER.warn("Can't clear storage", ex);
+            log.log(Level.WARNING, "Can't clear storage", ex);
         }
     }
 }

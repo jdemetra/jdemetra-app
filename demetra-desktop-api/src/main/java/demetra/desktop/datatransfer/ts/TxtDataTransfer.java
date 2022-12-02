@@ -16,13 +16,7 @@
  */
 package demetra.desktop.datatransfer.ts;
 
-import com.google.common.base.Preconditions;
-import com.google.common.base.StandardSystemProperty;
-import demetra.desktop.Config;
-import demetra.desktop.ConfigEditor;
-import demetra.desktop.Converter;
-import demetra.desktop.DemetraIcons;
-import demetra.desktop.Persistable;
+import demetra.desktop.*;
 import demetra.desktop.actions.Configurable;
 import demetra.desktop.beans.BeanConfigurator;
 import demetra.desktop.beans.BeanEditor;
@@ -30,31 +24,25 @@ import demetra.desktop.beans.BeanHandler;
 import demetra.desktop.datatransfer.DataTransferSpi;
 import demetra.desktop.properties.NodePropertySetBuilder;
 import demetra.desktop.properties.PropertySheetDialogBuilder;
-import demetra.timeseries.Ts;
-import demetra.timeseries.TsCollection;
-import demetra.timeseries.TsData;
-import demetra.timeseries.TsFactory;
-import demetra.timeseries.TsInformationType;
+import demetra.timeseries.*;
 import demetra.util.MultiLineNameUtil;
-import java.awt.datatransfer.DataFlavor;
-import java.beans.IntrospectionException;
-import java.io.IOException;
-import java.text.DateFormat;
-import java.text.NumberFormat;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
 import jdplus.math.matrices.FastMatrix;
 import nbbrd.io.text.BooleanProperty;
 import nbbrd.io.text.Parser;
 import org.openide.nodes.Sheet;
 import org.openide.util.lookup.ServiceProvider;
 import org.openide.util.lookup.ServiceProviders;
+
+import java.awt.datatransfer.DataFlavor;
+import java.beans.IntrospectionException;
+import java.io.IOException;
+import java.text.NumberFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * @author Jean Palate
@@ -65,7 +53,7 @@ import org.openide.util.lookup.ServiceProviders;
 public final class TxtDataTransfer implements DataTransferSpi, Configurable, Persistable, ConfigEditor {
 
     private static final char DELIMITOR = '\t';
-    private static final String NEWLINE = StandardSystemProperty.LINE_SEPARATOR.value();
+    private static final String NEWLINE = System.lineSeparator();
     private static final int MINDATES = 2;
     // PROPERTIES
     private final NumberFormat numberFormat;
@@ -584,8 +572,10 @@ public final class TxtDataTransfer implements DataTransferSpi, Configurable, Per
 
         @Override
         public InternalConfig doBackward(Config config) {
-            Preconditions.checkArgument(DOMAIN.equals(config.getDomain()));
-            Preconditions.checkArgument(NAME.equals(config.getName()));
+            if(!DOMAIN.equals(config.getDomain()))
+                throw new IllegalArgumentException();
+            if(!NAME.equals(config.getName()))
+                throw new IllegalArgumentException();
             InternalConfig result = new InternalConfig();
             result.vertical = VERTICAL.get(config::getParameter);
             result.showDates = SHOW_DATES.get(config::getParameter);

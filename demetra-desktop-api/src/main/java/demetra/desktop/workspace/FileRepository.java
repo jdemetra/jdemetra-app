@@ -16,7 +16,6 @@
  */
 package demetra.desktop.workspace;
 
-import com.google.common.base.StandardSystemProperty;
 import demetra.DemetraVersion;
 import demetra.timeseries.calendars.CalendarDefinition;
 import demetra.timeseries.calendars.CalendarManager;
@@ -34,6 +33,8 @@ import java.nio.file.InvalidPathException;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.function.UnaryOperator;
+
+import nbbrd.io.sys.SystemProperties;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.openide.DialogDisplayer;
@@ -277,6 +278,6 @@ public class FileRepository extends AbstractWorkspaceRepository implements Looku
     }
 
     private static File getUserHome(UnaryOperator<String> properties) {
-        return new File(properties.apply(StandardSystemProperty.USER_HOME.key()));
+        return new File(properties.apply(SystemProperties.USER_HOME));
     }
 }

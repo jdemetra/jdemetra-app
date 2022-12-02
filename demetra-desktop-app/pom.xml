@@ -52,7 +52,6 @@
         <dependency>
             <groupId>org.netbeans.modules</groupId>
             <artifactId>org-netbeans-modules-dbapi</artifactId>
-            <version>${netbeans.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.netbeans.api</groupId>
@@ -63,7 +62,6 @@
         <dependency>
             <groupId>org.netbeans.modules</groupId>
             <artifactId>org-netbeans-modules-projectapi-nb</artifactId>
-            <version>${netbeans.version}</version> 
         </dependency>
         
         <!-- JD+ modules -->
@@ -97,10 +95,6 @@
             <artifactId>demetra-desktop-sa-api</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <!--dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>demetra-desktop-jd2</artifactId>   
-        </dependency-->
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>demetra-desktop-sql</artifactId>

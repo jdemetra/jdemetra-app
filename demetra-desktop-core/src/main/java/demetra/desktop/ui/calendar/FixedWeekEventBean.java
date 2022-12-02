@@ -4,11 +4,11 @@
  */
 package demetra.desktop.ui.calendar;
 
-import com.google.common.base.MoreObjects;
 import demetra.desktop.design.SwingProperty;
 import demetra.timeseries.ValidityPeriod;
 import demetra.timeseries.calendars.FixedWeekDay;
 import demetra.timeseries.calendars.Holiday;
+
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.Month;
@@ -17,6 +17,7 @@ import java.time.Month;
  *
  * @author Philippe Charles
  */
+@lombok.ToString
 public class FixedWeekEventBean extends AbstractEventBean {
 
     // PROPERTIES DEFINITIONS
@@ -81,10 +82,5 @@ public class FixedWeekEventBean extends AbstractEventBean {
     @Override
     public Holiday toHoliday() {
         return new FixedWeekDay(month.getValue(), place, dayOfWeek, getWeight(), validityPeriod());
-    }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this).add("dayOfWeek", dayOfWeek).add("place", place).add("month", month).add("start", getStart()).add("end", getEnd()).add("weigth", getWeight()).toString();
     }
 }
