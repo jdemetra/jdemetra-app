@@ -26,6 +26,7 @@ public enum CustomPropertyEditorRegistry {
         //registerCompositeEditor(SeasonalFilterOption[].class);
         register(File.class, new DirectoryEditor());
         register(LocalDate.class, new JDayPropertyEditor());
+        register(Parameter.class, new ParameterEditor());
         register(Parameter[].class, new ParametersPropertyEditor());
         register(RampDescriptor[].class, new RampsEditor());
         register(TsVariableDescriptor[].class, new TsVariableDescriptorsEditor());

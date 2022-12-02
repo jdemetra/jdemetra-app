@@ -7,15 +7,8 @@ package demetra.desktop.sa.multiprocessing.actions;
 import demetra.desktop.sa.multiprocessing.ui.MultiProcessingController.SaProcessingState;
 import demetra.desktop.sa.multiprocessing.ui.MultiProcessingManager;
 import demetra.desktop.sa.multiprocessing.ui.SaBatchUI;
-import demetra.desktop.sa.multiprocessing.ui.SaNode;
 import demetra.desktop.ui.ActiveViewAction;
-import demetra.sa.SaItem;
-import java.awt.Dimension;
 import static javax.swing.Action.NAME;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import org.openide.DialogDisplayer;
-import org.openide.NotifyDescriptor;
 import org.openide.awt.ActionRegistration;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
@@ -32,22 +25,20 @@ import org.openide.util.NbBundle.Messages;
 @Messages("CTL_Process=Start")
 public final class Process extends ActiveViewAction<SaBatchUI> {
 
- 
-
-     public Process() {
+    public Process() {
         super(SaBatchUI.class);
         refreshAction();
         putValue(NAME, Bundle.CTL_CommentSaItem());
     }
-    
+
     private boolean start;
 
     @Override
     protected void refreshAction() {
+        SaBatchUI cur = context();
         enabled = false;
         start = true;
-        SaBatchUI cur = context();
-        if (cur != null) {
+        if (!cur.getElement().isProcessed()) {
             SaProcessingState state = cur.getState();
             switch (state) {
                 case PENDING:
@@ -60,6 +51,8 @@ public final class Process extends ActiveViewAction<SaBatchUI> {
                 case DONE: // not finished
                     enabled = true;
                     break;
+                case READY:
+                    enabled = true;
             }
         }
         if (start) {
@@ -72,13 +65,14 @@ public final class Process extends ActiveViewAction<SaBatchUI> {
     @Override
     public boolean isEnabled() {
         refreshAction();
-        return enabled;
+        SaBatchUI ui = context();
+        return enabled && !ui.getElement().getCurrent().isEmpty();
     }
 
     @Override
     protected void process(SaBatchUI cur) {
         if (start) {
-            cur.start(false);
+            cur.start(true);
         } else {
             cur.stop();
         }

@@ -14,6 +14,7 @@ public enum CustomPropertyRendererFactory {
 
     CustomPropertyRendererFactory() {
         registry_ = new PropertyRendererRegistry();
+        registry_.registerRenderer(Parameter.class, new ParameterRenderer());
         registry_.registerRenderer(Parameter[].class, new ArrayRenderer());
         registry_.registerRenderer(RampDescriptor[].class, new ArrayRenderer());
         registry_.registerRenderer(TsVariableDescriptor[].class, new ArrayRenderer());

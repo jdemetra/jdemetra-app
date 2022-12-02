@@ -8,7 +8,8 @@ import demetra.desktop.descriptors.EnhancedPropertyDescriptor;
 import demetra.desktop.descriptors.DateSelectorUI;
 import demetra.modelling.TransformationType;
 import demetra.timeseries.TimeSelector;
-import demetra.tramo.TramoSpec;
+import demetra.timeseries.calendars.LengthOfPeriodType;
+import demetra.tramo.TradingDaysSpec;
 import demetra.tramo.TransformSpec;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
@@ -34,10 +35,10 @@ public class TransformSpecUI extends BaseTramoSpecUI {
     public TransformSpecUI(TramoSpecRoot root) {
         super(root);
     }
-    
+
     @Override
-    public boolean isRo(){
-        return super.isRo() 
+    public boolean isRo() {
+        return super.isRo()
                 || core().getRegression().hasFixedCoefficients();
     }
 
@@ -52,10 +53,10 @@ public class TransformSpecUI extends BaseTramoSpecUI {
         if (desc != null) {
             descs.add(desc);
         }
-//        desc = unitDesc();
-//        if (desc != null) {
-//            descs.add(desc);
-//        }
+        desc = adjustDesc();
+        if (desc != null) {
+            descs.add(desc);
+        }
         return descs;
     }
 
@@ -70,14 +71,59 @@ public class TransformSpecUI extends BaseTramoSpecUI {
     }
 
     public void setFunction(TransformationType value) {
-        update(inner().toBuilder().function(value).build());
+        TradingDaysSpec td = core().getRegression().getCalendar().getTradingDays();
+        boolean adjust = td.isAutoAdjust();
+        LengthOfPeriodType lpt = inner().getAdjust(), lpreg = td.getLengthOfPeriodType();
+        switch (value) {
+            case Auto -> {
+                if (lpt != LengthOfPeriodType.None) {
+                    lpreg = lpt;
+                }
+                lpt = LengthOfPeriodType.None;
+                adjust = true;
+            }
+            case Log ->
+                adjust = false;
+            case None -> {
+                adjust = false;
+                if (lpt != LengthOfPeriodType.None) {
+                    lpreg = lpt;
+                }
+                lpt = LengthOfPeriodType.None;
+            }
+        }
+        update(inner().toBuilder()
+                .function(value)
+                .adjust(lpt)
+                .build());
+        // Fn == None -> No autoadjust + Lp set if auto-adjust
+        if (td.isDefaultTradingDays() || td.isHolidays()) {
+            if (td.isAutomatic()) {
+                if (td.isDefaultTradingDays()) {
+                    update(TradingDaysSpec.automatic(lpreg, td.getAutomaticMethod(), td.getProbabilityForFTest(), adjust));         
+                } else {
+                    update(TradingDaysSpec.automaticHolidays(td.getHolidays(), lpreg, td.getAutomaticMethod(), td.getProbabilityForFTest(), adjust));
+                }
+
+            } else {
+                // we need to update the trading days options
+                if (td.isDefaultTradingDays()) {
+                    update(TradingDaysSpec.td(td.getTradingDaysType(), lpreg,
+                            td.getRegressionTestType(), adjust));
+                } else {
+                    update(TradingDaysSpec.holidays(td.getHolidays(), td.getTradingDaysType(), lpreg,
+                            td.getRegressionTestType(), adjust));
+                }
+            }
+        }
+
     }
 
     public DateSelectorUI getSpan() {
-        return new DateSelectorUI(inner().getSpan(), isRo(), span->updateSpan(span));
+        return new DateSelectorUI(inner().getSpan(), isRo(), span -> updateSpan(span));
     }
 
-    public void updateSpan(TimeSelector span){
+    public void updateSpan(TimeSelector span) {
         update(inner().toBuilder().span(span).build());
     }
 
@@ -89,8 +135,28 @@ public class TransformSpecUI extends BaseTramoSpecUI {
         update(inner().toBuilder().fct(value).build());
     }
 
+    public LengthOfPeriodType getAdjust() {
+        return inner().getAdjust();
+    }
+
+    public void setAdjust(LengthOfPeriodType value) {
+        update(inner().toBuilder().adjust(value).build());
+        TradingDaysSpec td = core().getRegression().getCalendar().getTradingDays();
+        if ((td.isDefaultTradingDays() || td.isHolidays())
+                && value != LengthOfPeriodType.None && td.getLengthOfPeriodType() != LengthOfPeriodType.None) {
+            // we need to update the trading days options
+            if (td.isDefaultTradingDays()) {
+                update(TradingDaysSpec.td(td.getTradingDaysType(), LengthOfPeriodType.None,
+                        td.getRegressionTestType(), false));
+            } else {
+                update(TradingDaysSpec.holidays(td.getHolidays(), td.getTradingDaysType(), LengthOfPeriodType.None,
+                        td.getRegressionTestType(), false));
+            }
+        }
+    }
+
     ///////////////////////////////////////////////////////////////////////////
-    private static final int SPAN_ID = 0, FN_ID = 1, FCT_ID = 2, UNITS_ID = 3;
+    private static final int SPAN_ID = 0, FN_ID = 1, FCT_ID = 2, ADJUST_ID = 3;
 
     @Messages({"transformSpecUI.fnDesc.name=Function",
         "transformSpecUI.fnDesc.desc=[lam]. None=no transformation of data; Log=takes logs of data; Auto:the program tests for the log-level specification."
@@ -126,17 +192,24 @@ public class TransformSpecUI extends BaseTramoSpecUI {
         }
     }
 
-    private EnhancedPropertyDescriptor unitDesc() {
+    @Messages({
+        "transformSpecUI.adjustDesc.name=Adjust",
+        "transformSpecUI.adjustDesc.desc=[adjust] Preadjustment of the series for length of period or leap year effects. The series is divided by the specified effect. Not available with the \"auto\" mode"
+    })
+    private EnhancedPropertyDescriptor adjustDesc() {
+        if (inner().getFunction() != TransformationType.Log) {
+            return null;
+        }
         try {
-            PropertyDescriptor desc = new PropertyDescriptor("units", this.getClass());
-            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, UNITS_ID);
+            PropertyDescriptor desc = new PropertyDescriptor("adjust", this.getClass());
+            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, ADJUST_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            edesc.setReadOnly(isRo() || getFunction() != TransformationType.Auto);
+            edesc.setReadOnly(isRo() || getFunction() != TransformationType.Log);
+            desc.setShortDescription(Bundle.transformSpecUI_adjustDesc_desc());
+            desc.setDisplayName(Bundle.transformSpecUI_adjustDesc_name());
             return edesc;
         } catch (IntrospectionException ex) {
             return null;
         }
-
-
     }
 }

@@ -51,7 +51,6 @@ import java.util.function.Predicate;
 @SwingComponent
 public final class JSpecSelectionComponent extends JComponent implements ExplorerManager.Provider, IDialogDescriptorProvider {
 
-
     @SwingProperty
     public static final String SPECIFICATION_PROPERTY = "specification";
 
@@ -71,7 +70,7 @@ public final class JSpecSelectionComponent extends JComponent implements Explore
     }
 
     public JSpecSelectionComponent(boolean showSystemOnly) {
-        this.systemOnly=showSystemOnly;
+        this.systemOnly = showSystemOnly;
         this.tree = new BeanTreeView();
         this.em = new ExplorerManager();
         this.selectionListener = new SelectionListener();
@@ -80,7 +79,6 @@ public final class JSpecSelectionComponent extends JComponent implements Explore
 
         tree.setRootVisible(false);
         tree.setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-
 
         setLayout(new BorderLayout());
         add(tree, BorderLayout.CENTER);
@@ -94,8 +92,8 @@ public final class JSpecSelectionComponent extends JComponent implements Explore
             }
         });
     }
-    
-    public void setFamily(String family){
+
+    public void setFamily(String family) {
         DecoratedNode root = new DecoratedNode(new DummyWsNode(WorkspaceFactory.getInstance().getActiveWorkspace(), new LinearId(family, WorkspaceFactory.SPECIFICATIONS)), systemOnly ? ItemWsNodeFilter.SYSTEM_ONLY : (o -> true));
         root.breadthFirstStream().forEach(o -> o.setPreferredActionDecorator(DecoratedNode.PreferredAction.DO_NOTHING));
         em.setRootContext(root);
@@ -130,17 +128,20 @@ public final class JSpecSelectionComponent extends JComponent implements Explore
 //        for (Node o : (Node[]) em.getSelectedNodes()) {
 //            ((DecoratedNode) o).setHtmlDecorator(null);
 //        }
-        DecoratedNode root = (DecoratedNode) em.getRootContext();
-        Optional<DecoratedNode> node = root.breadthFirstStream().filter(o -> isCurrentSpecificationNode(o.getOriginal())).findFirst();
-        if (node.isPresent()) {
+        Node root = em.getRootContext();
+        if (root instanceof DecoratedNode droot) {
+            Optional<DecoratedNode> node = droot.breadthFirstStream().filter(o -> isCurrentSpecificationNode(o.getOriginal())).findFirst();
+            if (node.isPresent()) {
 //            node.get().setHtmlDecorator(DecoratedNode.Html.BOLD);
-            try {
-                em.setSelectedNodes(new Node[]{node.get()});
-            } catch (PropertyVetoException ex) {
-                // do nothing?
+                try {
+                    em.setSelectedNodes(new Node[]{node.get()});
+                } catch (PropertyVetoException ex) {
+                    // do nothing?
+                }
             }
         }
         selectionListener.enable = true;
+
     }
 
     //<editor-fold defaultstate="collapsed" desc="Getters/Setters">

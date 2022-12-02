@@ -19,21 +19,19 @@ package demetra.desktop.regarima.documents;
 import demetra.desktop.regarima.descriptors.RegArimaSpecUI;
 import demetra.desktop.ui.properties.l2fprod.PropertiesDialog;
 import demetra.desktop.workspace.AbstractWorkspaceItemManager;
-import demetra.desktop.workspace.Workspace;
 import demetra.desktop.workspace.WorkspaceFactory;
 import demetra.desktop.workspace.WorkspaceItem;
 import demetra.desktop.workspace.WorkspaceItemManager;
-import demetra.desktop.workspace.nodes.ItemWsNode;
 import demetra.regarima.RegArimaSpec;
 import demetra.util.Id;
 import demetra.util.LinearId;
+import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.Icon;
-import jdplus.x13.regarima.RegArimaDocument;
 import org.openide.util.ImageUtilities;
 import org.openide.util.lookup.ServiceProvider;
 import org.openide.windows.WindowManager;
@@ -123,8 +121,9 @@ public class RegArimaSpecManager extends AbstractWorkspaceItemManager<RegArimaSp
 
         }
         final RegArimaSpecUI ui = new RegArimaSpecUI(xdoc.getElement(), xdoc.isReadOnly());
+        Frame owner = WindowManager.getDefault().getMainWindow();
         PropertiesDialog propDialog =
-                new PropertiesDialog(WindowManager.getDefault().getMainWindow(), true, ui,
+                new PropertiesDialog(owner, true, ui,
                 new AbstractAction("OK") {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -132,6 +131,7 @@ public class RegArimaSpecManager extends AbstractWorkspaceItemManager<RegArimaSp
             }
         });
         propDialog.setTitle(xdoc.getDisplayName());
+        propDialog.setLocationRelativeTo(owner);
         propDialog.setVisible(true);
     }
 

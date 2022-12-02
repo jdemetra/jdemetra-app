@@ -30,8 +30,8 @@ public class StlPlusUIFactory implements DocumentUIServices<MStlSpec, StlPlusDoc
     }
 
     @Override
-    public IObjectDescriptor<MStlSpec> getSpecificationDescriptor(StlPlusDocument doc) {
-        return new StlPlusSpecUI(doc.getSpecification(), false);
+    public IObjectDescriptor<MStlSpec> getSpecificationDescriptor(MStlSpec spec) {
+        return new StlPlusSpecUI(spec, false);
     }
 
     @Override

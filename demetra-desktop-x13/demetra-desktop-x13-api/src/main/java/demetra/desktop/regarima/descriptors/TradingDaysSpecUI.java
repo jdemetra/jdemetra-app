@@ -114,6 +114,8 @@ public class TradingDaysSpecUI extends BaseRegArimaSpecUI {
     }
 
     public void setOption(TradingDaysSpecType value) {
+        if (value == getOption())
+            return;
         LengthOfPeriodType adjust = core().getTransform().getAdjust();
         TransformationType function = core().getTransform().getFunction();
         boolean auto = function == TransformationType.Auto;
@@ -153,13 +155,18 @@ public class TradingDaysSpecUI extends BaseRegArimaSpecUI {
             np.add("lp", inner.getLpCoefficient());
         }
         if (inner.isDefaultTradingDays() || inner.isHolidays()) {
-            Parameter[] ptd = inner.getTdCoefficients();
-            int ntd = inner.getTradingDaysType().getVariablesCount() - 1;
-            String[] td = new String[ntd];
-            for (int i = 0; i < ntd; ++i) {
-                td[i] = "td-" + (i + 1);
+            TradingDaysType type = inner.getTradingDaysType();
+            if (type != TradingDaysType.NONE) {
+                String[] names = type.contrastNames();
+                Parameter[] ptd = inner.getTdCoefficients();
+                np.addAll(names, ptd);
             }
-            np.addAll(td, ptd);
+        } else if (inner.isStockTradingDays()) {
+            String[] names = TradingDaysType.TD7.contrastNames();
+            Parameter[] ptd = inner.getTdCoefficients();
+            np.addAll(names, ptd);
+        }else if (inner.isUserDefined()){
+            np.addAll(inner.getUserVariables(), inner.getTdCoefficients());
         }
         return np;
     }
@@ -404,16 +411,12 @@ public class TradingDaysSpecUI extends BaseRegArimaSpecUI {
         if (!auto) {
             return null;
         }
-        boolean lp = inner().getLengthOfPeriodType() != LengthOfPeriodType.None;
-        if (!lp) {
-            return null;
-        }
         try {
             PropertyDescriptor desc = new PropertyDescriptor("autoAdjust", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, AUTO_ID);
             desc.setDisplayName(Bundle.tradingDaysSpecUI_autoDesc_name());
             desc.setShortDescription(Bundle.tradingDaysSpecUI_autoDesc_desc());
-            edesc.setReadOnly(isRo() || hasFixedCoefficients());
+            edesc.setReadOnly(isRo() || hasFixedCoefficients() || inner().getLengthOfPeriodType() == LengthOfPeriodType.None);
             return edesc;
         } catch (IntrospectionException ex) {
             return null;
@@ -477,7 +480,7 @@ public class TradingDaysSpecUI extends BaseRegArimaSpecUI {
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, LP_ID);
             desc.setDisplayName(Bundle.tradingDaysSpecUI_lpDesc_name());
             desc.setShortDescription(Bundle.tradingDaysSpecUI_lpDesc_desc());
-            edesc.setReadOnly(isRo() || core().getTransform().getAdjust() != LengthOfPeriodType.None || isAutoAdjust() || hasFixedCoefficients());
+            edesc.setReadOnly(isRo() || core().getTransform().getAdjust() != LengthOfPeriodType.None || hasFixedCoefficients());
             return edesc;
         } catch (IntrospectionException ex) {
             return null;

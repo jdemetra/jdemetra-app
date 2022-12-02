@@ -6,7 +6,6 @@ package demetra.desktop.sa.multiprocessing.actions;
 
 import demetra.desktop.sa.multiprocessing.ui.MultiProcessingManager;
 import demetra.desktop.sa.multiprocessing.ui.SaBatchUI;
-import demetra.desktop.sa.multiprocessing.ui.SaNode;
 import demetra.desktop.ui.ActiveViewAction;
 import org.openide.awt.ActionRegistration;
 import org.openide.awt.ActionReference;
@@ -15,31 +14,30 @@ import org.openide.awt.ActionID;
 import org.openide.util.NbBundle.Messages;
 
 @ActionID(category = "SaProcessing",
-id = "demetra.desktop.sa.multiprocessing.actions.ClearSelection")
-@ActionRegistration(displayName = "#CTL_ClearSelection", lazy=false)
+id = "demetra.desktop.sa.multiprocessing.actions.Paste")
+@ActionRegistration(displayName = "#CTL_Paste", lazy = false)
 @ActionReferences({
-    @ActionReference(path = MultiProcessingManager.CONTEXTPATH, position = 1600),
-    @ActionReference(path = "Shortcuts", name = "C")
+    @ActionReference(path = MultiProcessingManager.CONTEXTPATH + Edit.PATH, position = 1330)
 })
-@Messages("CTL_ClearSelection=Clear selection")
-public final class ClearSelection extends ActiveViewAction<SaBatchUI> {
+@Messages("CTL_Paste=Paste")
+public final class Paste extends ActiveViewAction<SaBatchUI> {
 
-
-    public ClearSelection() {
+    public Paste() {
         super(SaBatchUI.class);
+        putValue(NAME, Bundle.CTL_Paste());
         refreshAction();
-        putValue(NAME, Bundle.CTL_ClearSelection());
     }
 
     @Override
     protected void refreshAction() {
-        SaBatchUI ui = context();
-        enabled = ui.getSelectionCount()>0;
+        enabled = java.awt.Toolkit.getDefaultToolkit().getSystemClipboard().getAvailableDataFlavors().length > 0;
     }
 
     @Override
     protected void process(SaBatchUI cur) {
-        cur.setSelection(new SaNode[0]);
+        SaBatchUI ui = context();
+        if (ui != null) {
+            ui.paste(true);
+        }
     }
 }
-

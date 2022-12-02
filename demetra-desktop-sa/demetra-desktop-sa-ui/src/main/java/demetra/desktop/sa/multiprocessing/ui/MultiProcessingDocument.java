@@ -35,6 +35,7 @@ public class MultiProcessingDocument implements Documented {
     private final Map<String, String> metadata = Collections.emptyMap();
 
     private final List<SaNode> current = new ArrayList<>();
+    @NonNull
     private final SaItems initial;
 
     private MultiProcessingDocument(SaItems initial) {
@@ -69,71 +70,97 @@ public class MultiProcessingDocument implements Documented {
         return metadata;
     }
 
+    public boolean hasFrozenItems() {
+        Optional<SaNode> any = current.stream().filter(o -> o.getOutput().getDefinition().getTs().isFrozen()).findAny();
+        return any.isPresent();
+    }
+
+    public boolean isProcessed() {
+        Optional<SaNode> any = current.stream().filter(o -> !o.isProcessed()).findAny();
+        return any.isEmpty();
+    }
+
     public boolean isNew() {
-        return initial == null;
+        return initial.isEmpty();
+    }
+    
+    public boolean isRefreshable(){
+        return !isNew() || hasFrozenItems();
+    }
+
+    public boolean isNew(SaNode node) {
+        return node.getId() >= initial.size();
     }
 
     public void refresh(EstimationPolicy policy) {
-        if (initial == null) {
-            return;
-        }
         current.clear();
         current.addAll(of(initial.refresh(policy, TsInformationType.Data)));
     }
 
     public void refresh(EstimationPolicy policy, Predicate<SaNode> test) {
-        if (initial == null) {
-            return;
-        }
         for (int i = 0; i < current.size(); ++i) {
             SaNode cur = current.get(i);
-            int id=cur.getId();
-            if (id < initial.size() && test.test(cur)) {
-                SaItem item = initial.item(id);
-                SaNode n = SaNode.of(id, item.refresh(policy, TsInformationType.Data));
-                current.set(i, n);
+            int id = cur.getId();
+            if (test.test(cur)) {
+                SaItem item = null;
+                if (id < initial.size()) {
+                    item = initial.item(id);
+                } else if (cur.getOutput().getDefinition().getTs().isFrozen()) {
+                    item = cur.getOutput();
+                }
+                if (item != null) {
+                    SaNode n = SaNode.of(id, item.refresh(policy, TsInformationType.Data));
+                    current.set(i, n);
+                }
             }
         }
     }
 
     public void refresh(EstimationPolicyType policy, TimeSelector span, Predicate<SaNode> test) {
-        if (initial == null) {
-            return;
-        }
         for (int i = 0; i < current.size(); ++i) {
             SaNode cur = current.get(i);
-            int id=cur.getId();
-            if (id < initial.size() && test.test(cur)) {
-                SaItem item = initial.item(id);
-                Ts ts = item.getDefinition().getTs();
-                TsDomain domain = ts.getData().getDomain().select(span);
-                SaNode n = SaNode.of(id, item.refresh(new EstimationPolicy(policy, domain), TsInformationType.Data));
-                current.set(i, n);
+            int id = cur.getId();
+            if (test.test(cur)) {
+                SaItem item = null;
+                if (id < initial.size()) {
+                    item = initial.item(id);
+                } else if (cur.getOutput().getDefinition().getTs().isFrozen()) {
+                    item = cur.getOutput();
+                }
+                if (item != null) {
+                    Ts ts = item.getDefinition().getTs();
+                    TsDomain domain = ts.getData().getDomain().select(span);
+                    SaNode n = SaNode.of(id, item.refresh(new EstimationPolicy(policy, domain), TsInformationType.Data));
+                    current.set(i, n);
+                }
             }
         }
     }
 
     public void refresh(EstimationPolicyType policy, int nback, Predicate<SaNode> test) {
-        if (initial == null) {
-            return;
-        }
         for (int i = 0; i < current.size(); ++i) {
             SaNode cur = current.get(i);
-            int id=cur.getId();
-            if (id < initial.size() && test.test(cur)) {
-                SaItem item = initial.item(id);
-                TsDomain domain = null;
-                if (nback != 0) {
-                    Ts ts = item.getDefinition().getTs();
-                    domain = ts.getData().getDomain();
-                    if (nback < 0) {
-                        nback = -nback * domain.getAnnualFrequency();
-                    }
-                    domain = domain.drop(0, nback);
+            int id = cur.getId();
+            if (test.test(cur)) {
+                SaItem item = null;
+                if (id < initial.size()) {
+                    item = initial.item(id);
+                } else if (cur.getOutput().getDefinition().getTs().isFrozen()) {
+                    item = cur.getOutput();
                 }
-
-                SaNode n = SaNode.of(id, item.refresh(new EstimationPolicy(policy, domain), TsInformationType.Data));
-                current.set(i, n);
+                if (item != null) {
+                    TsDomain domain = null;
+                    if (nback != 0) {
+                        Ts ts = item.getDefinition().getTs();
+                        domain = ts.getData().getDomain();
+                        if (nback < 0) {
+                            nback = -nback * domain.getAnnualFrequency();
+                        }
+                        domain = domain.drop(0, nback);
+                    }
+                    SaNode n = SaNode.of(id, item.refresh(new EstimationPolicy(policy, domain), TsInformationType.Data));
+                    current.set(i, n);
+                }
             }
         }
     }
@@ -208,6 +235,7 @@ public class MultiProcessingDocument implements Documented {
 
     public void reset() {
         this.current.clear();
+        this.curId = 0;
         current.addAll(of(initial.getItems()));
     }
 

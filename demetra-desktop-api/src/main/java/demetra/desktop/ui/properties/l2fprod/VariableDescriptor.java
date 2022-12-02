@@ -64,31 +64,16 @@ public abstract class VariableDescriptor<T extends ITsVariable> implements IObje
         return coefficient;
     }
 
-    public double getParameter() {
-        return coefficient.isDefined() ? coefficient.getValue() : null;
+    public Parameter getParameter() {
+        return coefficient;
     }
 
-    public void setParameter(double p) {
-        coefficient = p == 0 ? Parameter.undefined() : Parameter.fixed(p);
+    public void setParameter(Parameter p) {
+        coefficient = p;
     }
 
-    public boolean isFixedParameter() {
-        return coefficient.isFixed();
-    }
 
-    public void setFixedParameter(boolean f) {
-        if (f && !coefficient.isFixed()) {
-            coefficient = Parameter.fixed(coefficient.getValue());
-        } else if (coefficient.isFixed()) {
-            if (coefficient.getValue() == 0) {
-                coefficient = Parameter.undefined();
-            } else {
-                coefficient = Parameter.initial(coefficient.getValue());
-            }
-        }
-    }
-
-    private static final int NAME_ID = 1, FIXEDPARAMETER_ID = 2, PARAMETER_ID = 3;
+    private static final int NAME_ID = 1, PARAMETER_ID = 2;
 
     @NbBundle.Messages("variableDescriptor.nameDesc.display=Name")
     protected EnhancedPropertyDescriptor nameDesc() {
@@ -102,23 +87,8 @@ public abstract class VariableDescriptor<T extends ITsVariable> implements IObje
         }
     }
 
-    @NbBundle.Messages("variableDescriptor.fixedParamDesc.display=Fixed coeff.")
-    protected EnhancedPropertyDescriptor fixedParameterDesc() {
-        try {
-            PropertyDescriptor desc = new PropertyDescriptor("fixedParameter", this.getClass());
-            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, FIXEDPARAMETER_ID);
-            desc.setDisplayName(Bundle.variableDescriptor_fixedParamDesc_display());
-            return edesc;
-        } catch (IntrospectionException ex) {
-            return null;
-        }
-    }
-
     @NbBundle.Messages("variableDescriptor.paramDesc.display=Coefficient")
     protected EnhancedPropertyDescriptor parameterDesc() {
-        if (!coefficient.isFixed()) {
-            return null;
-        }
         try {
             PropertyDescriptor desc = new PropertyDescriptor("parameter", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, PARAMETER_ID);

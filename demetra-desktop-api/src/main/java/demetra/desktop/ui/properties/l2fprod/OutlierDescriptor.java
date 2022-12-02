@@ -141,28 +141,12 @@ public class OutlierDescriptor implements IPropertyDescriptors {
         this.type = type;
     }
     
-    public double getParameter() {
-        return parameter.isDefined() ? parameter.getValue() : null;
+    public Parameter getParameter() {
+        return parameter;
     }
     
-    public void setParameter(double p) {
-        parameter = p == 0 ? Parameter.undefined() : Parameter.fixed(p);
-    }
-    
-    public boolean isFixedParameter() {
-        return parameter.isFixed();
-    }
-    
-    public void setFixedParameter(boolean f) {
-        if (f && !parameter.isFixed()) {
-            parameter = Parameter.fixed(parameter.getValue());
-        } else if (parameter.isFixed()) {
-            if (parameter.getValue() == 0) {
-                parameter = Parameter.undefined();
-            } else {
-                parameter = Parameter.initial(parameter.getValue());
-            }
-        }
+    public void setParameter(Parameter p) {
+        parameter = p ;
     }
     
     public Parameter getCoefficient() {
@@ -182,10 +166,6 @@ public class OutlierDescriptor implements IPropertyDescriptors {
             descs.add(desc);
         }
         desc = typeDesc();
-        if (desc != null) {
-            descs.add(desc);
-        }
-        desc = fixedParameterDesc();
         if (desc != null) {
             descs.add(desc);
         }
@@ -228,17 +208,6 @@ public class OutlierDescriptor implements IPropertyDescriptors {
             PropertyDescriptor desc = new PropertyDescriptor("type", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, TYPE_ID);
             desc.setDisplayName("Outlier Type");
-            return edesc;
-        } catch (IntrospectionException ex) {
-            return null;
-        }
-    }
-    
-    private EnhancedPropertyDescriptor fixedParameterDesc() {
-        try {
-            PropertyDescriptor desc = new PropertyDescriptor("fixedParameter", this.getClass());
-            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, FIXEDPARAMETER_ID);
-            desc.setDisplayName("Fixed Parameter");
             return edesc;
         } catch (IntrospectionException ex) {
             return null;

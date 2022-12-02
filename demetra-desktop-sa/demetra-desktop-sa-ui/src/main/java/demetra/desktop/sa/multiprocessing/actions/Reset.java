@@ -15,9 +15,9 @@ import org.openide.util.NbBundle.Messages;
 
 @ActionID(category = "SaProcessing",
         id = "demetra.desktop.ui.sa.multiprocessing.actions.Reset")
-@ActionRegistration(displayName = "#CTL_Reset", lazy=false)
+@ActionRegistration(displayName = "#CTL_Reset", lazy = false)
 @ActionReferences({
-    @ActionReference(path = MultiProcessingManager.CONTEXTPATH + Edit.PATH, position = 1346)
+    @ActionReference(path = MultiProcessingManager.CONTEXTPATH, position = 1250)
 })
 @Messages("CTL_Reset=Reset")
 public final class Reset extends ActiveViewAction<SaBatchUI> {
@@ -31,7 +31,7 @@ public final class Reset extends ActiveViewAction<SaBatchUI> {
     @Override
     protected void refreshAction() {
         SaBatchUI ui = context();
-        enabled = ui != null && ! ui.getElement().isNew();
+        enabled = !ui.getElement().isNew();
     }
 
     @Override

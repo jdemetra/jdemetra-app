@@ -16,7 +16,7 @@ import org.openide.util.NbBundle;
 
 @ActionID(category = "SaProcessing",
         id = "demetra.desktop.sa.multiprocessing.actions.LocalRefreshConcurrent")
-@ActionRegistration(displayName = "#CTL_LocalRefreshConcurrent", lazy=true)
+@ActionRegistration(displayName = "#CTL_LocalRefreshConcurrent", lazy = false)
 @ActionReferences({
     @ActionReference(path = MultiProcessingManager.LOCALPATH + LocalRefresh.PATH, position = 1290)
 })
@@ -37,6 +37,6 @@ public final class LocalRefreshConcurrent extends ActiveViewAction<SaBatchUI> {
     @Override
     protected void refreshAction() {
         SaBatchUI ui = context();
-        enabled = ui != null && !ui.getElement().isNew() && ui.getSelectionCount() > 0;
+        enabled = ui.getElement().isRefreshable() && ui.getSelectionCount() > 0;
     }
 }

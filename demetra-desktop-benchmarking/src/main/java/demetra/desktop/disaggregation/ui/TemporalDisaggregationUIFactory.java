@@ -41,8 +41,8 @@ public class TemporalDisaggregationUIFactory implements DocumentUIServices<Tempo
     }
 
     @Override
-    public IObjectDescriptor<TemporalDisaggregationSpec> getSpecificationDescriptor(TemporalDisaggregationDocument doc) {
-        return new TemporalDisaggregationSpecUI(doc.getSpecification(), false);
+    public IObjectDescriptor<TemporalDisaggregationSpec> getSpecificationDescriptor(TemporalDisaggregationSpec spec) {
+        return new TemporalDisaggregationSpecUI(spec, false);
     }
 
     @Override

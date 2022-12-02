@@ -18,8 +18,8 @@ import org.openide.util.NbBundle.Messages;
 import org.openide.util.actions.Presenter;
 
 @ActionID(category = "SaProcessing",
-id = "demetra.desktop.sa.multiprocessing.actions.RefreshPartial")
-@ActionRegistration(displayName = "#CTL_RefreshPartial", lazy=false)
+        id = "demetra.desktop.sa.multiprocessing.actions.RefreshPartial")
+@ActionRegistration(displayName = "#CTL_RefreshPartial", lazy = false)
 @ActionReferences({
     @ActionReference(path = MultiProcessingManager.CONTEXTPATH + Refresh.PATH, position = 1220),
     @ActionReference(path = "Shortcuts", name = "p")

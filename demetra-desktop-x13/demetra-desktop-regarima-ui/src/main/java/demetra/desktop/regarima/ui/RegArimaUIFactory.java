@@ -31,8 +31,8 @@ public class RegArimaUIFactory implements DocumentUIServices<RegArimaSpec, RegAr
     }
 
     @Override
-    public IObjectDescriptor<RegArimaSpec> getSpecificationDescriptor(RegArimaDocument doc) {
-        return new RegArimaSpecUI(doc.getSpecification(), false);
+    public IObjectDescriptor<RegArimaSpec> getSpecificationDescriptor(RegArimaSpec spec) {
+        return new RegArimaSpecUI(spec, false);
     }
 
     @Override

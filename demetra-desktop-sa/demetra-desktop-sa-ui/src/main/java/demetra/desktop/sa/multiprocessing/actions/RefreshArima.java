@@ -17,10 +17,10 @@ import org.openide.awt.ActionID;
 import org.openide.util.NbBundle.Messages;
 
 @ActionID(category = "SaProcessing",
-id = "demetra.desktop.sa.multiprocessing.actions.RefreshArima")
-@ActionRegistration(displayName = "#CTL_RefreshArima", lazy=true)
+        id = "demetra.desktop.sa.multiprocessing.actions.RefreshArima")
+@ActionRegistration(displayName = "#CTL_RefreshArima", lazy = false)
 @ActionReferences({
-    @ActionReference(path = MultiProcessingManager.CONTEXTPATH+RefreshPartial.PATH, position = 1260)
+    @ActionReference(path = MultiProcessingManager.CONTEXTPATH + RefreshPartial.PATH, position = 1260)
 })
 @Messages("CTL_RefreshArima=+ Arima model")
 public final class RefreshArima extends ActiveViewAction<SaBatchUI> {
@@ -39,6 +39,6 @@ public final class RefreshArima extends ActiveViewAction<SaBatchUI> {
     @Override
     protected void refreshAction() {
         SaBatchUI ui = context();
-        enabled = ui != null && !ui.getElement().isNew();
+        enabled = ui.getElement().isRefreshable();
     }
 }

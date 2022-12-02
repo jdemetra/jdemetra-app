@@ -41,8 +41,8 @@ public class DentonUIFactory implements DocumentUIServices<DentonSpec, DentonDoc
     }
 
     @Override
-    public IObjectDescriptor<DentonSpec> getSpecificationDescriptor(DentonDocument doc) {
-        return new DentonSpecUI(doc.getSpecification());
+    public IObjectDescriptor<DentonSpec> getSpecificationDescriptor(DentonSpec spec) {
+        return new DentonSpecUI(spec);
     }
 
     @Override

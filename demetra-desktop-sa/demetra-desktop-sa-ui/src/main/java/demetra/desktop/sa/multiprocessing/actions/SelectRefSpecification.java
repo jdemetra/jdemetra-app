@@ -35,19 +35,19 @@ import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle.Messages;
 
 @ActionID(category = "SaProcessing",
-        id = "demetra.sa.multiprocessing.actions.ChangeSpecification")
-@ActionRegistration(displayName = "#CTL_ChangeSpecification", lazy = false)
+        id = "demetra.sa.multiprocessing.actions.RefSpecification")
+@ActionRegistration(displayName = "#CTL_RefSpecification", lazy = false)
 @ActionReferences({
-    @ActionReference(path = MultiProcessingManager.CONTEXTPATH + Specification.PATH, position = 1410),
-    @ActionReference(path = MultiProcessingManager.LOCALPATH + Specification.PATH, position = 1410)
+    @ActionReference(path = MultiProcessingManager.CONTEXTPATH + Edit.PATH, position = 1500, separatorBefore = 1499),
+    @ActionReference(path = MultiProcessingManager.LOCALPATH + Edit.PATH, position = 1500)
 })
-@Messages("CTL_ChangeSpecification=Select...")
-public final class ChangeSpecification extends ActiveViewAction<SaBatchUI> {
+@Messages("CTL_RefSpecification=Reference Specification...")
+public final class SelectRefSpecification extends ActiveViewAction<SaBatchUI> {
 
-    public ChangeSpecification() {
+    public SelectRefSpecification() {
         super(SaBatchUI.class);
         refreshAction();
-        putValue(NAME, Bundle.CTL_ChangeSpecification());
+        putValue(NAME, Bundle.CTL_RefSpecification());
     }
 
     @Override
@@ -64,7 +64,7 @@ public final class ChangeSpecification extends ActiveViewAction<SaBatchUI> {
         // find unique spec
         for (SaNode o : selection) {
             SaSpecification dspec = o.domainSpec();
-                    
+
             if (spec == null) {
                 spec = dspec;
             } else if (!spec.equals(dspec)) {
@@ -74,12 +74,12 @@ public final class ChangeSpecification extends ActiveViewAction<SaBatchUI> {
         }
         JSpecSelectionComponent c = new JSpecSelectionComponent();
         c.setFamily(SaSpecification.FAMILY);
-        DialogDescriptor dd = c.createDialogDescriptor("Choose active specification");
+        DialogDescriptor dd = c.createDialogDescriptor("Choose reference specification");
         if (DialogDisplayer.getDefault().notify(dd) == NotifyDescriptor.OK_OPTION) {
             MultiProcessingController controller = cur.getController();
             WorkspaceItem<MultiProcessingDocument> document = controller.getDocument();
             for (SaNode o : selection) {
-                SaNode n= o.with((SaSpecification) c.getSpecification());
+                SaNode n = o.withDomainSpecification((SaSpecification) c.getSpecification());
                 document.getElement().replace(o.getId(), n);
             }
             cur.redrawAll();

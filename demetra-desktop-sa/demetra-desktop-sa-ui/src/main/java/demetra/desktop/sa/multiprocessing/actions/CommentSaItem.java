@@ -36,8 +36,7 @@ import org.openide.util.NbBundle.Messages;
         id = "demetra.desktop.sa.multiprocessing.actions.CommentSaItem")
 @ActionRegistration(displayName = "#CTL_CommentSaItem", lazy = false)
 @ActionReferences({
-    @ActionReference(path = MultiProcessingManager.LOCALPATH, position = 2100),
-    @ActionReference(path = MultiProcessingManager.CONTEXTPATH, position = 2100)
+    @ActionReference(path = MultiProcessingManager.CONTEXTPATH + Edit.PATH, position = 1600)
 })
 @Messages("CTL_CommentSaItem=Edit comments")
 public final class CommentSaItem extends ActiveViewAction<SaBatchUI> {

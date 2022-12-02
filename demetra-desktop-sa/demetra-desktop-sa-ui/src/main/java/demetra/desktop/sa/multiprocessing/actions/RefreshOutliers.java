@@ -17,7 +17,7 @@ import org.openide.util.NbBundle.Messages;
 
 @ActionID(category = "SaProcessing",
         id = "demetra.desktop.sa.multiprocessing.actions.RefreshOutliers")
-@ActionRegistration(displayName = "#CTL_RefreshOutliers", lazy=true)
+@ActionRegistration(displayName = "#CTL_RefreshOutliers", lazy = false)
 @ActionReferences({
     @ActionReference(path = MultiProcessingManager.CONTEXTPATH + RefreshPartial.PATH, position = 1250)
 })
@@ -38,6 +38,6 @@ public final class RefreshOutliers extends ActiveViewAction<SaBatchUI> {
     @Override
     protected void refreshAction() {
         SaBatchUI ui = context();
-        enabled = ui != null && !ui.getElement().isNew();
+        enabled = ui.getElement().isRefreshable();
     }
 }

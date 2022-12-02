@@ -16,10 +16,10 @@ import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle.Messages;
 
 @ActionID(category = "SaProcessing",
-id = "demetra.desktop.sa.multiprocessing.actions.RefreshCurrent")
-@ActionRegistration(displayName = "#CTL_RefreshCurrent", lazy=true)
+        id = "demetra.desktop.sa.multiprocessing.actions.RefreshCurrent")
+@ActionRegistration(displayName = "#CTL_RefreshCurrent", lazy = false)
 @ActionReferences({
-    @ActionReference(path = MultiProcessingManager.CONTEXTPATH+Refresh.PATH, position = 1201)
+    @ActionReference(path = MultiProcessingManager.CONTEXTPATH + Refresh.PATH, position = 1201)
 })
 @Messages("CTL_RefreshCurrent=Current [AO]")
 public final class RefreshCurrent extends ActiveViewAction<SaBatchUI> {
@@ -27,7 +27,7 @@ public final class RefreshCurrent extends ActiveViewAction<SaBatchUI> {
     public RefreshCurrent() {
         super(SaBatchUI.class);
         refreshAction();
-       putValue(NAME, Bundle.CTL_RefreshCurrent());
+        putValue(NAME, Bundle.CTL_RefreshCurrent());
     }
 
     @Override
@@ -38,6 +38,6 @@ public final class RefreshCurrent extends ActiveViewAction<SaBatchUI> {
     @Override
     protected void refreshAction() {
         SaBatchUI ui = context();
-        enabled = ui != null && !ui.getElement().isNew();
+        enabled = ui.getElement().isRefreshable();
     }
 }

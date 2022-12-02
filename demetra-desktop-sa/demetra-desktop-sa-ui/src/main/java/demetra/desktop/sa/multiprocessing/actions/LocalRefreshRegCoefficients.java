@@ -16,8 +16,8 @@ import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle;
 
 @ActionID(category = "SaProcessing",
-id = "demetra.desktop.sa.multiprocessing.actions.LocalRefreshRegCoefficients")
-@ActionRegistration(displayName = "#CTL_LocalRefreshRegCoefficients", lazy=true)
+        id = "demetra.desktop.sa.multiprocessing.actions.LocalRefreshRegCoefficients")
+@ActionRegistration(displayName = "#CTL_LocalRefreshRegCoefficients", lazy = false)
 @ActionReferences({
     @ActionReference(path = MultiProcessingManager.LOCALPATH + LocalRefreshPartial.PATH, position = 1225)
 })
