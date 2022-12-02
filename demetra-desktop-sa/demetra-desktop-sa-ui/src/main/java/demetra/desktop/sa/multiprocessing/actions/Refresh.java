@@ -18,35 +18,35 @@ import org.openide.util.NbBundle.Messages;
 import org.openide.util.actions.Presenter;
 
 @ActionID(category = "SaProcessing",
-id = "demetra.desktop.sa.multiprocessing.actions.Refresh")
-@ActionRegistration(displayName = "#CTL_Refresh", lazy=false)
+        id = "demetra.desktop.sa.multiprocessing.actions.Refresh")
+@ActionRegistration(displayName = "#CTL_Refresh", lazy = false)
 @ActionReferences({
     @ActionReference(path = MultiProcessingManager.CONTEXTPATH, position = 1200),
-    @ActionReference(path = "Shortcuts", name = "r")
+    @ActionReference(path = "Shortcuts", name = "R")
 })
 @Messages("CTL_Refresh=Refresh")
 public final class Refresh extends ActiveViewAction<SaBatchUI> implements Presenter.Popup {
-    
-    public static final String PATH="/Refresh";
 
-     public Refresh(){
+    public static final String PATH = "/Refresh";
+
+    public Refresh() {
         super(SaBatchUI.class);
     }
-    
+
     @Override
     public JMenuItem getPopupPresenter() {
         refreshAction();
-        JMenu menu=new JMenu(Bundle.CTL_Refresh());
+        JMenu menu = new JMenu(Bundle.CTL_Refresh());
         menu.setEnabled(enabled);
-        Menus.fillMenu(menu, MultiProcessingManager.CONTEXTPATH+PATH);
+        Menus.fillMenu(menu, MultiProcessingManager.CONTEXTPATH + PATH);
         return menu;
     }
 
     @Override
     protected void refreshAction() {
-        enabled=context() != null;
-//        enabled=context() != null && !context().getDocument().getElement().isNew();
-     }
+        SaBatchUI ui = context();
+        enabled = ui.getElement().isRefreshable();
+    }
 
     @Override
     protected void process(SaBatchUI cur) {

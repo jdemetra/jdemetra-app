@@ -16,8 +16,8 @@ import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle.Messages;
 
 @ActionID(category = "SaProcessing",
-id = "demetra.desktop.sa.multiprocessing.actions.RefreshFixedModel")
-@ActionRegistration(displayName = "#CTL_RefreshFixedModel", lazy=true)
+        id = "demetra.desktop.sa.multiprocessing.actions.RefreshFixedModel")
+@ActionRegistration(displayName = "#CTL_RefreshFixedModel", lazy = false)
 @ActionReferences({
     @ActionReference(path = MultiProcessingManager.CONTEXTPATH + RefreshPartial.PATH, position = 1205)
 })
@@ -38,6 +38,6 @@ public final class RefreshFixedModel extends ActiveViewAction<SaBatchUI> {
     @Override
     protected void refreshAction() {
         SaBatchUI ui = context();
-        enabled = ui != null && !ui.getElement().isNew();
+        enabled = ui.getElement().isRefreshable();
     }
 }

@@ -38,8 +38,8 @@ import org.openide.util.actions.Presenter;
         id = "demetra.desktop.sa.multiprocessing.actions.Specification")
 @ActionRegistration(displayName = "#CTL_Specification", lazy = false)
 @ActionReferences({
-    @ActionReference(path = MultiProcessingManager.CONTEXTPATH, position = 1400),
-    @ActionReference(path = MultiProcessingManager.LOCALPATH, position = 1400)
+    @ActionReference(path = MultiProcessingManager.CONTEXTPATH, position = 1500),
+    @ActionReference(path = MultiProcessingManager.LOCALPATH, position = 1500)
 })
 @Messages("CTL_Specification=Specification")
 public class Specification extends ActiveViewAction<SaBatchUI> implements Presenter.Popup {

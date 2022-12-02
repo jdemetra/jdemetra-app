@@ -114,6 +114,8 @@ public class TradingDaysSpecUI extends BaseRegArimaSpecUI {
     }
 
     public void setOption(TradingDaysSpecType value) {
+        if (value == getOption())
+            return;
         LengthOfPeriodType adjust = core().getTransform().getAdjust();
         TransformationType function = core().getTransform().getFunction();
         boolean auto = function == TransformationType.Auto;
@@ -409,16 +411,12 @@ public class TradingDaysSpecUI extends BaseRegArimaSpecUI {
         if (!auto) {
             return null;
         }
-        boolean nolp = inner().getLengthOfPeriodType() == LengthOfPeriodType.None;
-        if (nolp) {
-            return null;
-        }
         try {
             PropertyDescriptor desc = new PropertyDescriptor("autoAdjust", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, AUTO_ID);
             desc.setDisplayName(Bundle.tradingDaysSpecUI_autoDesc_name());
             desc.setShortDescription(Bundle.tradingDaysSpecUI_autoDesc_desc());
-            edesc.setReadOnly(isRo() || hasFixedCoefficients());
+            edesc.setReadOnly(isRo() || hasFixedCoefficients() || inner().getLengthOfPeriodType() == LengthOfPeriodType.None);
             return edesc;
         } catch (IntrospectionException ex) {
             return null;
@@ -482,7 +480,7 @@ public class TradingDaysSpecUI extends BaseRegArimaSpecUI {
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, LP_ID);
             desc.setDisplayName(Bundle.tradingDaysSpecUI_lpDesc_name());
             desc.setShortDescription(Bundle.tradingDaysSpecUI_lpDesc_desc());
-            edesc.setReadOnly(isRo() || core().getTransform().getAdjust() != LengthOfPeriodType.None || isAutoAdjust() || hasFixedCoefficients());
+            edesc.setReadOnly(isRo() || core().getTransform().getAdjust() != LengthOfPeriodType.None || hasFixedCoefficients());
             return edesc;
         } catch (IntrospectionException ex) {
             return null;

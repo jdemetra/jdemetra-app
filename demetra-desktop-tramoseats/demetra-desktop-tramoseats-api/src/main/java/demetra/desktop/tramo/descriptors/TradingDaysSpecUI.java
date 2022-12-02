@@ -12,7 +12,6 @@ import demetra.desktop.modelling.util.TradingDaysSpecType;
 import demetra.desktop.ui.properties.l2fprod.NamedParameters;
 import demetra.modelling.TransformationType;
 import demetra.timeseries.calendars.CalendarManager;
-import demetra.timeseries.calendars.DayClustering;
 import demetra.timeseries.calendars.LengthOfPeriodType;
 import demetra.timeseries.calendars.TradingDaysType;
 import demetra.tramo.RegressionTestType;
@@ -118,6 +117,8 @@ public class TradingDaysSpecUI extends BaseTramoSpecUI {
     }
 
     public void setOption(TradingDaysSpecType value) {
+        if (value == getOption())
+            return;
         LengthOfPeriodType adjust = core().getTransform().getAdjust();
         TransformationType function = core().getTransform().getFunction();
         boolean auto = function == TransformationType.Auto;
@@ -564,7 +565,8 @@ public class TradingDaysSpecUI extends BaseTramoSpecUI {
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, OPTION_ID);
             desc.setDisplayName(Bundle.tradingDaysSpecUI_leapyearDesc_name());
             desc.setShortDescription(Bundle.tradingDaysSpecUI_leapyearDesc_desc());
-            edesc.setReadOnly(isRo() || hasFixedCoefficients());
+            edesc.setReadOnly(isRo()|| core().getTransform().getAdjust() != LengthOfPeriodType.None
+                    || isAutoAdjust() || hasFixedCoefficients());
             return edesc;
         } catch (IntrospectionException ex) {
             return null;
@@ -583,16 +585,12 @@ public class TradingDaysSpecUI extends BaseTramoSpecUI {
         if (!auto) {
             return null;
         }
-        boolean lp = inner().getLengthOfPeriodType() != LengthOfPeriodType.None;
-        if (!lp) {
-            return null;
-        }
         try {
             PropertyDescriptor desc = new PropertyDescriptor("autoAdjust", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, AUTO_ID);
             desc.setDisplayName(Bundle.tradingDaysSpecUI_autoadjustDesc_name());
             desc.setShortDescription(Bundle.tradingDaysSpecUI_autoadjustDesc_desc());
-            edesc.setReadOnly(isRo() || hasFixedCoefficients());
+            edesc.setReadOnly(isRo() || hasFixedCoefficients() || inner().getLengthOfPeriodType() == LengthOfPeriodType.None);
             return edesc;
         } catch (IntrospectionException ex) {
             return null;

@@ -26,7 +26,6 @@ import demetra.desktop.ui.ActiveViewAction;
 import demetra.sa.EstimationPolicyType;
 import demetra.sa.SaManager;
 import demetra.sa.SaSpecification;
-import demetra.timeseries.TsDomain;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
@@ -37,10 +36,10 @@ import org.openide.util.NbBundle.Messages;
         id = "demetra.sa.multiprocessing.actions.ResultSpecification")
 @ActionRegistration(displayName = "#CTL_ResultSpecification", lazy = false)
 @ActionReferences({
-    @ActionReference(path = MultiProcessingManager.CONTEXTPATH + Specification.PATH, position = 1430),
-    @ActionReference(path = MultiProcessingManager.LOCALPATH + Specification.PATH, position = 1430)
+    @ActionReference(path = MultiProcessingManager.CONTEXTPATH + Edit.PATH, position = 1520),
+    @ActionReference(path = MultiProcessingManager.LOCALPATH + Edit.PATH, position = 1520)
 })
-@Messages("CTL_ResultSpecification=Select result specification")
+@Messages("CTL_ResultSpecification=Apply Result Specification")
 public final class ResultSpecification extends ActiveViewAction<SaBatchUI> {
 
     public ResultSpecification() {
@@ -64,7 +63,7 @@ public final class ResultSpecification extends ActiveViewAction<SaBatchUI> {
         for (SaNode o : selection) {
             if (o.isProcessed()) {
                 SaSpecification pspec = o.getOutput().getEstimation().getPointSpec();
-                pspec=SaManager.factoryFor(pspec).refreshSpec(pspec, o.domainSpec(), EstimationPolicyType.FreeParameters, null);
+                pspec = SaManager.factoryFor(pspec).refreshSpec(pspec, o.domainSpec(), EstimationPolicyType.FreeParameters, null);
                 SaNode n = o.withEstimationSpecification((SaSpecification) pspec);
                 document.getElement().replace(o.getId(), n);
             }

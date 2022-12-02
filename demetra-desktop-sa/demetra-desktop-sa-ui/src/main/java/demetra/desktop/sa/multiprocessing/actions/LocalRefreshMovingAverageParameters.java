@@ -16,10 +16,10 @@ import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle;
 
 @ActionID(category = "SaProcessing",
-id = "demetra.desktop.sa.multiprocessing.actions.LocalRefreshMovingAverageParameters")
-@ActionRegistration(displayName = "#CTL_LocalRefreshMovingAverageParameters", lazy=true)
+        id = "demetra.desktop.sa.multiprocessing.actions.LocalRefreshMovingAverageParameters")
+@ActionRegistration(displayName = "#CTL_LocalRefreshMovingAverageParameters", lazy = false)
 @ActionReferences({
-    @ActionReference(path = MultiProcessingManager.LOCALPATH+LocalRefreshPartial.PATH, position = 1230)
+    @ActionReference(path = MultiProcessingManager.LOCALPATH + LocalRefreshPartial.PATH, position = 1230)
 })
 @NbBundle.Messages("CTL_LocalRefreshMovingAverageParameters=+ Moving average parameters")
 public final class LocalRefreshMovingAverageParameters extends ActiveViewAction<SaBatchUI> {
@@ -38,6 +38,6 @@ public final class LocalRefreshMovingAverageParameters extends ActiveViewAction<
     @Override
     protected void refreshAction() {
         SaBatchUI ui = context();
-        enabled = ui != null && !ui.getElement().isNew() && ui.getSelectionCount() > 0;
+        enabled = ui.getElement().isRefreshable() && ui.getSelectionCount() > 0;
     }
 }

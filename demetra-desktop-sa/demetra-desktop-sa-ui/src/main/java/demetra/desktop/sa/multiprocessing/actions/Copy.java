@@ -14,19 +14,19 @@ import org.openide.awt.ActionID;
 import org.openide.util.NbBundle.Messages;
 
 @ActionID(category = "SaProcessing",
-        id = "demetra.sa.multiprocessing.actions.CopySeries")
-@ActionRegistration(displayName = "#CTL_CopySeries", lazy = false)
+        id = "demetra.desktop.sa.multiprocessing.actions.Copy")
+@ActionRegistration(displayName = "#CTL_Copy", lazy = false)
 @ActionReferences({
-    @ActionReference(path = MultiProcessingManager.CONTEXTPATH + Edit.PATH, position = 1400, separatorBefore = 1399),
-    @ActionReference(path = MultiProcessingManager.LOCALPATH, position = 1400)
+    @ActionReference(path = MultiProcessingManager.CONTEXTPATH + Edit.PATH, position = 1320),
+    @ActionReference(path = MultiProcessingManager.LOCALPATH, position = 1320)
 })
-@Messages("CTL_CopySeries=Copy Series")
-public final class CopySeries extends ActiveViewAction<SaBatchUI> {
+@Messages("CTL_Copy=Copy")
+public final class Copy extends ActiveViewAction<SaBatchUI> {
 
-    public CopySeries() {
+    public Copy() {
         super(SaBatchUI.class);
         refreshAction();
-        putValue(NAME, Bundle.CTL_CopySeries());
+        putValue(NAME, Bundle.CTL_Copy());
     }
 
     @Override
@@ -37,6 +37,6 @@ public final class CopySeries extends ActiveViewAction<SaBatchUI> {
 
     @Override
     protected void process(SaBatchUI cur) {
-        cur.copySeries();
+        cur.copy();
     }
 }

@@ -16,10 +16,10 @@ import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle;
 
 @ActionID(category = "SaProcessing",
-id = "demetra.desktop.sa.multiprocessing.actions.LocalRefreshParameters")
-@ActionRegistration(displayName = "#CTL_LocalRefreshParameters", lazy=true)
+        id = "demetra.desktop.sa.multiprocessing.actions.LocalRefreshParameters")
+@ActionRegistration(displayName = "#CTL_LocalRefreshParameters", lazy = false)
 @ActionReferences({
-    @ActionReference(path = MultiProcessingManager.LOCALPATH+LocalRefreshPartial.PATH, position = 1235)
+    @ActionReference(path = MultiProcessingManager.LOCALPATH + LocalRefreshPartial.PATH, position = 1235)
 })
 @NbBundle.Messages("CTL_LocalRefreshParameters=+ Arima parameters")
 public final class LocalRefreshParameters extends ActiveViewAction<SaBatchUI> {
@@ -38,6 +38,6 @@ public final class LocalRefreshParameters extends ActiveViewAction<SaBatchUI> {
     @Override
     protected void refreshAction() {
         SaBatchUI ui = context();
-        enabled = ui != null && !ui.getElement().isNew() && ui.getSelectionCount() > 0;
+        enabled = ui.getElement().isRefreshable() && ui.getSelectionCount() > 0;
     }
 }

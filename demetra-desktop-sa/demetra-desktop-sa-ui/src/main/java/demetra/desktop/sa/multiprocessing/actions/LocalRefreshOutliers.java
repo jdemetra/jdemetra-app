@@ -16,10 +16,10 @@ import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle;
 
 @ActionID(category = "SaProcessing",
-id = "demetra.desktop.sa.multiprocessing.actions.LocalRefreshOutliers")
-@ActionRegistration(displayName = "#CTL_LocalRefreshOutliers", lazy=true)
+        id = "demetra.desktop.sa.multiprocessing.actions.LocalRefreshOutliers")
+@ActionRegistration(displayName = "#CTL_LocalRefreshOutliers", lazy = false)
 @ActionReferences({
-    @ActionReference(path = MultiProcessingManager.LOCALPATH+LocalRefreshPartial.PATH, position = 1250)
+    @ActionReference(path = MultiProcessingManager.LOCALPATH + LocalRefreshPartial.PATH, position = 1250)
 })
 @NbBundle.Messages("CTL_LocalRefreshOutliers=+ All outliers")
 public final class LocalRefreshOutliers extends ActiveViewAction<SaBatchUI> {
@@ -38,6 +38,6 @@ public final class LocalRefreshOutliers extends ActiveViewAction<SaBatchUI> {
     @Override
     protected void refreshAction() {
         SaBatchUI ui = context();
-        enabled = ui != null && !ui.getElement().isNew() && ui.getSelectionCount() > 0;
+        enabled = ui.getElement().isRefreshable() && ui.getSelectionCount() > 0;
     }
 }

@@ -39,9 +39,9 @@ import org.openide.util.NbBundle.Messages;
         id = "demetra.sa.multiprocessing.actions.CopyDecomposition")
 @ActionRegistration(displayName = "#CTL_CopyDecomposition", lazy = false)
 @ActionReferences({
-    @ActionReference(path = MultiProcessingManager.CONTEXTPATH + Edit.PATH, position = 1327)
+    @ActionReference(path = MultiProcessingManager.CONTEXTPATH + Edit.PATH, position = 1410)
 })
-@Messages("CTL_CopyDecomposition=Copy decomposition")
+@Messages("CTL_CopyDecomposition=Copy Decomposition")
 public final class CopyDecomposition extends ActiveViewAction<SaBatchUI> {
 
 //    private final List<String> allFields;

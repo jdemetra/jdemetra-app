@@ -16,6 +16,7 @@ import demetra.desktop.components.parts.HasTsCollection;
 import demetra.desktop.components.parts.HasTsCollectionSupport;
 import demetra.desktop.datatransfer.DataTransferManager;
 import demetra.desktop.datatransfer.DataTransfers;
+import demetra.desktop.datatransfer.TransferableXmlInformation;
 import demetra.desktop.notification.MessageType;
 import demetra.desktop.notification.NotifyUtil;
 import demetra.desktop.sa.multiprocessing.ui.MultiProcessingController.SaProcessingState;
@@ -41,7 +42,9 @@ import demetra.sa.HasSaEstimation;
 import demetra.sa.SaDefinition;
 import demetra.sa.SaEstimation;
 import demetra.sa.SaItem;
+import demetra.sa.SaItems;
 import demetra.sa.SaSpecification;
+import demetra.sa.io.information.SaItemsMapping;
 import demetra.timeseries.Ts;
 import demetra.timeseries.TsCollection;
 import demetra.timeseries.TsData;
@@ -353,6 +356,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
 
     public void editDefaultSpecification() {
         JSpecSelectionComponent c = new JSpecSelectionComponent();
+        c.setFamily(SaSpecification.FAMILY);
         c.setSpecification(getDefaultSpecification());
         DialogDescriptor dd = c.createDialogDescriptor("Choose active specification");
         if (DialogDisplayer.getDefault().notify(dd) == NotifyDescriptor.OK_OPTION) {
@@ -538,15 +542,14 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
     }
 
     private boolean pasteSaProcessing(Transferable dataobj) {
-//        SaItems processing = TransferableXml.read(dataobj, SaItems.class, XmlSaProcessing.class);
-//        if (processing != null) {
-//            getCurrentProcessing().addAll(processing.stream().map(SaItem::makeCopy).collect(toList()));
-//            controller.setSaProcessingState(SaProcessingState.READY);
-//            return true;
-//        } else {
-//            return false;
-//        }
-        return false;
+        SaItems processing = TransferableXmlInformation.read(dataobj, SaItemsMapping.SERIALIZER_V3, SaItems.class, null, null);
+        if (processing != null) {
+            this.getElement().add(processing.getItems().toArray(SaItem[]::new));
+            controller.setSaProcessingState(SaProcessingState.READY);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public void remove(boolean interactive) {
@@ -619,10 +622,13 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
     }
 
     public void copy(Collection<SaNode> litems) {
-//        SaProcessing processing = new SaProcessing();
-//        processing.addAll(litems);
-//        TransferableXml transferable = new TransferableXml(processing, XmlSaProcessing.class);
-//        java.awt.Toolkit.getDefaultToolkit().getSystemClipboard().setContents(transferable, null);
+        litems.forEach(cur -> cur.prepare());
+        SaItems items = SaItems.builder()
+                .items(litems.stream().map(node -> node.getOutput()).collect(Collectors.toList()))
+                .build();
+
+        TransferableXmlInformation<SaItems> transferable = new TransferableXmlInformation<>(items, SaItemsMapping.SERIALIZER_V3, null, null);
+        java.awt.Toolkit.getDefaultToolkit().getSystemClipboard().setContents(transferable, null);
     }
 
     public void copySeries() {
@@ -668,13 +674,10 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
     }
 
     public void cut(Collection<SaNode> litems) {
-//        SaProcessing processing = new SaProcessing();
-//        processing.addAll(litems);
-//        TransferableXml transferable = new TransferableXml(processing, XmlSaProcessing.class);
-//        java.awt.Toolkit.getDefaultToolkit().getSystemClipboard().setContents(transferable, null);
-//        getCurrentProcessing().removeAll(litems);
-//        redrawAll();
-//        controller.setSaProcessingState(SaProcessingState.READY);
+        copy(litems);
+        this.getElement().remove(litems);
+        redrawAll();
+        controller.setSaProcessingState(SaProcessingState.READY);
     }
 
     private XTable buildList() {

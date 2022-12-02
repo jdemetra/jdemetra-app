@@ -8,21 +8,18 @@ import demetra.desktop.sa.multiprocessing.ui.MultiProcessingManager;
 import demetra.desktop.sa.multiprocessing.ui.SaBatchUI;
 import demetra.desktop.ui.ActiveViewAction;
 import demetra.sa.EstimationPolicyType;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import static javax.swing.Action.NAME;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionReferences;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle.Messages;
-import org.openide.windows.TopComponent;
 
 @ActionID(category = "SaProcessing",
-id = "demetra.desktop.sa.multiprocessing.actions.RefreshLastOutliers")
-@ActionRegistration(displayName = "#CTL_RefreshLastOutliers")
+        id = "demetra.desktop.sa.multiprocessing.actions.RefreshLastOutliers")
+@ActionRegistration(displayName = "#CTL_RefreshLastOutliers", lazy = false)
 @ActionReferences({
-    @ActionReference(path = MultiProcessingManager.CONTEXTPATH+RefreshPartial.PATH, position = 1240)
+    @ActionReference(path = MultiProcessingManager.CONTEXTPATH + RefreshPartial.PATH, position = 1240)
 })
 @Messages("CTL_RefreshLastOutliers=+ Last outliers")
 public final class RefreshLastOutliers extends ActiveViewAction<SaBatchUI> {
@@ -42,6 +39,6 @@ public final class RefreshLastOutliers extends ActiveViewAction<SaBatchUI> {
     @Override
     protected void refreshAction() {
         SaBatchUI ui = context();
-        enabled = ui != null && !ui.getElement().isNew();
+        enabled = ui.getElement().isRefreshable();
     }
 }

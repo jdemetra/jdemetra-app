@@ -16,10 +16,10 @@ import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle.Messages;
 
 @ActionID(category = "SaProcessing",
-id = "demetra.desktop.sa.multiprocessing.actions.RefreshConcurrent")
-@ActionRegistration(displayName = "#CTL_RefreshConcurrent", lazy=true)
+        id = "demetra.desktop.sa.multiprocessing.actions.RefreshConcurrent")
+@ActionRegistration(displayName = "#CTL_RefreshConcurrent", lazy = false)
 @ActionReferences({
-    @ActionReference(path = MultiProcessingManager.CONTEXTPATH+Refresh.PATH, position = 1290)
+    @ActionReference(path = MultiProcessingManager.CONTEXTPATH + Refresh.PATH, position = 1290)
 })
 @Messages("CTL_RefreshConcurrent=Concurrent")
 public final class RefreshConcurrent extends ActiveViewAction<SaBatchUI> {
@@ -38,6 +38,6 @@ public final class RefreshConcurrent extends ActiveViewAction<SaBatchUI> {
     @Override
     protected void refreshAction() {
         SaBatchUI ui = context();
-        enabled = ui != null && !ui.getElement().isNew();
+        enabled = ui.getElement().isRefreshable();
     }
 }

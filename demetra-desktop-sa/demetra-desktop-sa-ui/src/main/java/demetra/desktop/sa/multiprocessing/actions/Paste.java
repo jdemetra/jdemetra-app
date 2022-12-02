@@ -14,29 +14,30 @@ import org.openide.awt.ActionID;
 import org.openide.util.NbBundle.Messages;
 
 @ActionID(category = "SaProcessing",
-        id = "demetra.sa.multiprocessing.actions.CopySeries")
-@ActionRegistration(displayName = "#CTL_CopySeries", lazy = false)
+id = "demetra.desktop.sa.multiprocessing.actions.Paste")
+@ActionRegistration(displayName = "#CTL_Paste", lazy = false)
 @ActionReferences({
-    @ActionReference(path = MultiProcessingManager.CONTEXTPATH + Edit.PATH, position = 1400, separatorBefore = 1399),
-    @ActionReference(path = MultiProcessingManager.LOCALPATH, position = 1400)
+    @ActionReference(path = MultiProcessingManager.CONTEXTPATH + Edit.PATH, position = 1330)
 })
-@Messages("CTL_CopySeries=Copy Series")
-public final class CopySeries extends ActiveViewAction<SaBatchUI> {
+@Messages("CTL_Paste=Paste")
+public final class Paste extends ActiveViewAction<SaBatchUI> {
 
-    public CopySeries() {
+    public Paste() {
         super(SaBatchUI.class);
+        putValue(NAME, Bundle.CTL_Paste());
         refreshAction();
-        putValue(NAME, Bundle.CTL_CopySeries());
     }
 
     @Override
     protected void refreshAction() {
-        SaBatchUI ui = context();
-        enabled = ui != null && ui.getSelectionCount() > 0;
+        enabled = java.awt.Toolkit.getDefaultToolkit().getSystemClipboard().getAvailableDataFlavors().length > 0;
     }
 
     @Override
     protected void process(SaBatchUI cur) {
-        cur.copySeries();
+        SaBatchUI ui = context();
+        if (ui != null) {
+            ui.paste(true);
+        }
     }
 }

@@ -18,7 +18,7 @@ import org.openide.util.NbBundle.Messages;
 id = "demetra.desktop.sa.multiprocessing.actions.ClearSelection")
 @ActionRegistration(displayName = "#CTL_ClearSelection", lazy=false)
 @ActionReferences({
-    @ActionReference(path = MultiProcessingManager.CONTEXTPATH, position = 1350),
+    @ActionReference(path = MultiProcessingManager.CONTEXTPATH, position = 1600),
     @ActionReference(path = "Shortcuts", name = "C")
 })
 @Messages("CTL_ClearSelection=Clear selection")
@@ -34,7 +34,7 @@ public final class ClearSelection extends ActiveViewAction<SaBatchUI> {
     @Override
     protected void refreshAction() {
         SaBatchUI ui = context();
-        enabled = ui != null;
+        enabled = ui.getSelectionCount()>0;
     }
 
     @Override

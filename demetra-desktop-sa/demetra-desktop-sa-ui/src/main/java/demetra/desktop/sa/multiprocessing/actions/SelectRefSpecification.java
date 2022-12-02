@@ -38,10 +38,10 @@ import org.openide.util.NbBundle.Messages;
         id = "demetra.sa.multiprocessing.actions.RefSpecification")
 @ActionRegistration(displayName = "#CTL_RefSpecification", lazy = false)
 @ActionReferences({
-    @ActionReference(path = MultiProcessingManager.CONTEXTPATH + Specification.PATH, position = 1410),
-    @ActionReference(path = MultiProcessingManager.LOCALPATH + Specification.PATH, position = 1410)
+    @ActionReference(path = MultiProcessingManager.CONTEXTPATH + Edit.PATH, position = 1500, separatorBefore = 1499),
+    @ActionReference(path = MultiProcessingManager.LOCALPATH + Edit.PATH, position = 1500)
 })
-@Messages("CTL_RefSpecification=Change reference specification...")
+@Messages("CTL_RefSpecification=Reference Specification...")
 public final class SelectRefSpecification extends ActiveViewAction<SaBatchUI> {
 
     public SelectRefSpecification() {
@@ -64,7 +64,7 @@ public final class SelectRefSpecification extends ActiveViewAction<SaBatchUI> {
         // find unique spec
         for (SaNode o : selection) {
             SaSpecification dspec = o.domainSpec();
-                    
+
             if (spec == null) {
                 spec = dspec;
             } else if (!spec.equals(dspec)) {
@@ -79,7 +79,7 @@ public final class SelectRefSpecification extends ActiveViewAction<SaBatchUI> {
             MultiProcessingController controller = cur.getController();
             WorkspaceItem<MultiProcessingDocument> document = controller.getDocument();
             for (SaNode o : selection) {
-                SaNode n= o.withDomainSpecification((SaSpecification) c.getSpecification());
+                SaNode n = o.withDomainSpecification((SaSpecification) c.getSpecification());
                 document.getElement().replace(o.getId(), n);
             }
             cur.redrawAll();

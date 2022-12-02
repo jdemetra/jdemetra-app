@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package demetra.desktop.core.datatransfer;
+package demetra.desktop.datatransfer;
 
 import com.google.common.base.Throwables;
 import demetra.information.InformationSet;
