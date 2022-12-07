@@ -61,6 +61,7 @@ public final class RenameSaItem extends ActiveViewAction<SaBatchUI> {
             newName = nd.getInputText().trim();
             item.setName(newName);
             cur.getController().getDocument().setDirty();
+            cur.getController().changed();
             cur.redrawAll();
         }
     }

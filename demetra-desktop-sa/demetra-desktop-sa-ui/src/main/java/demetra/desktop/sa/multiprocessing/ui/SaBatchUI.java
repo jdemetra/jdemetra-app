@@ -454,9 +454,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
                     if (progressHandle != null) {
                         progressHandle.finish();
                     }
-                    if (controller != null) {
-                        controller.setSaProcessingState(SaProcessingState.DONE);
-                    }
+                    controller.setSaProcessingState(SaProcessingState.DONE);
                     break;
                 case PENDING:
                     controller.setSaProcessingState(SaProcessingState.PENDING);
@@ -503,6 +501,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
         }
         showDetails(null);
         controller.getDocument().setDirty();
+        controller.setSaProcessingState(SaProcessingState.READY);
         start(all);
     }
 
@@ -511,6 +510,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
         if (dataobj.getTransferDataFlavors().length > 0) {
             if (pasteTs(dataobj)) {
                 redrawAll();
+                
                 return;
             }
             if (pasteSaProcessing(dataobj)) {
@@ -581,7 +581,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
         controller.getDocument().getElement().remove(itemsToDelete);
 
         redrawAll();
-        controller.setSaProcessingState(SaProcessingState.READY);
+        controller.changed();
         controller.getDocument().setDirty();
         setSelection(null);
     }
@@ -704,7 +704,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
         copy(litems);
         this.getElement().remove(litems);
         redrawAll();
-        controller.setSaProcessingState(SaProcessingState.READY);
+        controller.changed();
     }
 
     private XTable buildList() {
@@ -763,7 +763,6 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
 //            statusLabel.setText("New processing");
 //        }
 //    }
-
     public void redrawAll() {
         int n = getElement().getCurrent().size();
         itemsLabel.setText(n + (n < 2 ? " item" : " items"));

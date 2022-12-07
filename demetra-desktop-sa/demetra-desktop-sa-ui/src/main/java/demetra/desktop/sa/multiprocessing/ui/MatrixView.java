@@ -4,10 +4,10 @@
  */
 package demetra.desktop.sa.multiprocessing.ui;
 
-import demetra.desktop.util.NbComponents;
 import demetra.desktop.components.GridCommands;
 import demetra.desktop.sa.util.ActionsHelper;
 import demetra.desktop.sa.util.ActionsHelpers;
+import demetra.desktop.util.NbComponents;
 import demetra.information.Explorable;
 import demetra.information.formatters.TableFormatter;
 import demetra.processing.AlgorithmDescriptor;
@@ -224,6 +224,8 @@ public final class MatrixView extends AbstractSaProcessingTopComponent implement
         comboBox.setSelectedIndex(-1);
         if (!methods.isEmpty()) {
             comboBox.setSelectedIndex(0);
+        }else{
+            clearMatrices();
         }
     }
 

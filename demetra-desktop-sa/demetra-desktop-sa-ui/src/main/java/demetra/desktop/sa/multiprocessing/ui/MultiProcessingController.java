@@ -16,8 +16,8 @@
  */
 package demetra.desktop.sa.multiprocessing.ui;
 
-import demetra.desktop.design.SwingProperty;
 import demetra.desktop.beans.PropertyChangeSource;
+import demetra.desktop.design.SwingProperty;
 import demetra.desktop.workspace.WorkspaceFactory;
 import demetra.desktop.workspace.WorkspaceItem;
 import java.beans.PropertyChangeListener;
@@ -71,6 +71,12 @@ public final class MultiProcessingController implements PropertyChangeSource.Wit
     public void setSaProcessingState(SaProcessingState state) {
         this.saProcessingState = state;
         broadcaster.firePropertyChange(SA_PROCESSING_STATE_PROPERTY, null, this.saProcessingState); // force refreshing in all cases
+    }
+    
+    public void changed(){
+        SaProcessingState state= getDocument().getElement().isProcessed() ? SaProcessingState.DONE :
+                SaProcessingState.READY;
+        setSaProcessingState(state);
     }
 
     public void dispose() {
