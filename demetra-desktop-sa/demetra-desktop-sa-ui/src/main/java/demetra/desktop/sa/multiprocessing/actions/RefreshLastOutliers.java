@@ -39,6 +39,6 @@ public final class RefreshLastOutliers extends ActiveViewAction<SaBatchUI> {
     @Override
     protected void refreshAction() {
         SaBatchUI ui = context();
-        enabled = ui.getElement().isRefreshable();
+        enabled = ui != null && ui.getElement().isRefreshable();
     }
 }

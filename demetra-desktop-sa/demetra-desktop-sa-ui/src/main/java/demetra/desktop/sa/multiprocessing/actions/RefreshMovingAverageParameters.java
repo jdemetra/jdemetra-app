@@ -38,6 +38,6 @@ public final class RefreshMovingAverageParameters extends ActiveViewAction<SaBat
     @Override
     protected void refreshAction() {
         SaBatchUI ui = context();
-        enabled = ui.getElement().isRefreshable();
+        enabled = ui != null && ui.getElement().isRefreshable();
     }
 }

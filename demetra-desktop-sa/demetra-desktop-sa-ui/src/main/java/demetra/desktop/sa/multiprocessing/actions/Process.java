@@ -38,7 +38,7 @@ public final class Process extends ActiveViewAction<SaBatchUI> {
         SaBatchUI cur = context();
         enabled = false;
         start = true;
-        if (!cur.getElement().isProcessed()) {
+        if (cur != null && !cur.getElement().isProcessed()) {
             SaProcessingState state = cur.getState();
             switch (state) {
                 case PENDING:

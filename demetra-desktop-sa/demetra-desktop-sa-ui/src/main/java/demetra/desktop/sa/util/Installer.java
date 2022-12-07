@@ -25,9 +25,11 @@ import demetra.desktop.ui.properties.l2fprod.ArrayRenderer;
 import demetra.desktop.ui.properties.l2fprod.CustomPropertyEditorRegistry;
 import demetra.desktop.ui.properties.l2fprod.CustomPropertyRendererFactory;
 import demetra.desktop.util.InstallerStep;
+import java.util.prefs.BackingStoreException;
 import org.openide.modules.ModuleInstall;
 
 import java.util.prefs.Preferences;
+import org.openide.util.Exceptions;
 
 public final class Installer extends ModuleInstall {
 
@@ -61,6 +63,11 @@ public final class Installer extends ModuleInstall {
         public void close() {
             DemetraSaUI ui = DemetraSaUI.get();
             put(prefs, ui.getConfig());
+            try {
+                prefs.flush();
+            } catch (BackingStoreException ex) {
+                Exceptions.printStackTrace(ex);
+            }
         }
     }
 

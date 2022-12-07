@@ -9,8 +9,14 @@ import demetra.desktop.actions.Resetable;
 import demetra.desktop.nodes.AbstractNodeBuilder;
 import demetra.desktop.nodes.NamedServiceNode;
 import demetra.desktop.x13.diagnostics.X13DiagnosticsFactoryBuddy;
+import ec.util.list.swing.JListSelection;
+import java.awt.Dimension;
 import java.beans.PropertyChangeEvent;
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.explorer.ExplorerManager;
@@ -20,6 +26,9 @@ import org.openide.util.Lookup;
 final class X13Panel extends javax.swing.JPanel {
 
     private final X13OptionsPanelController controller;
+    private final JListSelection<String> fieldSelectionComponent = new JListSelection<>();
+    private final List<String> selectedSeries = new ArrayList<>();
+    private final List<String> selectedDiags = new ArrayList<>();
 
     X13Panel(X13OptionsPanelController controller) {
         this.controller = controller;
@@ -31,6 +40,11 @@ final class X13Panel extends javax.swing.JPanel {
                 resetDiagnostic.setEnabled(nodes.length == 1 && nodes[0].getLookup().lookup(Resetable.class) != null);
             }
         });
+
+        fieldSelectionComponent.setSourceHeader(new JLabel("Available items :"));
+        fieldSelectionComponent.setTargetHeader(new JLabel("Selected items :"));
+        fieldSelectionComponent.setBorder(new EmptyBorder(10, 10, 10, 10));
+        fieldSelectionComponent.setPreferredSize(new Dimension(400, 300));
     }
 
     private ExplorerManager getDiagnosticsExplorerManager() {
@@ -157,7 +171,7 @@ final class X13Panel extends javax.swing.JPanel {
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(componentsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 450, Short.MAX_VALUE)
+            .addComponent(componentsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 400, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(diagnosticsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -196,48 +210,55 @@ final class X13Panel extends javax.swing.JPanel {
     }//GEN-LAST:event_resetDiagnosticActionPerformed
 
     private void selectedSeriesButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectedSeriesButtonActionPerformed
-//        fieldSelectionComponent.getSourceModel().clear();
-//        fieldSelectionComponent.getTargetModel().clear();
-//        List<String> tmpAvailable = new ArrayList<>(allSeriesFields);
-//        tmpAvailable.removeAll(selectedSeriesFields);
-//
-//        tmpAvailable.forEach(fieldSelectionComponent.getSourceModel()::addElement);
-//        selectedSeriesFields.forEach(fieldSelectionComponent.getTargetModel()::addElement);
-//
-//        NotifyDescriptor d = new NotifyDescriptor(fieldSelectionComponent, "Select fields",
-//            NotifyDescriptor.OK_CANCEL_OPTION,
-//            NotifyDescriptor.PLAIN_MESSAGE,
-//            null,
-//            NotifyDescriptor.OK_OPTION);
-//        if (DialogDisplayer.getDefault().notify(d) == NotifyDescriptor.OK_OPTION) {
-//            selectedSeriesFields = fieldSelectionComponent.getSelectedValues();
-//            selectedSeriesLabel.setText(String.format("%s selected", selectedSeriesFields == null ? 0 : selectedSeriesFields.size()));
-//            controller.changed();
-//        }
+        fieldSelectionComponent.getSourceModel().clear();
+        fieldSelectionComponent.getTargetModel().clear();
+        List<String> tmpAvailable = new ArrayList<>(X13UI.get().allComponents());
+        tmpAvailable.removeAll(selectedSeries);
+
+        fieldSelectionComponent.getSourceModel().addAll(tmpAvailable);
+        fieldSelectionComponent.getTargetModel().addAll(selectedSeries);
+
+        NotifyDescriptor d = new NotifyDescriptor(fieldSelectionComponent, "Select fields",
+                NotifyDescriptor.OK_CANCEL_OPTION,
+                NotifyDescriptor.PLAIN_MESSAGE,
+                null,
+                NotifyDescriptor.OK_OPTION);
+        if (DialogDisplayer.getDefault().notify(d) == NotifyDescriptor.OK_OPTION) {
+            selectedSeries.clear();
+            selectedSeries.addAll(fieldSelectionComponent.getSelectedValues());
+            selectedSeriesLabel.setText(String.format("%s selected", selectedSeries.size()));
+            controller.changed();
+        }
     }//GEN-LAST:event_selectedSeriesButtonActionPerformed
 
     private void selectedDiagButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selectedDiagButtonActionPerformed
-//        fieldSelectionComponent.getSourceModel().clear();
-//        fieldSelectionComponent.getTargetModel().clear();
-//        List<String> tmpAvailable = new ArrayList<>(allDiagFields);
-//        tmpAvailable.removeAll(selectedDiagFields);
-//
-//        tmpAvailable.forEach(fieldSelectionComponent.getSourceModel()::addElement);
-//        selectedDiagFields.forEach(fieldSelectionComponent.getTargetModel()::addElement);
-//
-//        NotifyDescriptor d = new NotifyDescriptor(fieldSelectionComponent, "Select fields",
-//            NotifyDescriptor.OK_CANCEL_OPTION,
-//            NotifyDescriptor.PLAIN_MESSAGE,
-//            null,
-//            NotifyDescriptor.OK_OPTION);
-//        if (DialogDisplayer.getDefault().notify(d) == NotifyDescriptor.OK_OPTION) {
-//            selectedDiagFields = fieldSelectionComponent.getSelectedValues();
-//            selectedDiagLabel.setText(String.format("%s selected", selectedDiagFields == null ? 0 : selectedDiagFields.size()));
-//            controller.changed();
-//        }
+        fieldSelectionComponent.getSourceModel().clear();
+        fieldSelectionComponent.getTargetModel().clear();
+        List<String> tmpAvailable = new ArrayList<>(X13UI.get().allDiagnostics());
+        tmpAvailable.removeAll(selectedDiags);
+
+        fieldSelectionComponent.getSourceModel().addAll(tmpAvailable);
+        fieldSelectionComponent.getTargetModel().addAll(selectedDiags);
+        NotifyDescriptor d = new NotifyDescriptor(fieldSelectionComponent, "Select fields",
+                NotifyDescriptor.OK_CANCEL_OPTION,
+                NotifyDescriptor.PLAIN_MESSAGE,
+                null,
+                NotifyDescriptor.OK_OPTION);
+        if (DialogDisplayer.getDefault().notify(d) == NotifyDescriptor.OK_OPTION) {
+            selectedDiags.clear();
+            selectedDiags.addAll(fieldSelectionComponent.getSelectedValues());
+            selectedDiagLabel.setText(String.format("%s selected", selectedDiags.size()));
+            controller.changed();
+        }
     }//GEN-LAST:event_selectedDiagButtonActionPerformed
 
     void load() {
+        selectedSeries.clear();
+        selectedSeries.addAll(X13UI.get().getSelectedComponents());
+        selectedSeriesLabel.setText(String.format("%s selected", selectedSeries.size()));
+        selectedDiags.clear();
+        selectedDiags.addAll(X13UI.get().getSelectedDiagnostics());
+        selectedDiagLabel.setText(String.format("%s selected", selectedDiags.size()));
         AbstractNodeBuilder root = new AbstractNodeBuilder()
                 .name("Diagnostics")
                 .add(Lookup.getDefault().lookupAll(X13DiagnosticsFactoryBuddy.class).stream().map(NamedServiceNode::new));
@@ -245,6 +266,8 @@ final class X13Panel extends javax.swing.JPanel {
     }
 
     void store() {
+        X13UI.get().setSelectedComponents(selectedSeries);
+        X13UI.get().setSelectedDiagnostics(selectedDiags);
         X13UI.setDiagnostics();
     }
 

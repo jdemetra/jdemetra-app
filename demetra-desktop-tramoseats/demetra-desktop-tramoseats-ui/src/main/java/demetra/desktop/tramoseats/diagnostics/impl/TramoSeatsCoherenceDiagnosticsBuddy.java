@@ -18,7 +18,6 @@ package demetra.desktop.tramoseats.diagnostics.impl;
 
 import demetra.desktop.sa.diagnostics.CoherenceDiagnosticsBuddy;
 import demetra.desktop.tramoseats.diagnostics.TramoSeatsDiagnosticsFactoryBuddy;
-import demetra.sa.SaDiagnosticsFactory;
 import jdplus.sa.diagnostics.CoherenceDiagnostics;
 import jdplus.sa.diagnostics.CoherenceDiagnosticsConfiguration;
 import jdplus.sa.diagnostics.CoherenceDiagnosticsFactory;

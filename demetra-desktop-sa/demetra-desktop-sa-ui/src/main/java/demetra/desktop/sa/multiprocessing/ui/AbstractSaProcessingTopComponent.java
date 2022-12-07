@@ -19,7 +19,6 @@ package demetra.desktop.sa.multiprocessing.ui;
 import demetra.desktop.ui.ActiveView;
 import demetra.desktop.ui.ActiveViewManager;
 import demetra.desktop.workspace.WorkspaceItem;
-import demetra.desktop.workspace.ui.WorkspaceTopComponent;
 import demetra.sa.SaItem;
 import demetra.sa.SaItems;
 import javax.swing.JComponent;
@@ -27,7 +26,6 @@ import org.netbeans.core.spi.multiview.CloseOperationState;
 import org.netbeans.core.spi.multiview.MultiViewDescription;
 import org.netbeans.core.spi.multiview.MultiViewElement;
 import org.netbeans.core.spi.multiview.MultiViewElementCallback;
-import org.openide.nodes.Node;
 import org.openide.windows.TopComponent;
 
 /**

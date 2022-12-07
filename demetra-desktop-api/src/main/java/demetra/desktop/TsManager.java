@@ -119,6 +119,7 @@ public final class TsManager implements DataSourceFactory, Closeable {
     @OnEDT
     public void loadAsync(@NonNull Ts ts, @NonNull TsInformationType info, @NonNull Consumer<? super Ts> onLoaded) {
         if (!ts.getMoniker().isProvided()) {
+            SwingUtilities.invokeLater(() -> onLoaded.accept(ts));
             return;
         }
         executor.execute(() -> {

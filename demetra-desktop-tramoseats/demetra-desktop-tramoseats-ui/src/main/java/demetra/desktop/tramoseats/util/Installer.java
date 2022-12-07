@@ -20,14 +20,18 @@ import demetra.desktop.Config;
 import demetra.desktop.tramoseats.diagnostics.TramoSeatsDiagnosticsFactoryBuddies;
 import demetra.desktop.tramoseats.ui.TramoSeatsUI;
 import demetra.desktop.util.InstallerStep;
+import static demetra.desktop.util.InstallerStep.put;
+import static demetra.desktop.util.InstallerStep.tryGet;
+import java.util.prefs.BackingStoreException;
 import org.openide.modules.ModuleInstall;
 
 import java.util.prefs.Preferences;
+import org.openide.util.Exceptions;
 
 public final class Installer extends ModuleInstall {
 
     public static final InstallerStep STEP = InstallerStep.all(
-            new DemetraTramoSeatsDiagnosticsStep()
+            new DemetraTramoSeatsDiagnosticsStep(), new TramoSeatsOptionsStep()
     );
 
     @Override
@@ -62,8 +66,35 @@ public final class Installer extends ModuleInstall {
                 if (config != null){
                     Preferences nprefs = prefs.node(buddy.getDisplayName());
                     put(nprefs, config);
+                    try {
+                        nprefs.flush();
+                    } catch (BackingStoreException ex) {
+                        Exceptions.printStackTrace(ex);
+                    }
                 }
             });
+        }
+    }
+    
+    private static final class TramoSeatsOptionsStep extends InstallerStep {
+
+        final Preferences prefs = prefs().node("options");
+
+        @Override
+        public void restore() {
+            TramoSeatsUI ui = TramoSeatsUI.get();
+            tryGet(prefs).ifPresent(ui::setConfig);
+        }
+
+        @Override
+        public void close() {
+            TramoSeatsUI ui = TramoSeatsUI.get();
+            put(prefs, ui.getConfig());
+            try {
+                prefs.flush();
+            } catch (BackingStoreException ex) {
+                Exceptions.printStackTrace(ex);
+            }
         }
     }
 }

@@ -39,6 +39,6 @@ public final class LocalRefreshLastOutliers extends ActiveViewAction<SaBatchUI> 
     @Override
     protected void refreshAction() {
         SaBatchUI ui = context();
-        enabled = ui.getElement().isRefreshable() && ui.getSelectionCount() > 0;
+        enabled = ui != null && ui.getElement().isRefreshable() && ui.getSelectionCount() > 0;
     }
 }

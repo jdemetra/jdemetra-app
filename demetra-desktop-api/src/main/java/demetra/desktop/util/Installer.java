@@ -50,6 +50,7 @@ import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.openide.util.Exceptions;
 
 @lombok.extern.java.Log
 public final class Installer extends ModuleInstall {
@@ -73,6 +74,11 @@ public final class Installer extends ModuleInstall {
 
     @Override
     public void close() {
+        try {
+            STEP.prefs().flush();
+        } catch (BackingStoreException ex) {
+            Exceptions.printStackTrace(ex);
+        }
         STEP.close();
         super.close();
     }
@@ -232,7 +238,6 @@ public final class Installer extends ModuleInstall {
         }
     }
 
-
     private static final class DemetraOptionsStep extends InstallerStep {
 
         final Preferences prefs = prefs().node("options");
@@ -253,6 +258,11 @@ public final class Installer extends ModuleInstall {
             put(prefs.node(UI), ui.getConfig());
             DemetraBehaviour behaviour = DemetraBehaviour.get();
             put(prefs.node(BEHAVIOUR), behaviour.getConfig());
+            try {
+                prefs.flush();
+            } catch (BackingStoreException ex) {
+                Exceptions.printStackTrace(ex);
+            }
         }
     }
 }

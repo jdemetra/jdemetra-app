@@ -25,14 +25,16 @@ import demetra.desktop.x13.descriptors.SeasonalFilterPropertyEditor;
 import demetra.desktop.x13.diagnostics.X13DiagnosticsFactoryBuddies;
 import demetra.desktop.x13.ui.X13UI;
 import demetra.x11.SeasonalFilterOption;
+import java.util.prefs.BackingStoreException;
 import org.openide.modules.ModuleInstall;
 
 import java.util.prefs.Preferences;
+import org.openide.util.Exceptions;
 
 public final class Installer extends ModuleInstall {
 
     public static final InstallerStep STEP = InstallerStep.all(
-            new DemetraX13DiagnosticsStep(), new PropertiesStep()
+            new DemetraX13DiagnosticsStep(), new PropertiesStep(), new X13OptionsStep()
     );
 
     @Override
@@ -67,6 +69,11 @@ public final class Installer extends ModuleInstall {
                 if (config != null) {
                     Preferences nprefs = prefs.node(buddy.getDisplayName());
                     put(nprefs, config);
+                    try {
+                        nprefs.flush();
+                    } catch (BackingStoreException ex) {
+                        Exceptions.printStackTrace(ex);
+                    }
                 }
             });
         }
@@ -84,6 +91,28 @@ public final class Installer extends ModuleInstall {
         public void close() {
             CustomPropertyEditorRegistry.INSTANCE.unregister(SeasonalFilterOption[].class);
             CustomPropertyEditorRegistry.INSTANCE.unregister(SeasonalFilterOption[].class);
+        }
+    }
+
+    private static final class X13OptionsStep extends InstallerStep {
+
+        final Preferences prefs = prefs().node("options");
+
+        @Override
+        public void restore() {
+            X13UI ui = X13UI.get();
+            tryGet(prefs).ifPresent(ui::setConfig);
+        }
+
+        @Override
+        public void close() {
+            X13UI ui = X13UI.get();
+            put(prefs, ui.getConfig());
+            try {
+                prefs.flush();
+            } catch (BackingStoreException ex) {
+                Exceptions.printStackTrace(ex);
+            }
         }
     }
 

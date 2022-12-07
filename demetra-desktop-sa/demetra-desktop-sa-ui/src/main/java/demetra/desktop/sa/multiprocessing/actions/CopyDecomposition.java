@@ -72,24 +72,6 @@ public final class CopyDecomposition extends ActiveViewAction<SaBatchUI> {
 
     @Override
     protected void process(SaBatchUI cur) {
-//        DemetraUI demetraUI = DemetraUI.getDefault();
-//        List<String> tmpAvailable = new ArrayList<>(allFields);
-//        List<String> selectedElements = demetraUI.getSelectedSeriesFields();
-//        fieldSelectionComponent.getSourceModel().clear();
-//        fieldSelectionComponent.getTargetModel().clear();
-//        tmpAvailable.removeAll(selectedElements);
-//        tmpAvailable.forEach(fieldSelectionComponent.getSourceModel()::addElement);
-//        selectedElements.forEach(fieldSelectionComponent.getTargetModel()::addElement);
-//        fieldSelectionComponent.setPreferredSize(new Dimension(400, 300));
-//
-//        NotifyDescriptor d = new NotifyDescriptor(fieldSelectionComponent, "Select fields",
-//                NotifyDescriptor.OK_CANCEL_OPTION,
-//                NotifyDescriptor.PLAIN_MESSAGE,
-//                null,
-//                NotifyDescriptor.OK_OPTION);
-//        if (DialogDisplayer.getDefault().notify(d) == NotifyDescriptor.OK_OPTION) {
-//            cur.copyComponents(fieldSelectionComponent.getSelectedValues());
-//        }
         List<String> decomp=new ArrayList<>();
         decomp.add(SaDictionaries.Y);
         decomp.add(SaDictionaries.SA);
