@@ -52,7 +52,7 @@ import demetra.sa.SaOutputFactory;
  * @author Mats Maggi
  */
 @ServiceProvider(service = OutputFactoryBuddy.class, position = 1100)
-public class CsvMatrixOutputBuddy implements OutputFactoryBuddy, Configurable, Persistable, ConfigEditor, Resetable {
+public class CsvMatrixOutputBuddy implements OutputFactoryBuddy, Configurable, ConfigEditor, Resetable {
 
     private static final BeanConfigurator<CsvMatrixOutputConfiguration, CsvMatrixOutputBuddy> configurator = createConfigurator();
     private CsvMatrixOutputConfiguration config = new CsvMatrixOutputConfiguration();
@@ -72,8 +72,8 @@ public class CsvMatrixOutputBuddy implements OutputFactoryBuddy, Configurable, P
     }
 
     @Override
-    public AbstractOutputNode createNodeFor(SaOutputFactory factory) {
-        return factory instanceof CsvMatrixOutputFactory ? new CsvMatrixNode(((CsvMatrixOutputFactory) factory).getConfiguration()) : null;
+    public AbstractOutputNode createNodeFor(Object properties) {
+        return properties instanceof CsvMatrixOutputConfiguration ? new CsvMatrixNode((CsvMatrixOutputConfiguration) properties) : null;
     }
 
     @Override
@@ -137,7 +137,7 @@ public class CsvMatrixOutputBuddy implements OutputFactoryBuddy, Configurable, P
 
         @Override
         public Config doForward(CsvMatrixOutputConfiguration a) {
-            Config.Builder result = Config.builder(OutputFactoryBuddy.class.getName(), "Csv_Matrix", "");
+            Config.Builder result = Config.builder("outputs", "csv_matrix", "3.0");
             folderParam.set(result::parameter, a.getFolder());
             fileNameParam.set(result::parameter, a.getFileName());
             seriesParam.set(result::parameter, a.getItems().stream().collect(Collectors.joining(",")));

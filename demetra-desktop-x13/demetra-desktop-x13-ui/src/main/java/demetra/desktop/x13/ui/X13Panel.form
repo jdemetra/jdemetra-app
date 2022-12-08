@@ -140,6 +140,14 @@
           </SubComponents>
         </Container>
         <Component class="org.openide.explorer.view.OutlineView" name="diagnosticsView">
+          <Properties>
+            <Property name="columnHeader" type="javax.swing.JViewport" editor="org.netbeans.modules.form.ComponentChooserEditor">
+              <ComponentRef name="null"/>
+            </Property>
+            <Property name="columnHeaderView" type="java.awt.Component" editor="org.netbeans.modules.form.ComponentChooserEditor">
+              <ComponentRef name="null"/>
+            </Property>
+          </Properties>
           <AuxValues>
             <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new org.openide.explorer.view.OutlineView(&quot;Diagnostics&quot;)"/>
           </AuxValues>

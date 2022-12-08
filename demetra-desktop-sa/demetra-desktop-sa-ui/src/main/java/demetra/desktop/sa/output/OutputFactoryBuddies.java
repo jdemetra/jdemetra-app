@@ -61,7 +61,7 @@ public class OutputFactoryBuddies implements LookupListener {
     
     Node createNodeFor(SaOutputFactory factory) {
         for (OutputFactoryBuddy fac : outputs){
-            Node node=fac.createNodeFor(factory);
+            Node node=fac.createNodeFor(factory.getConfiguration());
             if (node != null)
                 return node;
         }

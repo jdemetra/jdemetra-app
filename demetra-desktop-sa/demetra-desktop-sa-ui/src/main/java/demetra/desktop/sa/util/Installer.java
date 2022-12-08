@@ -16,6 +16,8 @@
  */
 package demetra.desktop.sa.util;
 
+import demetra.desktop.Config;
+import demetra.desktop.sa.output.OutputFactoryBuddies;
 import demetra.desktop.sa.properties.l2fprod.SaInterventionVariableDescriptor;
 import demetra.desktop.sa.properties.l2fprod.SaInterventionVariablesEditor;
 import demetra.desktop.sa.properties.l2fprod.SaTsVariableDescriptor;
@@ -25,6 +27,8 @@ import demetra.desktop.ui.properties.l2fprod.ArrayRenderer;
 import demetra.desktop.ui.properties.l2fprod.CustomPropertyEditorRegistry;
 import demetra.desktop.ui.properties.l2fprod.CustomPropertyRendererFactory;
 import demetra.desktop.util.InstallerStep;
+import static demetra.desktop.util.InstallerStep.put;
+import static demetra.desktop.util.InstallerStep.tryGet;
 import java.util.prefs.BackingStoreException;
 import org.openide.modules.ModuleInstall;
 
@@ -34,7 +38,7 @@ import org.openide.util.Exceptions;
 public final class Installer extends ModuleInstall {
 
     public static final InstallerStep STEP = InstallerStep.all(
-            new DemetraSaOptionsStep(), new PropertiesStep()
+            new DemetraSaOptionsStep(), new SaOutputStep(), new PropertiesStep()
     );
 
     @Override
@@ -70,6 +74,37 @@ public final class Installer extends ModuleInstall {
             }
         }
     }
+    
+        private static final class SaOutputStep extends InstallerStep {
+
+        final Preferences prefs = prefs().node("outputs");
+
+        @Override
+        public void restore() {
+            OutputFactoryBuddies.getInstance().getFactories().forEach(buddy->{
+                    Preferences nprefs = prefs.node(buddy.getDisplayName());
+                    tryGet(nprefs).ifPresent(buddy::setConfig);
+            });
+        }
+
+        @Override
+        public void close() {
+            OutputFactoryBuddies.getInstance().getFactories().forEach(buddy->{
+                Config config = buddy.getConfig();
+                if (config != null){
+                    Preferences nprefs = prefs.node(buddy.getDisplayName());
+                    put(nprefs, config);
+                    try {
+                        nprefs.flush();
+                    } catch (BackingStoreException ex) {
+                        Exceptions.printStackTrace(ex);
+                    }
+                }
+            });
+        }
+    }
+    
+
 
     private static final class PropertiesStep extends InstallerStep {
 

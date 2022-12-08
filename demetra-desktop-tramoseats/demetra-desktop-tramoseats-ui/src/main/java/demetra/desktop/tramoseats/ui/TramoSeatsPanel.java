@@ -148,6 +148,7 @@ final class TramoSeatsPanel extends javax.swing.JPanel {
         });
         jToolBar1.add(resetDiagnostic);
 
+        diagnosticsView.setColumnHeader(null);
         diagnosticsView.setColumnHeaderView(null);
         diagnosticsView.setQuickSearchAllowed(false);
         diagnosticsView.setRowHeaderView(null);

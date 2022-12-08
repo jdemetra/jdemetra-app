@@ -53,7 +53,7 @@ import demetra.sa.csv.CsvOutputFactory;
  * @author Philippe Charles
  */
 @ServiceProvider(service = OutputFactoryBuddy.class, position = 1000)
-public final class CsvOutputBuddy implements OutputFactoryBuddy, Configurable, Persistable, ConfigEditor, Resetable {
+public final class CsvOutputBuddy implements OutputFactoryBuddy, Configurable, ConfigEditor, Resetable {
 
     private final BeanConfigurator<CsvOutputConfiguration, CsvOutputBuddy> configurator = createConfigurator();
     private CsvOutputConfiguration config = new CsvOutputConfiguration();
@@ -73,8 +73,8 @@ public final class CsvOutputBuddy implements OutputFactoryBuddy, Configurable, P
     }
 
     @Override
-    public AbstractOutputNode createNodeFor(SaOutputFactory fac) {
-        return fac instanceof CsvOutputFactory ? new CsvNode(((CsvOutputFactory) fac).getConfiguration()) : null;
+    public AbstractOutputNode createNodeFor(Object properties) {
+        return properties instanceof CsvOutputConfiguration ? new CsvNode((CsvOutputConfiguration) properties) : null;
     }
 
     @Override
@@ -140,7 +140,7 @@ public final class CsvOutputBuddy implements OutputFactoryBuddy, Configurable, P
 
         @Override
         public Config doForward(CsvOutputConfiguration a) {
-            Config.Builder result = Config.builder(OutputFactoryBuddy.class.getName(), "Csv", "");
+            Config.Builder result = Config.builder("outputs", "csv", "3.0");
             presentationParam.set(result::parameter, a.getPresentation());
             folderParam.set(result::parameter, a.getFolder());
             filePrefixParam.set(result::parameter, a.getFilePrefix());

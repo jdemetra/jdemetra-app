@@ -104,6 +104,9 @@ final class X13Panel extends javax.swing.JPanel {
         });
         jToolBar1.add(resetDiagnostic);
 
+        diagnosticsView.setColumnHeader(null);
+        diagnosticsView.setColumnHeaderView(null);
+
         javax.swing.GroupLayout diagnosticsPanelLayout = new javax.swing.GroupLayout(diagnosticsPanel);
         diagnosticsPanel.setLayout(diagnosticsPanelLayout);
         diagnosticsPanelLayout.setHorizontalGroup(
