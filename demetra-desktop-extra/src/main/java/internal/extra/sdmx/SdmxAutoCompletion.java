@@ -16,15 +16,12 @@
  */
 package internal.extra.sdmx;
 
-import internal.favicon.FaviconSupport;
-import internal.favicon.GoogleSupplier;
 import sdmxdl.Dataflow;
 import sdmxdl.DataflowRef;
 import sdmxdl.Dimension;
 import sdmxdl.LanguagePriorityList;
 import sdmxdl.web.SdmxWebManager;
 import sdmxdl.web.SdmxWebSource;
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import demetra.desktop.TsManager;
 import demetra.tsp.extra.sdmx.web.SdmxWebProvider;
 import ec.util.completion.AutoCompletionSource;
@@ -33,22 +30,28 @@ import static ec.util.completion.AutoCompletionSource.Behavior.NONE;
 import static ec.util.completion.AutoCompletionSource.Behavior.SYNC;
 import ec.util.completion.ExtAutoCompletionSource;
 import ec.util.completion.swing.CustomListCellRenderer;
-import internal.favicon.FaviconkitSupplier;
-import internal.util.http.DefaultHttpClient;
-import internal.util.http.HttpContext;
+import java.io.IOException;
+import java.net.Proxy;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.Executors;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import static java.util.stream.Collectors.toList;
+import javax.net.ssl.HttpsURLConnection;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JList;
 import javax.swing.ListCellRenderer;
+import nbbrd.desktop.favicon.DomainName;
+import nbbrd.desktop.favicon.FaviconRef;
+import nbbrd.desktop.favicon.FaviconSupport;
+import nbbrd.desktop.favicon.URLConnectionFactory;
 import org.openide.util.ImageUtilities;
 import sdmxdl.Attribute;
 import sdmxdl.Connection;
@@ -153,7 +156,7 @@ public abstract class SdmxAutoCompletion {
 
                 @Override
                 protected Icon toIcon(String term, JList list, SdmxWebSource value, int index, boolean isSelected, boolean cellHasFocus) {
-                    return FAVICONS.get(value.getWebsite(), list::repaint);
+                    return getFavicon(value.getWebsite(), list::repaint);
                 }
             };
         }
@@ -343,25 +346,52 @@ public abstract class SdmxAutoCompletion {
         return ImageUtilities.loadImageIcon("demetra/desktop/extra/sdmx/sdmx-logo.png", false);
     }
 
+    public static Icon getFavicon(URL website) {
+        return website != null
+                ? FAVICONS.getOrDefault(FaviconRef.of(DomainName.of(website), 16), getDefaultIcon())
+                : getDefaultIcon();
+    }
+
+    public static Icon getFavicon(URL website, Runnable callback) {
+        return website != null
+                ? FAVICONS.getOrDefault(FaviconRef.of(DomainName.of(website), 16), callback, getDefaultIcon())
+                : getDefaultIcon();
+    }
+
     public static final FaviconSupport FAVICONS = FaviconSupport
-            .builder()
-            .client(new DefaultHttpClient(getHttpContext()))
-            .supplier(new GoogleSupplier())
-            .supplier(new FaviconkitSupplier())
-            .executor(Executors.newCachedThreadPool(new ThreadFactoryBuilder().setDaemon(true).setPriority(Thread.MIN_PRIORITY).build()))
-            .fallback(getDefaultIcon())
+            .ofServiceLoader()
+            .toBuilder()
+            .client(new ClientOverCustomNetwork())
             .cache(new HashMap<>())
             //            .cache(IOCacheFactoryLoader.get().ofTtl(Duration.ofHours(1)))
             .build();
 
-    private static HttpContext getHttpContext() {
-        return HttpContext
-                .builder()
-                .proxySelector(() -> getNetwork().getProxySelector())
-                .sslSocketFactory(() -> getNetwork().getSSLSocketFactory())
-                .hostnameVerifier(() -> getNetwork().getHostnameVerifier())
-                .urlConnectionFactory(() -> getNetwork().getURLConnectionFactory())
-                .build();
+    private static final class ClientOverCustomNetwork implements URLConnectionFactory {
+
+        @Override
+        public URLConnection openConnection(URL url) throws IOException {
+            Network network = getNetwork();
+            Proxy proxy = selectProxy(network, url);
+            URLConnection result = network.getURLConnectionFactory().openConnection(url, proxy);
+            applyHttps(result, network);
+            return result;
+        }
+
+        private void applyHttps(URLConnection result, Network network) {
+            if (result instanceof HttpsURLConnection) {
+                HttpsURLConnection https = (HttpsURLConnection) result;
+                https.setHostnameVerifier(network.getHostnameVerifier());
+                https.setSSLSocketFactory(network.getSSLSocketFactory());
+            }
+        }
+
+        private Proxy selectProxy(Network network, URL url) throws IOException {
+            try {
+                return network.getProxySelector().select(url.toURI()).stream().findFirst().orElse(Proxy.NO_PROXY);
+            } catch (URISyntaxException ex) {
+                throw new IOException(ex);
+            }
+        }
     }
 
     private static Network getNetwork() {

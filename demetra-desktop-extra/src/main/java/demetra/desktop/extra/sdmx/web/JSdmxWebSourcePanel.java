@@ -204,7 +204,7 @@ public final class JSdmxWebSourcePanel extends JComponent {
                 JLabel result = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
                 if (value instanceof SdmxWebSource source) {
                     result.setText(source.getName());
-                    result.setIcon(SdmxAutoCompletion.FAVICONS.get(source.getWebsite(), table::repaint));
+                    result.setIcon(SdmxAutoCompletion.getFavicon(source.getWebsite(), table::repaint));
                 }
                 return result;
             }

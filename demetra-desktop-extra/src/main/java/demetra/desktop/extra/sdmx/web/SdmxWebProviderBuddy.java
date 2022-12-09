@@ -36,7 +36,6 @@ import java.io.IOException;
 import java.util.Optional;
 import nbbrd.service.ServiceProvider;
 import nbbrd.design.DirectImpl;
-import nbbrd.io.function.IORunnable;
 import org.openide.nodes.Sheet;
 import org.openide.util.ImageUtilities;
 import sdmxdl.Connection;
@@ -140,7 +139,7 @@ public final class SdmxWebProviderBuddy implements DataSourceProviderBuddy, Conf
     }
 
     private static Image getSourceIcon(SdmxWebProvider provider, SdmxWebSource source) {
-        return ImageUtilities.icon2Image(SdmxAutoCompletion.FAVICONS.get(source.getWebsite(), IORunnable.noOp().asUnchecked()));
+        return ImageUtilities.icon2Image(SdmxAutoCompletion.getFavicon(source.getWebsite()));
     }
 
     private static boolean supportsDataQueryDetail(SdmxWebProvider provider, SdmxWebSource source) {
