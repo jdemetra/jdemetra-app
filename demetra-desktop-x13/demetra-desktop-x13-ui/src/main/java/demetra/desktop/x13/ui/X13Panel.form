@@ -37,7 +37,7 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Component id="componentsPanel" alignment="0" pref="450" max="32767" attributes="0"/>
+          <Component id="componentsPanel" alignment="0" pref="400" max="32767" attributes="0"/>
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
               <Component id="diagnosticsPanel" max="32767" attributes="0"/>
@@ -140,6 +140,14 @@
           </SubComponents>
         </Container>
         <Component class="org.openide.explorer.view.OutlineView" name="diagnosticsView">
+          <Properties>
+            <Property name="columnHeader" type="javax.swing.JViewport" editor="org.netbeans.modules.form.ComponentChooserEditor">
+              <ComponentRef name="null"/>
+            </Property>
+            <Property name="columnHeaderView" type="java.awt.Component" editor="org.netbeans.modules.form.ComponentChooserEditor">
+              <ComponentRef name="null"/>
+            </Property>
+          </Properties>
           <AuxValues>
             <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new org.openide.explorer.view.OutlineView(&quot;Diagnostics&quot;)"/>
           </AuxValues>

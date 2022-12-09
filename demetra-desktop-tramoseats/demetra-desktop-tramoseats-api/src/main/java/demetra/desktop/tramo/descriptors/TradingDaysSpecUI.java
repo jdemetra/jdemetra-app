@@ -348,7 +348,7 @@ public class TradingDaysSpecUI extends BaseTramoSpecUI {
         if (value.equals(td.getAutomaticMethod())) {
             return;
         }
-        if (value.equals(TradingDaysSpec.AutoMethod.Unused)) {
+        if (value.equals(TradingDaysSpec.AutoMethod.UNUSED)) {
             switch (getOption()) {
                 case Default:
                     update(TradingDaysSpec.td(TradingDaysType.TD2, td.getLengthOfPeriodType(), RegressionTestType.Joint_F, td.isAutoAdjust()));

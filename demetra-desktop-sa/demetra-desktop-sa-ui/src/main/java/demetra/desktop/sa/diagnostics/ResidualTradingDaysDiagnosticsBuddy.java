@@ -35,6 +35,7 @@ public class ResidualTradingDaysDiagnosticsBuddy extends AbstractSaDiagnosticsFa
     public static class Bean {
 
         private boolean active;
+        private boolean monthlyOnly;
         private double severeThreshold;
         private double badThreshold;
         private double uncertainThreshold;
@@ -42,6 +43,7 @@ public class ResidualTradingDaysDiagnosticsBuddy extends AbstractSaDiagnosticsFa
         public static Bean of(ResidualTradingDaysDiagnosticsConfiguration config) {
             Bean bean = new Bean();
             bean.active = config.isActive();
+            bean.monthlyOnly = config.isMonthlyOnly();
             bean.severeThreshold = config.getSevereThreshold();
             bean.badThreshold = config.getBadThreshold();
             bean.uncertainThreshold = config.getUncertainThreshold();
@@ -51,6 +53,7 @@ public class ResidualTradingDaysDiagnosticsBuddy extends AbstractSaDiagnosticsFa
         public ResidualTradingDaysDiagnosticsConfiguration asCore() {
             return ResidualTradingDaysDiagnosticsConfiguration.builder()
                     .active(active)
+                    .monthlyOnly(monthlyOnly)
                     .severeThreshold(severeThreshold)
                     .badThreshold(badThreshold)
                     .uncertainThreshold(uncertainThreshold)
@@ -95,6 +98,7 @@ public class ResidualTradingDaysDiagnosticsBuddy extends AbstractSaDiagnosticsFa
     static final class CoreConverter implements Converter<ResidualTradingDaysDiagnosticsConfiguration, Config> {
 
         private final BooleanProperty activeParam = BooleanProperty.of("active", ResidualTradingDaysDiagnosticsConfiguration.ACTIVE);
+        private final BooleanProperty monthlyOnlyParam = BooleanProperty.of("monthlyOnly", ResidualTradingDaysDiagnosticsConfiguration.MONTHLY);
         private final DoubleProperty severeParam = DoubleProperty.of("severeThreshold", ResidualTradingDaysDiagnosticsConfiguration.SEV);
         private final DoubleProperty badParam = DoubleProperty.of("badThreshold", ResidualTradingDaysDiagnosticsConfiguration.BAD);
         private final DoubleProperty uncertainParam = DoubleProperty.of("uncertainThreshold", ResidualTradingDaysDiagnosticsConfiguration.UNC);
@@ -103,6 +107,7 @@ public class ResidualTradingDaysDiagnosticsBuddy extends AbstractSaDiagnosticsFa
         public Config doForward(ResidualTradingDaysDiagnosticsConfiguration a) {
             Config.Builder result = Config.builder("diagnostics", "residual_td", "3.0");
             activeParam.set(result::parameter, a.isActive());
+            monthlyOnlyParam.set(result::parameter, a.isMonthlyOnly());
             severeParam.set(result::parameter, a.getSevereThreshold());
             badParam.set(result::parameter, a.getBadThreshold());
             uncertainParam.set(result::parameter, a.getUncertainThreshold());
@@ -113,6 +118,7 @@ public class ResidualTradingDaysDiagnosticsBuddy extends AbstractSaDiagnosticsFa
         public ResidualTradingDaysDiagnosticsConfiguration doBackward(Config b) {
             return ResidualTradingDaysDiagnosticsConfiguration.builder()
                     .active(activeParam.get(b::getParameter))
+                    .monthlyOnly(monthlyOnlyParam.get(b::getParameter))
                     .severeThreshold(severeParam.get(b::getParameter))
                     .badThreshold(badParam.get(b::getParameter))
                     .uncertainThreshold(uncertainParam.get(b::getParameter))
@@ -133,6 +139,7 @@ public class ResidualTradingDaysDiagnosticsBuddy extends AbstractSaDiagnosticsFa
             NodePropertySetBuilder builder = new NodePropertySetBuilder();
             builder.reset("Behaviour");
             builder.withBoolean().select(bean, "active").display("Enabled").add();
+            builder.withBoolean().select(bean, "monthlyOnly").display("Monthly Only").description("Apply the tests only on monthly series").add();
             sheet.put(builder.build());
             builder.reset("Thresholds");
             builder.withDouble().select(bean, "severeThreshold").display("Severe").add();

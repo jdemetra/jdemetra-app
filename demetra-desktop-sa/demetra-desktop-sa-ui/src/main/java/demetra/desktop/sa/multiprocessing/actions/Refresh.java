@@ -45,7 +45,7 @@ public final class Refresh extends ActiveViewAction<SaBatchUI> implements Presen
     @Override
     protected void refreshAction() {
         SaBatchUI ui = context();
-        enabled = ui.getElement().isRefreshable();
+        enabled = ui != null && ui.getElement().isRefreshable();
     }
 
     @Override

@@ -84,5 +84,12 @@ public final class X13OptionsPanelController extends OptionsPanelController {
         return panel;
     }
 
+    void changed() {
+        if (!changed) {
+            changed = true;
+            pcs.firePropertyChange(OptionsPanelController.PROP_CHANGED, false, true);
+        }
+        pcs.firePropertyChange(OptionsPanelController.PROP_VALID, null, null);
+    }
 
 }

@@ -4,13 +4,17 @@
  */
 package demetra.desktop.sa.multiprocessing.ui;
 
-import demetra.desktop.util.NbComponents;
 import demetra.desktop.components.GridCommands;
+import demetra.desktop.sa.util.ActionsHelper;
+import demetra.desktop.sa.util.ActionsHelpers;
+import demetra.desktop.util.NbComponents;
 import demetra.information.Explorable;
 import demetra.information.formatters.TableFormatter;
 import demetra.processing.AlgorithmDescriptor;
 import demetra.sa.SaDictionaries;
 import demetra.sa.SaItem;
+import demetra.sa.SaManager;
+import demetra.sa.SaProcessingFactory;
 import demetra.timeseries.TsData;
 import demetra.toolkit.dictionaries.ArimaDictionaries;
 import demetra.toolkit.dictionaries.LikelihoodDictionaries;
@@ -25,8 +29,6 @@ import ec.util.list.swing.JLists;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.event.ItemEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.text.DecimalFormat;
 import java.util.*;
 import java.util.Map.Entry;
@@ -43,7 +45,7 @@ import org.openide.explorer.ExplorerUtils;
  *
  * @author Philippe Charles
  */
-public class MatrixView extends AbstractSaProcessingTopComponent implements MultiViewElement {
+public final class MatrixView extends AbstractSaProcessingTopComponent implements MultiViewElement {
 
     private final ExplorerManager mgr = new ExplorerManager();
 
@@ -58,16 +60,11 @@ public class MatrixView extends AbstractSaProcessingTopComponent implements Mult
     private final JComboBox<Entry<Integer, AlgorithmDescriptor>> comboBox;
     private final JGrid resMatrix_, calMatrix_, armaMatrix_, outMatrix_, testMatrix_, customMatrix_;
     private final JTabbedPane matrixTabPane_;
-    // data
-    private SaItem[] saItems;
-    private List<String> selectedComponents;
-    private final PropertyChangeListener listener;
+//    private final PropertyChangeListener listener;
 
     public MatrixView(MultiProcessingController controller) {
         super(controller);
         this.comboBox = new JComboBox<>();
-        // TODO
-        this.selectedComponents = Collections.emptyList(); // DemetraUI.getDefault().getSelectedDiagFields();
 
         comboBox.setRenderer(JLists.cellRendererOf((label, value) -> {
             if (value != null) {
@@ -97,12 +94,11 @@ public class MatrixView extends AbstractSaProcessingTopComponent implements Mult
 
         visualRepresentation = matrixTabPane_;
 
-        listener = (PropertyChangeEvent evt) -> {
-            selectedComponents = Collections.emptyList(); // DemetraUI.getDefault().getSelectedDiagFields();
-            Entry<Integer, AlgorithmDescriptor> item = (Entry<Integer, AlgorithmDescriptor>) comboBox.getSelectedItem();
-            customMatrix_.setModel(new TableModelAdapter(createTableModel(item.getValue(), item.getKey(), selectedComponents, selectedComponents)));
-        };
-
+//        listener = (PropertyChangeEvent evt) -> {
+//            selectedComponents = selectedComponents();
+//            Entry<Integer, AlgorithmDescriptor> item = (Entry<Integer, AlgorithmDescriptor>) comboBox.getSelectedItem();
+//            customMatrix_.setModel(new TableModelAdapter(createTableModel(item.getValue(), item.getKey(), selectedComponents, selectedComponents)));
+//        };
         updateData(new SaItem[0]);
 
         setLayout(new BorderLayout());
@@ -111,12 +107,34 @@ public class MatrixView extends AbstractSaProcessingTopComponent implements Mult
         associateLookup(ExplorerUtils.createLookup(mgr, getActionMap()));
     }
 
+    public AlgorithmDescriptor activeMethod() {
+        Entry<Integer, AlgorithmDescriptor> item = (Entry<Integer, AlgorithmDescriptor>) comboBox.getSelectedItem();
+        if (item == null) {
+            return null;
+        } else {
+            return item.getValue();
+        }
+    }
+
+    public List<String> customItems() {
+        AlgorithmDescriptor desc = activeMethod();
+        if (desc == null) {
+            return Collections.emptyList();
+        }
+        SaProcessingFactory factory = SaManager.factoryFor(desc);
+        ActionsHelper helper = ActionsHelpers.getInstance().getHelperFor(factory);
+        if (helper == null) {
+            return Collections.emptyList();
+        } else {
+            return helper.selectedMatrixItems();
+        }
+    }
+
     @Override
     protected void onSaProcessingStateChange() {
         super.onSaProcessingStateChange();
-        SaItem[] items = current();
         if (getState().isFinished()) {
-            updateData(items);
+            updateData(current());
         } else {
             updateData(new SaItem[0]);
         }
@@ -158,14 +176,7 @@ public class MatrixView extends AbstractSaProcessingTopComponent implements Mult
     }
 
     @Override
-    public void componentOpened() {
-        super.componentOpened();
-//        DemetraUI.getDefault().addPropertyChangeListener(DemetraUI.SELECTED_DIAG_FIELDS_PROPERTY, listener);
-    }
-
-    @Override
     public void componentClosed() {
-//        DemetraUI.getDefault().removePropertyChangeListener(DemetraUI.SELECTED_DIAG_FIELDS_PROPERTY, listener);
         clearMatrices();
         super.componentClosed();
     }
@@ -206,7 +217,6 @@ public class MatrixView extends AbstractSaProcessingTopComponent implements Mult
     }
 
     private void updateData(SaItem[] saItems) {
-        this.saItems = saItems;
         Map<Integer, List<AlgorithmDescriptor>> methods = methods(saItems);
         long count = methods.values().stream().mapToLong(Collection::size).sum();
         comboBox.setVisible(count > 1);
@@ -214,6 +224,8 @@ public class MatrixView extends AbstractSaProcessingTopComponent implements Mult
         comboBox.setSelectedIndex(-1);
         if (!methods.isEmpty()) {
             comboBox.setSelectedIndex(0);
+        }else{
+            clearMatrices();
         }
     }
 
@@ -226,13 +238,29 @@ public class MatrixView extends AbstractSaProcessingTopComponent implements Mult
         customMatrix_.setModel(null);
     }
 
+    private static final boolean SHORT = true;
+    private static final int MAXLENGTH = 8;
+
     private void updateMatrix(AlgorithmDescriptor desc, int freq) {
-        resMatrix_.setModel(new TableModelAdapter(createTableModel(desc, freq, Arrays.asList(MAIN_TITLE), Arrays.asList(MAIN))));
-        calMatrix_.setModel(new TableModelAdapter(createTableModel(desc, freq, Arrays.asList(CALENDAR_TITLE), Arrays.asList(CALENDAR))));
-        armaMatrix_.setModel(new TableModelAdapter(createTableModel(desc, freq, Arrays.asList(ARMA_TITLE), Arrays.asList(ARMA))));
-        outMatrix_.setModel(new TableModelAdapter(createTableModel(desc, freq, Arrays.asList(OUTLIERS_TITLE), Arrays.asList(OUTLIERS))));
-        testMatrix_.setModel(new TableModelAdapter(createTableModel(desc, freq, Arrays.asList(TESTS_TITLE), Arrays.asList(TESTS))));
-        customMatrix_.setModel(new TableModelAdapter(createTableModel(desc, freq, selectedComponents, selectedComponents)));
+        List<String> customItems = customItems();
+        SaItem[] items = selectionFor(desc, freq);
+        resMatrix_.setModel(new TableModelAdapter(createTableModel(items, Arrays.asList(MAIN_TITLE), Arrays.asList(MAIN))));
+        calMatrix_.setModel(new TableModelAdapter(createTableModel(items, Arrays.asList(CALENDAR_TITLE), Arrays.asList(CALENDAR))));
+        armaMatrix_.setModel(new TableModelAdapter(createTableModel(items, Arrays.asList(ARMA_TITLE), Arrays.asList(ARMA))));
+        outMatrix_.setModel(new TableModelAdapter(createTableModel(items, Arrays.asList(OUTLIERS_TITLE), Arrays.asList(OUTLIERS))));
+        testMatrix_.setModel(new TableModelAdapter(createTableModel(items, Arrays.asList(TESTS_TITLE), Arrays.asList(TESTS))));
+
+        List<String> titles = !SHORT ? customItems : customItems.stream().map(s -> {
+            if (s.length() > MAXLENGTH) {
+                int idx = s.lastIndexOf('.');
+                if (idx >= 0) {
+                    s = s.substring(idx + 1);
+                }
+            }
+            return s;
+        }).toList();
+
+        customMatrix_.setModel(new TableModelAdapter(createTableModel(items, titles, customItems)));
     }
 
     private static String arimaItem(String key) {
@@ -280,17 +308,21 @@ public class MatrixView extends AbstractSaProcessingTopComponent implements Mult
 
     private static final String[] MAIN_TITLE = {"N", "Seasonal", "Log", "Mean", "P", "D", "Q", "BP", "BD", "BQ", "BIC", "SE(res)"};
 
-    private TableModel createTableModel(AlgorithmDescriptor method, int freq, List<String> titles, List<String> items) {
+    private SaItem[] selectionFor(AlgorithmDescriptor method, int freq) {
+        return Arrays.stream(current()).filter(item -> {
+            AlgorithmDescriptor alg = item.getDefinition().getDomainSpec().getAlgorithmDescriptor();
+            TsData ts = item.getDefinition().getTs().getData();
+            return alg.equals(method) && ts.getAnnualFrequency() == freq && item.isProcessed();
+        }).toArray(SaItem[]::new);
+    }
+
+    private TableModel createTableModel(SaItem[] curItems, List<String> titles, List<String> items) {
         DefaultTableModel rslt = new DefaultTableModel();
         List<String> names = new ArrayList<>();
         List<Explorable> rslts = new ArrayList<>();
-        for (SaItem sa : this.saItems) {
-            AlgorithmDescriptor alg = sa.getDefinition().getDomainSpec().getAlgorithmDescriptor();
-            TsData ts = sa.getDefinition().getTs().getData();
-            if (alg.equals(method) && ts.getAnnualFrequency() == freq && sa.isProcessed()) {
-                rslts.add(sa.getEstimation().getResults());
-                names.add(MultiLineNameUtil.join(sa.getName()));
-            }
+        for (SaItem sa : curItems) {
+            rslts.add(sa.getEstimation().getResults());
+            names.add(MultiLineNameUtil.join(sa.getName()));
         }
 
         Table<String> srslts = TableFormatter.formatProcResults(rslts, items, true);

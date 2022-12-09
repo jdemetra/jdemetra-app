@@ -31,7 +31,7 @@ public final class Reset extends ActiveViewAction<SaBatchUI> {
     @Override
     protected void refreshAction() {
         SaBatchUI ui = context();
-        enabled = !ui.getElement().isNew();
+        enabled = ui != null && !ui.getElement().isNew();
     }
 
     @Override

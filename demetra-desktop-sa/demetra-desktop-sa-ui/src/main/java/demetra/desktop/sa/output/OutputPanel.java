@@ -6,6 +6,7 @@ package demetra.desktop.sa.output;
 
 import demetra.desktop.DemetraIcons;
 import demetra.sa.SaOutputFactory;
+import demetra.sa.SaProcessingFactory;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,7 +27,7 @@ import org.openide.nodes.Node;
  */
 public class OutputPanel extends javax.swing.JPanel implements ExplorerManager.Provider {
 
-    protected List<SaOutputFactory> factories = new ArrayList<>();
+    private List<SaOutputFactory> factories = new ArrayList<>();
     // OTHER
     final ExplorerManager em;
     final JPopupMenu addPopupMenu;
@@ -51,7 +52,7 @@ public class OutputPanel extends javax.swing.JPanel implements ExplorerManager.P
         removeButton.setEnabled(false);
         refreshNodes();
     }
-
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always

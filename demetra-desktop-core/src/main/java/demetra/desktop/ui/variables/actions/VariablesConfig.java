@@ -40,7 +40,7 @@ final class VariablesConfig implements Converter<TsDataSuppliers, Config> {
     @Override
     public Config doForward(TsDataSuppliers a) {
         NameManager<TsDataSuppliers> manager = ModellingContext.getActiveContext().getTsVariableManagers();
-        Config.Builder result = Config.builder(DOMAIN, manager.get(a), "");
+        Config.Builder result = Config.builder(DOMAIN, manager.get(a), "3.0");
         XmlTsVariables xml = new XmlTsVariables();
         xml.copy(a);
         result.parameter("xml", formatter.formatAsString(xml));

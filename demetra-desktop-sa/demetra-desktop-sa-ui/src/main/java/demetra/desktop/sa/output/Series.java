@@ -16,4 +16,6 @@ public class Series extends ListSelectionEditor<String> {
     public Series() {
         super(OutputSelection.seriesItems(SaManager.processors()));
     }
+   
+   
 }

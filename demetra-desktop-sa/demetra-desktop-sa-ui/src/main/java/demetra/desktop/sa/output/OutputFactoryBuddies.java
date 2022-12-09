@@ -17,7 +17,6 @@
 package demetra.desktop.sa.output;
 
 import demetra.sa.SaOutputFactory;
-import demetra.sa.SaProcessingFactory;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -62,7 +61,7 @@ public class OutputFactoryBuddies implements LookupListener {
     
     Node createNodeFor(SaOutputFactory factory) {
         for (OutputFactoryBuddy fac : outputs){
-            Node node=fac.createNodeFor(factory);
+            Node node=fac.createNodeFor(factory.getConfiguration());
             if (node != null)
                 return node;
         }

@@ -38,6 +38,6 @@ public final class LocalRefreshMovingAverageParameters extends ActiveViewAction<
     @Override
     protected void refreshAction() {
         SaBatchUI ui = context();
-        enabled = ui.getElement().isRefreshable() && ui.getSelectionCount() > 0;
+        enabled = ui != null && ui.getElement().isRefreshable() && ui.getSelectionCount() > 0;
     }
 }

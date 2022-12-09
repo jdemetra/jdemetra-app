@@ -17,22 +17,25 @@
 package demetra.desktop.sa.output;
 
 import demetra.desktop.NamedService;
+import demetra.desktop.Persistable;
 import demetra.sa.SaOutputFactory;
+import demetra.sa.SaProcessingFactory;
 import java.awt.Image;
+import java.util.List;
 import org.openide.nodes.Sheet;
 
 /**
  * Makes the link between actual output factories and the gui, through specialized nodes
  * @author Jean Palate
  */
-public interface OutputFactoryBuddy extends NamedService {
+public interface OutputFactoryBuddy extends NamedService, Persistable {
 
     @Override
     String getName();
     
     AbstractOutputNode createNode();
     
-    AbstractOutputNode createNodeFor(SaOutputFactory factory);
+    AbstractOutputNode createNodeFor(Object properties);
 
     @Override
     default String getDisplayName() {

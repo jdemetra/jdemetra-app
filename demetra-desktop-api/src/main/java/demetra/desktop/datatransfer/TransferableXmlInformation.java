@@ -15,13 +15,14 @@ import javax.xml.bind.Unmarshaller;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.StringReader;
 import java.io.StringWriter;
 
 /**
  *
  * @author Jean Palate
+ * @param <T>
  */
 public class TransferableXmlInformation<T> implements Transferable {
 
@@ -29,14 +30,16 @@ public class TransferableXmlInformation<T> implements Transferable {
     private final InformationSetSerializer<T> serializer;
     private final DataFlavor local_;
     private final String type_, version_;
-    private static JAXBContext context;
+    private static final JAXBContext context;
 
     static {
+        JAXBContext tmp;
         try {
-            context = JAXBContext.newInstance(XmlInformationSet.class);
+            tmp = JAXBContext.newInstance(XmlInformationSet.class);
         } catch (JAXBException ex) {
-            context = null;
+            tmp = null;
         }
+        context=tmp;
     }
 
     public static <T> T read(Transferable dataobj, InformationSetSerializer<T> serializer, Class<T> tclass, String type, String version) {
@@ -49,15 +52,14 @@ public class TransferableXmlInformation<T> implements Transferable {
             if (!dataobj.isDataFlavorSupported(xmlflavor)) {
                 return null;
             }
-            String str = (String) dataobj.getTransferData(BasicFormatter.DEMETRA);
-            StringReader reader = new StringReader(str);
+            byte[] bytes=(byte[]) dataobj.getTransferData(BasicFormatter.DEMETRA);
+//            String str = new String(bytes); 
+//            StringReader reader = new StringReader(str);
 
 //	    byte[] bytearray = (byte[]) dataobj.getTransferData(xmlflavor);
-//	    ByteArrayInputStream mem = new ByteArrayInputStream(bytearray, 0,
-//		    bytearray.length);
-//	    mem.reset();
+	    ByteArrayInputStream mem = new ByteArrayInputStream(bytes);
             Unmarshaller unmarshaller = context.createUnmarshaller();
-            XmlInformationSet x = (XmlInformationSet) unmarshaller.unmarshal(reader);
+            XmlInformationSet x = (XmlInformationSet) unmarshaller.unmarshal(mem);
             if (x == null) {
                 return null;
             }
@@ -114,7 +116,7 @@ public class TransferableXmlInformation<T> implements Transferable {
             xml.copy(info);
             marshaller.marshal(xml, writer);
             writer.flush();
-            return writer.toString();
+            return writer.toString().getBytes();
         } catch (Exception ex) {
             return null;
         }

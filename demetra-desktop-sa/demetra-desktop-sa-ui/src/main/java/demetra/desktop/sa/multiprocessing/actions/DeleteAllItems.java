@@ -31,7 +31,7 @@ public final class DeleteAllItems extends ActiveViewAction<SaBatchUI> {
     @Override
     protected void refreshAction() {
         SaBatchUI ui = context();
-        enabled = !ui.getElement().getCurrent().isEmpty();
+        enabled = ui != null && !ui.getElement().getCurrent().isEmpty();
     }
 
     @Override

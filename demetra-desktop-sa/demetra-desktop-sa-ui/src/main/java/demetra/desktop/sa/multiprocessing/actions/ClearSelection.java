@@ -34,7 +34,7 @@ public final class ClearSelection extends ActiveViewAction<SaBatchUI> {
     @Override
     protected void refreshAction() {
         SaBatchUI ui = context();
-        enabled = ui.getSelectionCount()>0;
+        enabled = ui != null && ui.getSelectionCount()>0;
     }
 
     @Override

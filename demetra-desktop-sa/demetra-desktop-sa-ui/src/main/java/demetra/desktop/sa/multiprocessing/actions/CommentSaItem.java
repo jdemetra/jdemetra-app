@@ -38,10 +38,10 @@ import org.openide.util.NbBundle.Messages;
 @ActionReferences({
     @ActionReference(path = MultiProcessingManager.CONTEXTPATH + Edit.PATH, position = 1600)
 })
-@Messages("CTL_CommentSaItem=Edit comments")
+@Messages("CTL_CommentSaItem=Comments...")
 public final class CommentSaItem extends ActiveViewAction<SaBatchUI> {
 
-    public static final String TITLE = "Edit comments";
+    public static final String TITLE = "Comments";
 
     public CommentSaItem() {
         super(SaBatchUI.class);

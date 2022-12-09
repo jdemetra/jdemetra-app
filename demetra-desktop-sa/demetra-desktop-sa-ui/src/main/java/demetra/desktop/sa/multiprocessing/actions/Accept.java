@@ -18,8 +18,7 @@ import org.openide.util.NbBundle;
         id = "demetra.desktop.sa.multiprocessing.actions.Accept")
 @ActionRegistration(displayName = "#CTL_Accept", lazy = false)
 @ActionReferences({
-    @ActionReference(path = MultiProcessingManager.CONTEXTPATH + Edit.PATH, position = 1600, separatorBefore = 1599),
-    @ActionReference(path = MultiProcessingManager.LOCALPATH + Edit.PATH, position = 1600)
+    @ActionReference(path = MultiProcessingManager.LOCALPATH, position = 1600, separatorBefore = 1599)
 })
 @NbBundle.Messages("CTL_Accept=Accept")
 public final class Accept extends ActiveViewAction<SaBatchUI> {
@@ -33,7 +32,7 @@ public final class Accept extends ActiveViewAction<SaBatchUI> {
     @Override
     protected void refreshAction() {
         SaBatchUI ui = context();
-        enabled = ui.getSelectionCount() > 0;
+        enabled = ui != null && ui.getSelectionCount() > 0;
         if (enabled) {
             SaNode[] selection = ui.getSelection();
             boolean accepted = canAccept(selection);

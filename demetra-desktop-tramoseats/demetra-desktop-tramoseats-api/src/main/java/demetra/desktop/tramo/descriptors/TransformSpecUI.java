@@ -53,6 +53,10 @@ public class TransformSpecUI extends BaseTramoSpecUI {
         if (desc != null) {
             descs.add(desc);
         }
+        desc = outliersDesc();
+        if (desc != null) {
+            descs.add(desc);
+        }
         desc = adjustDesc();
         if (desc != null) {
             descs.add(desc);
@@ -134,6 +138,14 @@ public class TransformSpecUI extends BaseTramoSpecUI {
     public void setFct(double value) {
         update(inner().toBuilder().fct(value).build());
     }
+    
+    public boolean isOutliers(){
+        return inner().isOutliersCorrection();
+    }
+    
+    public void setOutliers(boolean outliers){
+        update(inner().toBuilder().outliersCorrection(outliers).build());
+    }
 
     public LengthOfPeriodType getAdjust() {
         return inner().getAdjust();
@@ -156,7 +168,7 @@ public class TransformSpecUI extends BaseTramoSpecUI {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    private static final int SPAN_ID = 0, FN_ID = 1, FCT_ID = 2, ADJUST_ID = 3;
+    private static final int SPAN_ID = 0, FN_ID = 1, FCT_ID = 2, ADJUST_ID = 3, OUTLIERS_ID = 4;
 
     @Messages({"transformSpecUI.fnDesc.name=Function",
         "transformSpecUI.fnDesc.desc=[lam]. None=no transformation of data; Log=takes logs of data; Auto:the program tests for the log-level specification."
@@ -186,6 +198,23 @@ public class TransformSpecUI extends BaseTramoSpecUI {
             edesc.setReadOnly(isRo() || getFunction() != TransformationType.Auto);
             desc.setDisplayName(Bundle.transformSpecUI_fctDesc_name());
             desc.setShortDescription(Bundle.transformSpecUI_fctDesc_desc());
+            return edesc;
+        } catch (IntrospectionException ex) {
+            return null;
+        }
+    }
+
+    @Messages({"transformSpecUI.outliersDesc.name=Outliers corr.",
+        "transformSpecUI.outliersDesc.desc=Pre-correction for large outliers (AO and LS only)"
+    })
+    private EnhancedPropertyDescriptor outliersDesc() {
+        try {
+            PropertyDescriptor desc = new PropertyDescriptor("outliers", this.getClass());
+            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, OUTLIERS_ID);
+            edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
+            edesc.setReadOnly(isRo() || getFunction() != TransformationType.Auto);
+            desc.setDisplayName(Bundle.transformSpecUI_outliersDesc_name());
+            desc.setShortDescription(Bundle.transformSpecUI_outliersDesc_desc());
             return edesc;
         } catch (IntrospectionException ex) {
             return null;

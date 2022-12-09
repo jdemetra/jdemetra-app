@@ -51,7 +51,7 @@ final class CalendarConfig implements Converter<CalendarDefinition, Config> {
     @Override
     public Config doForward(CalendarDefinition cal) {
         CalendarManager manager = ModellingContext.getActiveContext().getCalendars();
-        Config.Builder result = Config.builder(DOMAIN, manager.get(cal), "");
+        Config.Builder result = Config.builder(DOMAIN, manager.get(cal), "3.0");
         String code = manager.get(cal);
         result.parameter("type", cal.getClass().getName());
         String xml = format(cal, code, manager);

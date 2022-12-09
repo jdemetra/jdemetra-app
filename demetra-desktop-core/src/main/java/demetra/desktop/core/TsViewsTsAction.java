@@ -18,9 +18,7 @@ package demetra.desktop.core;
 
 import demetra.desktop.TsManager;
 import demetra.desktop.components.parts.HasTs;
-import demetra.timeseries.TsFactory;
 import demetra.timeseries.TsInformationType;
-import javax.swing.SwingUtilities;
 import nbbrd.design.DirectImpl;
 import nbbrd.service.ServiceProvider;
 import org.openide.windows.TopComponent;

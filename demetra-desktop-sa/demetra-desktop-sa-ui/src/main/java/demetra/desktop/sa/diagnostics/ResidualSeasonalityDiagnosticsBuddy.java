@@ -126,7 +126,7 @@ public class ResidualSeasonalityDiagnosticsBuddy extends AbstractSaDiagnosticsFa
 
         @Override
         public Config doForward(ResidualSeasonalityDiagnosticsConfiguration a) {
-            Config.Builder result = Config.builder("diagnostics", "combined_seasonality", "");
+            Config.Builder result = Config.builder("diagnostics", "combined_seasonality", "3.0");
             activeParam.set(result::parameter, a.isActive());
             severeSaParam.set(result::parameter, a.getSevereThresholdForSa());
             badSaParam.set(result::parameter, a.getBadThresholdForSa());

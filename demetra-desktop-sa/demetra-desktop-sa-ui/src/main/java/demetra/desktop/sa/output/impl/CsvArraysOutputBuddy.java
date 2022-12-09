@@ -35,7 +35,6 @@ import nbbrd.io.text.Parser;
 import nbbrd.io.text.Property;
 import demetra.desktop.beans.BeanEditor;
 import demetra.desktop.Converter;
-import demetra.desktop.Persistable;
 import demetra.desktop.actions.Configurable;
 import demetra.desktop.beans.BeanConfigurator;
 import demetra.desktop.sa.output.AbstractOutputNode;
@@ -52,13 +51,12 @@ import demetra.sa.csv.CsvArrayOutputFactory;
  * @author Philippe Charles
  */
 @ServiceProvider(service = OutputFactoryBuddy.class, position = 1000)
-public final class CsvArraysOutputBuddy implements OutputFactoryBuddy, Configurable, Persistable, ConfigEditor, Resetable {
+public final class CsvArraysOutputBuddy implements OutputFactoryBuddy, Configurable, ConfigEditor, Resetable {
 
     private final BeanConfigurator<CsvArrayOutputConfiguration, CsvArraysOutputBuddy> configurator = createConfigurator();
     private CsvArrayOutputConfiguration config = new CsvArrayOutputConfiguration();
     
     public CsvArraysOutputBuddy(){
-        config.setArrays(OutputSelection.arraysItems(SaManager.processors()));
     }
 
     @Override
@@ -72,8 +70,8 @@ public final class CsvArraysOutputBuddy implements OutputFactoryBuddy, Configura
     }
 
     @Override
-    public AbstractOutputNode createNodeFor(SaOutputFactory fac) {
-        return fac instanceof CsvArrayOutputFactory ? new CsvArraysNode(((CsvArrayOutputFactory) fac).getConfiguration()) : null;
+    public AbstractOutputNode createNodeFor(Object properties) {
+        return properties instanceof CsvArrayOutputConfiguration ? new CsvArraysNode((CsvArrayOutputConfiguration) properties) : null;
     }
 
     @Override
@@ -139,7 +137,7 @@ public final class CsvArraysOutputBuddy implements OutputFactoryBuddy, Configura
 
         @Override
         public Config doForward(CsvArrayOutputConfiguration a) {
-            Config.Builder result = Config.builder(OutputFactoryBuddy.class.getName(), "Csv", "");
+            Config.Builder result = Config.builder("outputs", "csv_array", "3.0");
 //            presentationParam.set(result::parameter, a.getPresentation());
             folderParam.set(result::parameter, a.getFolder());
             filePrefixParam.set(result::parameter, a.getFilePrefix());

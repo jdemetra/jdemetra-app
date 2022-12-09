@@ -10,6 +10,7 @@ import com.google.common.base.Strings;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import demetra.desktop.DemetraBehaviour;
 import demetra.desktop.DemetraIcons;
+import demetra.desktop.TsActionManager;
 import demetra.desktop.TsDynamicProvider;
 import demetra.desktop.TsManager;
 import demetra.desktop.components.parts.HasTsCollection;
@@ -21,6 +22,8 @@ import demetra.desktop.notification.MessageType;
 import demetra.desktop.notification.NotifyUtil;
 import demetra.desktop.sa.multiprocessing.ui.MultiProcessingController.SaProcessingState;
 import demetra.desktop.sa.ui.DemetraSaUI;
+import demetra.desktop.sa.util.ActionsHelper;
+import demetra.desktop.sa.util.ActionsHelpers;
 import demetra.desktop.tsproviders.DataSourceManager;
 import demetra.desktop.ui.Menus;
 import demetra.desktop.ui.Menus.DynamicPopup;
@@ -451,9 +454,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
                     if (progressHandle != null) {
                         progressHandle.finish();
                     }
-                    if (controller != null) {
-                        controller.setSaProcessingState(SaProcessingState.DONE);
-                    }
+                    controller.setSaProcessingState(SaProcessingState.DONE);
                     break;
                 case PENDING:
                     controller.setSaProcessingState(SaProcessingState.PENDING);
@@ -500,6 +501,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
         }
         showDetails(null);
         controller.getDocument().setDirty();
+        controller.setSaProcessingState(SaProcessingState.READY);
         start(all);
     }
 
@@ -508,6 +510,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
         if (dataobj.getTransferDataFlavors().length > 0) {
             if (pasteTs(dataobj)) {
                 redrawAll();
+                
                 return;
             }
             if (pasteSaProcessing(dataobj)) {
@@ -578,7 +581,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
         controller.getDocument().getElement().remove(itemsToDelete);
 
         redrawAll();
-        controller.setSaProcessingState(SaProcessingState.READY);
+        controller.changed();
         controller.getDocument().setDirty();
         setSelection(null);
     }
@@ -658,7 +661,32 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
                 }
             });
         }
+        if (col.isEmpty()) {
+            return;
+        }
 
+        Transferable transferable = DataTransferManager.get().fromTsCollection(TsCollection.of(col));
+        java.awt.Toolkit.getDefaultToolkit().getSystemClipboard().setContents(transferable, null);
+    }
+
+    public void copyComponents() {
+        List<demetra.timeseries.Ts> col = new java.util.ArrayList<>();
+        for (SaNode item : getSelection()) {
+            ActionsHelper helper = ActionsHelpers.getInstance().getHelperFor(item.getSpec());
+            if (helper != null) {
+                item.getOutput().compute(ModellingContext.getActiveContext(), false);
+                List<String> components = helper.selectedSeries();
+                components.stream().forEach((comp) -> {
+                    TsData tsData = item.getOutput().getEstimation().getResults().getData(comp, TsData.class);
+                    if (tsData != null) {
+                        col.add(Ts.of(item.getName() + "[" + comp + "] ", tsData));
+                    }
+                });
+            }
+        }
+        if (col.isEmpty()) {
+            return;
+        }
         Transferable transferable = DataTransferManager.get().fromTsCollection(TsCollection.of(col));
         java.awt.Toolkit.getDefaultToolkit().getSystemClipboard().setContents(transferable, null);
     }
@@ -676,7 +704,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
         copy(litems);
         this.getElement().remove(litems);
         redrawAll();
-        controller.setSaProcessingState(SaProcessingState.READY);
+        controller.changed();
     }
 
     private XTable buildList() {
@@ -715,7 +743,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
                 int row = result.getSelectedRow();
                 if (e.getClickCount() > 1 && row != -1) {
                     SaNode item = model.getValues().get(result.getRowSorter().convertRowIndexToModel(row));
-//                    TsActions.getDefault().openWith(item..getDefinition().getTs(), DemetraUI.getDefault().getTsActionName());
+                    TsActionManager.get().openWith(item.getOutput().getDefinition().getTs(), DemetraBehaviour.get().getTsActionName());
                 }
             }
         });
@@ -723,7 +751,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
         return result;
     }
 
-    private void refreshInfo() {
+//    private void refreshInfo() {
 //        String ts = getCurrentProcessing().getMeta().get(TsMeta.TIMESTAMP);
 //        if (!Strings.isNullOrEmpty(ts)) {
 //            if (getCurrentProcessing().isDirty()) {
@@ -734,8 +762,7 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
 //        } else {
 //            statusLabel.setText("New processing");
 //        }
-    }
-
+//    }
     public void redrawAll() {
         int n = getElement().getCurrent().size();
         itemsLabel.setText(n + (n < 2 ? " item" : " items"));
@@ -763,22 +790,22 @@ public class SaBatchUI extends AbstractSaProcessingTopComponent implements Multi
                 doc.setAll(cspec, ts, output.getEstimation().getResults());
                 detail.onDocumentChanged();
             } else {
-                DocumentUIServices ui = DocumentUIServices.forSpec(cspec.getClass());
-                if (ui == null) {
+                DocumentUIServices uis = DocumentUIServices.forSpec(cspec.getClass());
+                if (uis == null) {
                     showDetails(null);
                 } else {
-                    Class dclass = ui.getDocumentType();
-                    WorkspaceItemManager mgr = WorkspaceItemManager.forItem(dclass);
-                    if (mgr == null) {
+                    Class dclass = uis.getDocumentType();
+                    WorkspaceItemManager wmgr = WorkspaceItemManager.forItem(dclass);
+                    if (wmgr == null) {
                         showDetails(null);
                     } else {
-                        TsDocument tmp = (TsDocument) mgr.createNewObject();
+                        TsDocument tmp = (TsDocument) wmgr.createNewObject();
                         if (doc != null) {
                             TsDynamicProvider.onDocumentClosing(doc);
                         }
                         TsDynamicProvider.onDocumentOpened(tmp);
                         tmp.setAll(cspec, ts, output.getEstimation().getResults());
-                        detail.setDocument(tmp, ui);
+                        detail.setDocument(tmp, uis);
                     }
                 }
             }
