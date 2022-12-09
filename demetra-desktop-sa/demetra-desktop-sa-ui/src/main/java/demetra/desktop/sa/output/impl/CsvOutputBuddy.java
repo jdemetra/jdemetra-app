@@ -59,7 +59,6 @@ public final class CsvOutputBuddy implements OutputFactoryBuddy, Configurable, C
     private CsvOutputConfiguration config = new CsvOutputConfiguration();
     
     public CsvOutputBuddy(){
-        config.setSeries(OutputSelection.seriesItems(SaManager.processors()));
     }
 
     @Override

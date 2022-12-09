@@ -63,7 +63,8 @@ public class TransformSpecUI extends BaseRegArimaSpecUI {
                 lpt = LengthOfPeriodType.None;
                 adjust = true;
             }
-            case Log -> adjust = false;
+            case Log ->
+                adjust = false;
             case None -> {
                 adjust = false;
                 if (lpt != LengthOfPeriodType.None) {
@@ -90,6 +91,14 @@ public class TransformSpecUI extends BaseRegArimaSpecUI {
         }
     }
 
+    public boolean isOutliers() {
+        return inner().isOutliersCorrection();
+    }
+
+    public void setOutliers(boolean outliers) {
+        update(inner().toBuilder().outliersCorrection(outliers).build());
+    }
+
     @Override
     public List<EnhancedPropertyDescriptor> getProperties() {
         ArrayList<EnhancedPropertyDescriptor> descs = new ArrayList<>();
@@ -98,6 +107,10 @@ public class TransformSpecUI extends BaseRegArimaSpecUI {
             descs.add(desc);
         }
         desc = aicDesc();
+        if (desc != null) {
+            descs.add(desc);
+        }
+        desc = outliersDesc();
         if (desc != null) {
             descs.add(desc);
         }
@@ -143,7 +156,7 @@ public class TransformSpecUI extends BaseRegArimaSpecUI {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    private static final int FN_ID = 1, AIC_ID = 2, ADJUST_ID = 3;
+    private static final int FN_ID = 1, AIC_ID = 2, ADJUST_ID = 3, OUTLIERS_ID = 4;
 
     @Messages({
         "transformSpecUI.fnDesc.name=function",
@@ -175,6 +188,23 @@ public class TransformSpecUI extends BaseRegArimaSpecUI {
             edesc.setReadOnly(isRo() || getFunction() != TransformationType.Auto);
             desc.setShortDescription(Bundle.transformSpecUI_aicDesc_desc());
             desc.setDisplayName(Bundle.transformSpecUI_aicDesc_name());
+            return edesc;
+        } catch (IntrospectionException ex) {
+            return null;
+        }
+    }
+
+    @Messages({"transformSpecUI.outliersDesc.name=Outliers corr.",
+        "transformSpecUI.outliersDesc.desc=Pre-correction for large outliers (AO and LS only)"
+    })
+    private EnhancedPropertyDescriptor outliersDesc() {
+        try {
+            PropertyDescriptor desc = new PropertyDescriptor("outliers", this.getClass());
+            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, OUTLIERS_ID);
+            edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
+            edesc.setReadOnly(isRo() || getFunction() != TransformationType.Auto);
+            desc.setDisplayName(Bundle.transformSpecUI_outliersDesc_name());
+            desc.setShortDescription(Bundle.transformSpecUI_outliersDesc_desc());
             return edesc;
         } catch (IntrospectionException ex) {
             return null;

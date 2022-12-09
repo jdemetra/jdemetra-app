@@ -35,7 +35,6 @@ import nbbrd.io.text.Parser;
 import nbbrd.io.text.Property;
 import demetra.desktop.beans.BeanEditor;
 import demetra.desktop.Converter;
-import demetra.desktop.Persistable;
 import demetra.desktop.actions.Configurable;
 import demetra.desktop.beans.BeanConfigurator;
 import demetra.desktop.sa.output.AbstractOutputNode;
@@ -58,7 +57,6 @@ public class CsvMatrixOutputBuddy implements OutputFactoryBuddy, Configurable, C
     private CsvMatrixOutputConfiguration config = new CsvMatrixOutputConfiguration();
 
     public CsvMatrixOutputBuddy(){
-        config.setItems(OutputSelection.matrixItems(SaManager.processors()));
     }
     
     @Override
