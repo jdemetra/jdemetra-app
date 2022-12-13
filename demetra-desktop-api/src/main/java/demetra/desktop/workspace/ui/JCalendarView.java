@@ -111,11 +111,13 @@ public final class JCalendarView extends JComponent {
 
         DayClustering clustering = DayClustering.of(dtype);
         List<ITsVariable> vars = new ArrayList<>();
-        GenericTradingDays td = contrast ? GenericTradingDays.contrasts(clustering)
-                : mean ? GenericTradingDays.meanCorrected(clustering) : GenericTradingDays.raw(clustering);
-
-        HolidaysCorrectedTradingDays htd = new HolidaysCorrectedTradingDays(td, HolidaysCorrectionFactory.corrector(calendar,
-                ModellingContext.getActiveContext().getCalendars(), DayOfWeek.SUNDAY, mean));
+ 
+        HolidaysCorrectedTradingDays htd = HolidaysCorrectedTradingDays.builder()
+                .clustering(clustering)
+                .meanCorrection(mean)
+                .contrast(contrast)
+                .corrector(HolidaysCorrectionFactory.corrector(calendar, ModellingContext.getActiveContext().getCalendars(), DayOfWeek.SUNDAY))
+                .build();
         vars.add(htd);
         if (ltype != LengthOfPeriodType.None) {
             vars.add(new LengthOfPeriod(ltype));
