@@ -30,6 +30,7 @@ import demetra.desktop.ui.processing.stats.EstimationUI;
 import demetra.desktop.ui.processing.stats.ResidualsDistUI;
 import demetra.desktop.ui.processing.stats.ResidualsUI;
 import demetra.desktop.ui.processing.stats.RevisionHistoryUI;
+import demetra.desktop.ui.processing.stats.SlidingSpansUI;
 import demetra.desktop.ui.processing.stats.SpectrumUI;
 import demetra.desktop.ui.processing.stats.StabilityUI;
 import demetra.html.HtmlElement;
@@ -1174,6 +1175,7 @@ public class TramoSeatsViewFactory extends ProcDocumentViewFactory<TramoSeatsDoc
     }
 
 //</editor-fold>
+    
 //<editor-fold defaultstate="collapsed" desc="REGISTER SLIDING SPANS">
     @ServiceProvider(service = IProcDocumentItemFactory.class, position = 6300)
     public static class DiagnosticsSlidingSummaryFactory extends ProcDocumentItemFactory<TramoSeatsDocument, HtmlElement> {
@@ -1214,7 +1216,86 @@ public class TramoSeatsViewFactory extends ProcDocumentViewFactory<TramoSeatsDoc
         }
     }
 
-    //</editor-fold>
+    private static Function<TramoSeatsDocument, SlidingSpansUI.Information<TramoSeatsResults>> ssExtractor(String name, boolean changes, Function<TramoSeatsResults, TsData> fn) {
+        return (TramoSeatsDocument source) -> {
+            TramoSeatsResults result = source.getResult();
+            if (result == null) {
+                return null;
+            }
+            TsData input = source.getInput().getData();
+            TsDomain domain = input.getDomain();
+            TramoSeatsSpec pspec = TramoSeatsFactory.getInstance().generateSpec(source.getSpecification(), result);
+            TramoSeatsSpec nspec = TramoSeatsFactory.getInstance().refreshSpec(pspec, source.getSpecification(), EstimationPolicyType.FreeParameters, domain);
+            TramoSeatsKernel kernel = TramoSeatsKernel.of(nspec, source.getContext());
+            SlidingSpans<TramoSeatsResults> ss = new SlidingSpans<>(domain, d -> kernel.process(TsData.fitToDomain(input, d), null));
+            boolean mul = result.getFinals().getMode().isMultiplicative();
+            Function<TramoSeatsResults, TsData> extractor = tsrslt -> {
+                if (tsrslt == null) {
+                    return null;
+                }
+                return fn.apply(tsrslt);
+            };
+            DiagnosticInfo info;
+            if (changes){
+                info=mul ? DiagnosticInfo.PeriodToPeriodGrowthDifference : DiagnosticInfo.PeriodToPeriodDifference;
+            }else{
+                info=mul ? DiagnosticInfo.RelativeDifference : DiagnosticInfo.AbsoluteDifference;
+            }
+            return new SlidingSpansUI.Information<>(mul, ss, info , name, extractor);
+        };
+    }
+
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 6310)
+    public static class DiagnosticsSlidingSeasFactory extends ProcDocumentItemFactory<TramoSeatsDocument, SlidingSpansUI.Information<TramoSeatsResults>> {
+
+        public DiagnosticsSlidingSeasFactory() {
+            super(TramoSeatsDocument.class, SaViews.DIAGNOSTICS_SLIDING_SEAS, 
+                    ssExtractor("Seasonal", false,
+                            rslt->rslt.getFinals().getSeries(ComponentType.Seasonal, ComponentInformation.Value))
+                    , new SlidingSpansUI<TramoSeatsResults>());
+        }
+
+        @Override
+        public int getPosition() {
+            return 6310;
+        }
+    }
+    
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 6320)
+    public static class DiagnosticsSlidingTdFactory extends ProcDocumentItemFactory<TramoSeatsDocument, SlidingSpansUI.Information<TramoSeatsResults>> {
+
+        public DiagnosticsSlidingTdFactory() {
+            super(TramoSeatsDocument.class, SaViews.DIAGNOSTICS_SLIDING_TD, 
+                    ssExtractor("Trading days", false,
+                            rslt->rslt.getPreprocessing().getTradingDaysEffect(null))
+                    , new SlidingSpansUI<TramoSeatsResults>());
+        }
+
+        @Override
+        public int getPosition() {
+            return 6320;
+        }
+    }
+    
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 6330)
+    public static class DiagnosticsSlidingSaFactory extends ProcDocumentItemFactory<TramoSeatsDocument, SlidingSpansUI.Information<TramoSeatsResults>> {
+
+        public DiagnosticsSlidingSaFactory() {
+            super(TramoSeatsDocument.class, SaViews.DIAGNOSTICS_SLIDING_SA, 
+                    ssExtractor("Seasonally adjusted", true,
+                            rslt->rslt.getDecomposition().getFinalComponents().getSeries(ComponentType.SeasonallyAdjusted, ComponentInformation.Value))
+                    , new SlidingSpansUI<TramoSeatsResults>());
+        }
+
+        @Override
+        public int getPosition() {
+            return 6330;
+        }
+    }
+    
+    
+//</editor-fold>
+    
 //<editor-fold defaultstate="collapsed" desc="REGISTER REVISION HISTORY VIEW">
     private static Function<TramoSeatsDocument, RevisionHistoryUI.Information> revisionExtractor(String info, DiagnosticInfo diag) {
         return (TramoSeatsDocument source) -> {
@@ -1230,6 +1311,7 @@ public class TramoSeatsViewFactory extends ProcDocumentViewFactory<TramoSeatsDoc
             RevisionHistory<Explorable> rh = new RevisionHistory<>(domain, d -> kernel.process(TsData.fitToDomain(input, d), null));
             return new RevisionHistoryUI.Information(info, diag, rh);
         };
+
     }
 
     @ServiceProvider(service = IProcDocumentItemFactory.class, position = 6410)
@@ -1283,7 +1365,7 @@ public class TramoSeatsViewFactory extends ProcDocumentViewFactory<TramoSeatsDoc
             return 6440;
         }
     }
-    //</editor-fold>
+//</editor-fold>
 
 //<editor-fold defaultstate="collapsed" desc="REGISTER STABILITY VIEWS">
     private static Function<TramoSeatsDocument, StabilityUI.Information> stabilityExtractor(EstimationPolicyType policy, String[] items, String msg) {
@@ -1301,6 +1383,7 @@ public class TramoSeatsViewFactory extends ProcDocumentViewFactory<TramoSeatsDoc
             mp.setWindowLength(DemetraSaUI.get().getStabilityLength() * input.getAnnualFrequency());
             return new StabilityUI.Information(mp, items, msg);
         };
+
     }
 
     @ServiceProvider(service = IProcDocumentItemFactory.class, position = 6510)
@@ -1368,5 +1451,5 @@ public class TramoSeatsViewFactory extends ProcDocumentViewFactory<TramoSeatsDoc
         };
 
     }
-    //</editor-fold>
+//</editor-fold>
 }

@@ -581,7 +581,7 @@ public class TradingDaysSpecUI extends BaseTramoSpecUI {
         if (!inner().isDefaultTradingDays() && !inner().isHolidays()) {
             return null;
         }
-        boolean auto = core().getTransform().getFunction() == TransformationType.Auto;
+        boolean auto = core().getTransform().getFunction() != TransformationType.None;
         if (!auto) {
             return null;
         }

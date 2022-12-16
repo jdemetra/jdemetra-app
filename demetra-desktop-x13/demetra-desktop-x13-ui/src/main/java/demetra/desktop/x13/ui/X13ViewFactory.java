@@ -26,6 +26,7 @@ import demetra.desktop.ui.processing.ProcDocumentViewFactory;
 import demetra.desktop.ui.processing.stats.ResidualsDistUI;
 import demetra.desktop.ui.processing.stats.ResidualsUI;
 import demetra.desktop.ui.processing.stats.RevisionHistoryUI;
+import demetra.desktop.ui.processing.stats.SlidingSpansUI;
 import demetra.desktop.ui.processing.stats.SpectrumUI;
 import demetra.desktop.ui.processing.stats.StabilityUI;
 import demetra.html.AbstractHtmlElement;
@@ -38,6 +39,7 @@ import demetra.html.core.HtmlDiagnosticsSummary;
 import demetra.information.BasicInformationExtractor;
 import demetra.information.Explorable;
 import demetra.information.InformationSet;
+import demetra.modelling.ComponentInformation;
 import demetra.modelling.ModellingDictionary;
 import demetra.modelling.SeriesInfo;
 import demetra.processing.ProcDiagnostic;
@@ -48,6 +50,7 @@ import demetra.sa.SaDictionaries;
 import demetra.sa.SaManager;
 import demetra.sa.SaProcessingFactory;
 import demetra.sa.SeriesDecomposition;
+import demetra.sa.html.HtmlSaSlidingSpanSummary;
 import demetra.sa.html.HtmlSeasonalityDiagnostics;
 import demetra.timeseries.TsData;
 import demetra.timeseries.TsDocument;
@@ -72,6 +75,7 @@ import jdplus.sa.tests.SeasonalityTests;
 import jdplus.timeseries.simplets.analysis.DiagnosticInfo;
 import jdplus.timeseries.simplets.analysis.MovingProcessing;
 import jdplus.timeseries.simplets.analysis.RevisionHistory;
+import jdplus.timeseries.simplets.analysis.SlidingSpans;
 import jdplus.x11.X11Results;
 import jdplus.x13.X13Document;
 import jdplus.x13.X13Factory;
@@ -913,7 +917,7 @@ public class X13ViewFactory extends ProcDocumentViewFactory<X13Document> {
     }
 //</editor-fold>
     
-    //<editor-fold defaultstate="collapsed" desc="BENCHMARKING">
+//<editor-fold defaultstate="collapsed" desc="BENCHMARKING">
     @ServiceProvider(service = IProcDocumentItemFactory.class, position = 4900)
     public static class BenchmarkingFactory extends ProcDocumentItemFactory<X13Document, BenchmarkingUI.Input> {
 
@@ -939,6 +943,125 @@ public class X13ViewFactory extends ProcDocumentViewFactory<X13Document> {
 
     }
 //</editor-fold>
+
+//<editor-fold defaultstate="collapsed" desc="REGISTER SLIDING SPANS">
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 6300)
+    public static class DiagnosticsSlidingSummaryFactory extends ProcDocumentItemFactory<X13Document, HtmlElement> {
+
+        public DiagnosticsSlidingSummaryFactory() {
+            super(X13Document.class, SaViews.DIAGNOSTICS_SLIDING_SUMMARY, (X13Document source) -> {
+                X13Results result = source.getResult();
+                if (result == null) {
+                    return null;
+                }
+                TsData input = source.getInput().getData();
+                TsDomain domain = input.getDomain();
+                X13Spec pspec = X13Factory.getInstance().generateSpec(source.getSpecification(), result);
+                X13Spec nspec = X13Factory.getInstance().refreshSpec(pspec, source.getSpecification(), EstimationPolicyType.FreeParameters, domain);
+                X13Kernel kernel = X13Kernel.of(nspec, source.getContext());
+                SlidingSpans<X13Results> ss = new SlidingSpans<>(domain, d -> kernel.process(TsData.fitToDomain(input, d), null));
+                boolean mul = result.getDecomposition().getMode().isMultiplicative();
+                return new HtmlSaSlidingSpanSummary<>(ss, mul, (X13Results cur) -> {
+                    if (cur == null) {
+                        return null;
+                    }
+                    return cur.getDecomposition().getD10();
+                }, (var cur) -> {
+                    if (cur == null) {
+                        return null;
+                    }
+                    return cur.getDecomposition().getD8();
+                });
+            },
+                    new HtmlItemUI());
+        }
+
+        @Override
+        public int getPosition() {
+            return 6300;
+        }
+    }
+
+    private static Function<X13Document, SlidingSpansUI.Information<X13Results>> ssExtractor(String name, boolean changes, Function<X13Results, TsData> fn) {
+        return (X13Document source) -> {
+            X13Results result = source.getResult();
+            if (result == null) {
+                return null;
+            }
+            TsData input = source.getInput().getData();
+            TsDomain domain = input.getDomain();
+            X13Spec pspec = X13Factory.getInstance().generateSpec(source.getSpecification(), result);
+            X13Spec nspec = X13Factory.getInstance().refreshSpec(pspec, source.getSpecification(), EstimationPolicyType.FreeParameters, domain);
+            X13Kernel kernel = X13Kernel.of(nspec, source.getContext());
+            SlidingSpans<X13Results> ss = new SlidingSpans<>(domain, d -> kernel.process(TsData.fitToDomain(input, d), null));
+            boolean mul = result.getDecomposition().getMode().isMultiplicative();
+            Function<X13Results, TsData> extractor = tsrslt -> {
+                if (tsrslt == null) {
+                    return null;
+                }
+                return fn.apply(tsrslt);
+            };
+            DiagnosticInfo info;
+            if (changes){
+                info=mul ? DiagnosticInfo.PeriodToPeriodGrowthDifference : DiagnosticInfo.PeriodToPeriodDifference;
+            }else{
+                info=mul ? DiagnosticInfo.RelativeDifference : DiagnosticInfo.AbsoluteDifference;
+            }
+            return new SlidingSpansUI.Information<>(mul, ss, info , name, extractor);
+        };
+    }
+
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 6310)
+    public static class DiagnosticsSlidingSeasFactory extends ProcDocumentItemFactory<X13Document, SlidingSpansUI.Information<X13Results>> {
+
+        public DiagnosticsSlidingSeasFactory() {
+            super(X13Document.class, SaViews.DIAGNOSTICS_SLIDING_SEAS, 
+                    ssExtractor("Seasonal", false,
+                            rslt->rslt.getDecomposition().getD10())
+                    , new SlidingSpansUI<X13Results>());
+        }
+
+        @Override
+        public int getPosition() {
+            return 6310;
+        }
+    }
+    
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 6320)
+    public static class DiagnosticsSlidingTdFactory extends ProcDocumentItemFactory<X13Document, SlidingSpansUI.Information<X13Results>> {
+
+        public DiagnosticsSlidingTdFactory() {
+            super(X13Document.class, SaViews.DIAGNOSTICS_SLIDING_TD, 
+                    ssExtractor("Trading days", false,
+                            rslt->rslt.getPreprocessing().getTradingDaysEffect(null))
+                    , new SlidingSpansUI<X13Results>());
+        }
+
+        @Override
+        public int getPosition() {
+            return 6320;
+        }
+    }
+    
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 6330)
+    public static class DiagnosticsSlidingSaFactory extends ProcDocumentItemFactory<X13Document, SlidingSpansUI.Information<X13Results>> {
+
+        public DiagnosticsSlidingSaFactory() {
+            super(X13Document.class, SaViews.DIAGNOSTICS_SLIDING_SA, 
+                    ssExtractor("Seasonally adjusted", true,
+                            rslt->rslt.getFinals().getD11final())
+                    , new SlidingSpansUI<X13Results>());
+        }
+
+        @Override
+        public int getPosition() {
+            return 6330;
+        }
+    }
+    
+    
+//</editor-fold>
+    
 
 
 //<editor-fold defaultstate="collapsed" desc="REGISTER REVISION HISTORY VIEW">
