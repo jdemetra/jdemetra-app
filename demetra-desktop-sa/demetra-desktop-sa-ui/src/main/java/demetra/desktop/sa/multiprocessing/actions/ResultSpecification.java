@@ -62,8 +62,9 @@ public final class ResultSpecification extends ActiveViewAction<SaBatchUI> {
         WorkspaceItem<MultiProcessingDocument> document = controller.getDocument();
         for (SaNode o : selection) {
             if (o.isProcessed()) {
+                SaSpecification dspec = o.domainSpec();
                 SaSpecification pspec = o.getOutput().getEstimation().getPointSpec();
-                pspec = SaManager.factoryFor(pspec).refreshSpec(pspec, o.domainSpec(), EstimationPolicyType.FreeParameters, null);
+                pspec = SaManager.factoryFor(dspec).refreshSpec(pspec, dspec, EstimationPolicyType.FreeParameters, null);
                 SaNode n = o.withEstimationSpecification((SaSpecification) pspec);
                 document.getElement().replace(o.getId(), n);
             }
