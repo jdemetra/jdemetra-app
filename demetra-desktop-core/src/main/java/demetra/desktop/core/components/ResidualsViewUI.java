@@ -52,6 +52,7 @@ import java.util.Collections;
 
 import static demetra.desktop.components.parts.HasObsFormat.OBS_FORMAT_PROPERTY;
 import static demetra.desktop.components.parts.HasTsData.TS_DATA_PROPERTY;
+import demetra.timeseries.TsMoniker;
 import demetra.tsprovider.util.ObsFormat;
 import java.util.DoubleSummaryStatistics;
 import java.util.stream.DoubleStream;
@@ -134,7 +135,7 @@ public final class ResidualsViewUI implements InternalUI<JResidualsView> {
 
     private void onTsDataChange(JResidualsView view) {
         demetra.timeseries.TsData data = view.getTsData();
-        demetra.timeseries.Ts ts = demetra.timeseries.Ts.builder().name("Residuals").data(data).build();
+        demetra.timeseries.Ts ts = demetra.timeseries.Ts.builder().moniker(TsMoniker.of()).name("Residuals").data(data).build();
         chartPanel.getChart().getXYPlot().setDataset(TsXYDataset.of(Collections.singletonList(ts)));
         if (!data.isEmpty()) {
             Range rng = calcRange(data.getValues().toArray());

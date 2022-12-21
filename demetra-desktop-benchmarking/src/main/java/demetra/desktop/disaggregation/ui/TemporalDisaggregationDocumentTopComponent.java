@@ -16,21 +16,19 @@
  */
 package demetra.desktop.disaggregation.ui;
 
-import demetra.desktop.TsDynamicProvider;
 import demetra.desktop.disaggregation.documents.TemporalDisaggregationDocumentManager;
-import demetra.desktop.ui.processing.DefaultProcessingViewer;
 import demetra.desktop.ui.processing.TsRegressionProcessingViewer;
 import demetra.desktop.util.NbUtilities;
 import demetra.desktop.workspace.DocumentUIServices;
 import demetra.desktop.workspace.WorkspaceFactory;
 import demetra.desktop.workspace.WorkspaceItem;
-import demetra.desktop.workspace.ui.WorkspaceTopComponent;
-import java.beans.PropertyChangeEvent;
+import demetra.desktop.workspace.ui.WorkspaceTsRegressionTopComponent;
 import jdplus.tempdisagg.univariate.TemporalDisaggregationDocument;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.explorer.ExplorerManager;
+import org.openide.explorer.ExplorerUtils;
 import org.openide.util.NbBundle;
 import org.openide.windows.TopComponent;
 
@@ -51,7 +49,7 @@ import org.openide.windows.TopComponent;
     "CTL_TemporalDisaggregationDocumentTopComponent=Regression Model Window",
     "HINT_TemporalDisaggregationDocumentTopComponent=This is a Regression Model window"
 })
-public final class TemporalDisaggregationDocumentTopComponent extends WorkspaceTopComponent<TemporalDisaggregationDocument> {
+public final class TemporalDisaggregationDocumentTopComponent extends WorkspaceTsRegressionTopComponent<TemporalDisaggregationDocument> {
 
     private final ExplorerManager mgr = new ExplorerManager();
     protected TsRegressionProcessingViewer panel;
@@ -68,7 +66,8 @@ public final class TemporalDisaggregationDocumentTopComponent extends WorkspaceT
         super(doc);
         initComponents();
         setToolTipText(Bundle.HINT_TemporalDisaggregationDocumentTopComponent());
-    }
+      associateLookup(ExplorerUtils.createLookup(mgr, getActionMap()));
+      }
 
     @Override
     public void refresh() {
@@ -109,32 +108,8 @@ public final class TemporalDisaggregationDocumentTopComponent extends WorkspaceT
     // End of variables declaration//GEN-END:variables
 
     @Override
-    public void componentOpened() {
-        super.componentOpened();
-        panel = TsRegressionProcessingViewer.create(getElement(), DocumentUIServices.forDocument(TemporalDisaggregationDocument.class), false);
-        add(panel);
-        panel.initialize();
-        panel.doLayout();
-        WorkspaceItem<TemporalDisaggregationDocument> d = getDocument();
-        panel.addPropertyChangeListener((PropertyChangeEvent arg0) -> {
-            switch (arg0.getPropertyName()) {
-                case DefaultProcessingViewer.SPEC_CHANGED -> {
-                    WorkspaceFactory.Event ev = new WorkspaceFactory.Event(d.getOwner(), d.getId(), WorkspaceFactory.Event.ITEMCHANGED, this);
-                    WorkspaceFactory.getInstance().notifyEvent(ev);
-                }
-            }
-        });
-        TsDynamicProvider.onDocumentOpened(panel.getDocument());
-    }
-
-    @Override
-    public void componentClosed() {
-        // TODO add custom code on component closing
-        TsDynamicProvider.onDocumentClosing(panel.getDocument());
-        super.componentClosed();
-        if (panel != null) {
-            panel.dispose();
-        }
+    public TsRegressionProcessingViewer initViewer() {
+        return TsRegressionProcessingViewer.create(getElement(), DocumentUIServices.forDocument(TemporalDisaggregationDocument.class), false);
     }
 
     void writeProperties(java.util.Properties p) {

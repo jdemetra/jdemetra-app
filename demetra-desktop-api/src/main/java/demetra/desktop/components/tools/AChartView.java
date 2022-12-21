@@ -7,7 +7,6 @@ package demetra.desktop.components.tools;
 import demetra.desktop.components.parts.HasColorScheme;
 import demetra.desktop.components.parts.HasColorSchemeResolver;
 import demetra.desktop.components.parts.HasColorSchemeSupport;
-import ec.util.chart.swing.SwingColorSchemeSupport;
 import java.awt.BorderLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;

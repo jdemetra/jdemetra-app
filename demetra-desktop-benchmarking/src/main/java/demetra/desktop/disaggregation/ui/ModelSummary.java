@@ -104,9 +104,9 @@ public class ModelSummary extends AbstractHtmlElement {
         stream.write(p.getValue());
         if (!p.isFixed()) {
             Matrix hessian = results.getMaximum().getHessian();
-            double scale = results.getLikelihood().ssq() / (results.getLikelihood().degreesOfFreedom() - 1);
+//            double scale = results.getLikelihood().ssq() / (results.getLikelihood().degreesOfFreedom() - 1);
             stream.write(" [");
-            stream.write(df4.format(Math.sqrt(hessian.get(0, 0) * scale)));
+            stream.write(df4.format(Math.sqrt(1/hessian.get(0, 0))));
             stream.write("]");
         }
     }

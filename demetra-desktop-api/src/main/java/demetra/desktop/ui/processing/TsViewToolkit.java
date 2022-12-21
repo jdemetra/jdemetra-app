@@ -13,6 +13,7 @@ import demetra.desktop.components.parts.HasTsCollection;
 import demetra.html.HtmlElement;
 import demetra.html.HtmlUtil;
 import demetra.timeseries.Ts;
+import demetra.timeseries.TsInformationType;
 import demetra.util.Collections2;
 
 import javax.swing.*;
@@ -34,14 +35,14 @@ public class TsViewToolkit {
     }
 
     public static JTsChart getChart(Iterable<Ts> series) {
-        JTsChart result = new JTsChart();
+        JTsChart result = new JTsChart(TsInformationType.Data);
         result.setTsUpdateMode(HasTsCollection.TsUpdateMode.None);
         result.setTsCollection(Collections2.streamOf(series).collect(TsCollection.toTsCollection()));
         return result;
     }
 
     public static JTsGrowthChart getGrowthChart(Iterable<Ts> series) {
-        JTsGrowthChart result = new JTsGrowthChart();
+        JTsGrowthChart result = new JTsGrowthChart(TsInformationType.Data);
         result.setTsUpdateMode(HasTsCollection.TsUpdateMode.None);
         result.setTsCollection(Collections2.streamOf(series).collect(TsCollection.toTsCollection()));
         return result;

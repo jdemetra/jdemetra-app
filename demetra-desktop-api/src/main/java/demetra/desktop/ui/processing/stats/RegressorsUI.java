@@ -10,6 +10,7 @@ import demetra.timeseries.Ts;
 import demetra.timeseries.TsCollection;
 import demetra.timeseries.TsData;
 import demetra.timeseries.TsDomain;
+import demetra.timeseries.TsMoniker;
 import demetra.timeseries.TsPeriod;
 import demetra.timeseries.regression.ITsVariable;
 import demetra.timeseries.regression.Variable;
@@ -47,17 +48,19 @@ public class RegressorsUI implements ItemUI<RegSarimaModel> {
                     for (int j = 0; j < dim; ++j) {
                         collection.add(Ts
                                 .builder()
+                                .moniker(TsMoniker.of())
                                 .name(core.description(j, domain))
                                 .data(TsData.of(start, matrix.column(j)))
                                 .build());
                     }
-                }else{
+                } else {
                     DataBlock x = Regression.x(domain, core);
                     collection.add(Ts
-                                .builder()
-                                .name(cur.getName())
-                                .data(TsData.ofInternal(start, x.getStorage()))
-                                .build());
+                            .builder()
+                            .moniker(TsMoniker.of())
+                            .name(cur.getName())
+                            .data(TsData.ofInternal(start, x.getStorage()))
+                            .build());
                 }
             }
         }
