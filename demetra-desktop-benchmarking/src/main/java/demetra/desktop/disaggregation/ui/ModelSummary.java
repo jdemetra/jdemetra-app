@@ -100,13 +100,13 @@ public class ModelSummary extends AbstractHtmlElement {
             double[] parameters = results.getMaximum().getParameters();
             p = Parameter.estimated(parameters[0]);
         }
-
-        stream.write(p.getValue());
+        stream.write(df4.format(p.getValue()));
         if (!p.isFixed()) {
+            int n = results.getLikelihood().degreesOfFreedom() - 1;
             Matrix hessian = results.getMaximum().getHessian();
 //            double scale = results.getLikelihood().ssq() / (results.getLikelihood().degreesOfFreedom() - 1);
             stream.write(" [");
-            stream.write(df4.format(Math.sqrt(1/hessian.get(0, 0))));
+            stream.write(df4.format(Math.sqrt(-1 / (n * hessian.get(0, 0)))));
             stream.write("]");
         }
     }
