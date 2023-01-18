@@ -46,7 +46,7 @@ public abstract class WorkspaceTsRegressionTopComponent<T extends MultiTsDocumen
         panel.doLayout();
         panel.refreshHeader();
         WorkspaceItem<T> d = getDocument();
-       panel.addPropertyChangeListener((PropertyChangeEvent arg0) -> {
+        panel.addPropertyChangeListener((PropertyChangeEvent arg0) -> {
             switch (arg0.getPropertyName()) {
                 case DefaultProcessingViewer.INPUT_CHANGED -> {
                     Object nval = arg0.getNewValue();

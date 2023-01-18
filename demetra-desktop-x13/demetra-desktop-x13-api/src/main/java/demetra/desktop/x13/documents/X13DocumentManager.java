@@ -17,7 +17,7 @@ import org.openide.util.lookup.ServiceProvider;
  * @author Jean Palate
  */
 @ServiceProvider(service = WorkspaceItemManager.class,
-        position = 500)
+        position = 1000)
 public class X13DocumentManager extends AbstractWorkspaceTsItemManager<X13Spec, X13Document> {
  
     public static final LinearId ID = new LinearId(X13Spec.FAMILY, "documents", X13Spec.METHOD);

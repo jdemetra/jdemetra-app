@@ -17,7 +17,7 @@ import org.openide.util.lookup.ServiceProvider;
  * @author Jean Palate
  */
 @ServiceProvider(service = WorkspaceItemManager.class,
-        position = 500)
+        position = 1000)
 public class RegArimaDocumentManager extends AbstractWorkspaceTsItemManager<RegArimaSpec, RegArimaDocument> {
 
     public static final LinearId ID = new LinearId(RegArimaSpec.FAMILY, "documents", RegArimaSpec.METHOD);

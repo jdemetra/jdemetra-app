@@ -5,7 +5,6 @@
 package demetra.desktop.highfreq;
 
 import demetra.desktop.workspace.AbstractWorkspaceTsItemManager;
-import demetra.desktop.workspace.WorkspaceItem;
 import demetra.desktop.workspace.WorkspaceItemManager;
 import demetra.highfreq.ExtendedAirlineDecompositionSpec;
 import demetra.util.Id;
@@ -17,7 +16,7 @@ import org.openide.util.lookup.ServiceProvider;
  * @author Jean Palate
  */
 @ServiceProvider(service = WorkspaceItemManager.class,
-        position = 500)
+        position = 2000)
 public class FractionalAirlineDecompositionDocumentManager extends AbstractWorkspaceTsItemManager<ExtendedAirlineDecompositionSpec, FractionalAirlineDecompositionDocument> {
 
 

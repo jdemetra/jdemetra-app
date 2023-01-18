@@ -133,22 +133,18 @@ public class AdvancedSpecUI extends BaseTemporalDisaggregationSpecUI {
         if (desc != null) {
             props.add(desc);
         }
-        desc = methodDesc();
-        if (desc != null) {
-            props.add(desc);
-        }
-        desc = algorithmDesc();
-        if (desc != null) {
-            props.add(desc);
-        }
+//        desc = algorithmDesc();
+//        if (desc != null) {
+//            props.add(desc);
+//        }
         desc = fastDesc();
         if (desc != null) {
             props.add(desc);
         }
-        desc = rescaleDesc();
-        if (desc != null) {
-            props.add(desc);
-        }
+//        desc = rescaleDesc();
+//        if (desc != null) {
+//            props.add(desc);
+//        }
         desc = zeroDesc();
         if (desc != null) {
             props.add(desc);
@@ -201,20 +197,6 @@ public class AdvancedSpecUI extends BaseTemporalDisaggregationSpecUI {
             desc.setDisplayName(TRUNCATED_NAME);
             desc.setShortDescription(TRUNCATED_DESC);
             edesc.setReadOnly(isRo() || (core().getResidualsModel() != TemporalDisaggregationSpec.Model.Ar1 || core().getParameter().isFixed()));
-            return edesc;
-        } catch (IntrospectionException ex) {
-            return null;
-        }
-    }
-
-    private EnhancedPropertyDescriptor methodDesc() {
-        try {
-            PropertyDescriptor desc = new PropertyDescriptor("Method", this.getClass());
-            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, KF_ID);
-            edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            desc.setDisplayName(KF_NAME);
-            desc.setShortDescription(KF_DESC);
-            edesc.setReadOnly(isRo() || !core().getResidualsModel().hasParameter() || core().getResidualsModel().isStationary());
             return edesc;
         } catch (IntrospectionException ex) {
             return null;

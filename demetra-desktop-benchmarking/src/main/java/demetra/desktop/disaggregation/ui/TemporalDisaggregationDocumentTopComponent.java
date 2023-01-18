@@ -35,8 +35,6 @@ import org.openide.windows.TopComponent;
 /**
  * Top component which displays something.
  */
-@ConvertAsProperties(dtd = "-//demetra.desktop.disaggregation.ui//TemporalDisaggregationDocument//EN",
-        autostore = false)
 @TopComponent.Description(preferredID = "TemporalDisaggregationDocumentTopComponent",
         //iconBase="SET/PATH/TO/ICON/HERE", 
         persistenceType = TopComponent.PERSISTENCE_NEVER)
@@ -68,11 +66,6 @@ public final class TemporalDisaggregationDocumentTopComponent extends WorkspaceT
         setToolTipText(Bundle.HINT_TemporalDisaggregationDocumentTopComponent());
       associateLookup(ExplorerUtils.createLookup(mgr, getActionMap()));
       }
-
-    @Override
-    public void refresh() {
-        panel.onDocumentChanged();
-    }
 
     @Override
     public ExplorerManager getExplorerManager() {
@@ -110,18 +103,6 @@ public final class TemporalDisaggregationDocumentTopComponent extends WorkspaceT
     @Override
     public TsRegressionProcessingViewer initViewer() {
         return TsRegressionProcessingViewer.create(getElement(), DocumentUIServices.forDocument(TemporalDisaggregationDocument.class), false);
-    }
-
-    void writeProperties(java.util.Properties p) {
-        // better to version settings since initial version as advocated at
-        // http://wiki.apidesign.org/wiki/PropertyFiles
-        p.setProperty("version", "1.0");
-        // TODO store your settings
-    }
-
-    void readProperties(java.util.Properties p) {
-        String version = p.getProperty("version");
-        // TODO read your settings according to their version
     }
 
     @Override
