@@ -30,43 +30,43 @@ import java.util.List;
  */
 @lombok.Data
 @lombok.AllArgsConstructor
-public class ShockDescriptor implements IPropertyDescriptors {
+public class BiRatioDescriptor implements IPropertyDescriptors{
 
-    private static final int POSITION_ID = 1, VARIANCE_ID = 2;
+    private static final int POSITION_ID = 1, VALUE_ID = 2;
 
     LocalDate position;
-    double variance;
-
-    public ShockDescriptor() {
+    double value;
+    
+    public BiRatioDescriptor() {
         position = LocalDate.now();
-        variance = 100;
+        value = 1;
     }
 
-    public ShockDescriptor duplicate() {
-        return new ShockDescriptor(this);
+    public BiRatioDescriptor duplicate() {
+        return new BiRatioDescriptor(this);
     }
 
-    public ShockDescriptor(ShockDescriptor desc) {
+    public BiRatioDescriptor(BiRatioDescriptor desc) {
         position = desc.position;
-        variance = desc.variance;
+        value = desc.value;
     }
 
-    public LocalDate getPosition() {
+        public LocalDate getPosition() {
         return position;
     }
-
+    
     public void setPosition(LocalDate position) {
         this.position = position;
     }
-
-    public double getVariance() {
-        return variance;
+    
+    public double getValue() {
+        return value;
     }
-
-    public void setVariance(double val) {
-        this.variance = val;
+    
+    public void setValue(double val) {
+        this.value = val;
     }
-
+    
     @Override
     public List<EnhancedPropertyDescriptor> getProperties() {
         ArrayList<EnhancedPropertyDescriptor> descs = new ArrayList<>();
@@ -75,29 +75,29 @@ public class ShockDescriptor implements IPropertyDescriptors {
         if (desc != null) {
             descs.add(desc);
         }
-        desc = varianceDesc();
+        desc = valueDesc();
         if (desc != null) {
             descs.add(desc);
         }
         return descs;
     }
-
+    
     @Override
     public String getDisplayName() {
-        return "Shock";
+        return "Bi-Ratio";
     }
-
-    EnhancedPropertyDescriptor varianceDesc() {
+    
+    EnhancedPropertyDescriptor valueDesc() {
         try {
-            PropertyDescriptor desc = new PropertyDescriptor("variance", this.getClass());
-            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, VARIANCE_ID);
-            desc.setDisplayName("Variance");
+            PropertyDescriptor desc = new PropertyDescriptor("value", this.getClass());
+            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, VALUE_ID);
+            desc.setDisplayName("Value");
             return edesc;
         } catch (IntrospectionException ex) {
             return null;
         }
     }
-
+    
     private EnhancedPropertyDescriptor positionDesc() {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("position", this.getClass());

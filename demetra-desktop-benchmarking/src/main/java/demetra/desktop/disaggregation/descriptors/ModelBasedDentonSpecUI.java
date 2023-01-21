@@ -68,7 +68,7 @@ public class ModelBasedDentonSpecUI implements IObjectDescriptor<ModelBasedDento
     }
 
     public ShockDescriptor[] getShocks() {
-        return core.getOutlierVariances()
+        return core.getShockVariances()
                 .entrySet()
                 .stream()
                 .map(var -> new ShockDescriptor(var.getKey(), var.getValue()))
@@ -76,12 +76,29 @@ public class ModelBasedDentonSpecUI implements IObjectDescriptor<ModelBasedDento
     }
 
     public void setShocks(ShockDescriptor[] value) {
-        ModelBasedDentonSpec.Builder builder = core.toBuilder().clearOutlierVariances();
+        ModelBasedDentonSpec.Builder builder = core.toBuilder().clearShockVariances();
         for (ShockDescriptor val : value)
-            builder.outlierVariance(val.getPosition(),val.getVariance());
+            builder.shockVariance(val.getPosition(),val.getVariance());
         
         core=builder.build();
     }
+    
+    public BiRatioDescriptor[] getFixedBiRatios() {
+        return core.getFixedBiRatios()
+                .entrySet()
+                .stream()
+                .map(var -> new BiRatioDescriptor(var.getKey(), var.getValue()))
+                .toArray(BiRatioDescriptor[]::new);
+    }
+
+    public void setFixedBiRatios(BiRatioDescriptor[] value) {
+        ModelBasedDentonSpec.Builder builder = core.toBuilder().clearFixedBiRatios();
+        for (BiRatioDescriptor val : value)
+            builder.fixedBiRatio(val.getPosition(),val.getValue());
+        
+        core=builder.build();
+    }
+    
     @Override
     public List<EnhancedPropertyDescriptor> getProperties() {
         List<EnhancedPropertyDescriptor> props = new ArrayList<>();
@@ -94,6 +111,10 @@ public class ModelBasedDentonSpecUI implements IObjectDescriptor<ModelBasedDento
             props.add(desc);
         }
         desc = shocksDesc();
+        if (desc != null) {
+            props.add(desc);
+        }
+        desc = biratiosDesc();
         if (desc != null) {
             props.add(desc);
         }
@@ -144,12 +165,30 @@ public class ModelBasedDentonSpecUI implements IObjectDescriptor<ModelBasedDento
         }
     }
 
+   @NbBundle.Messages({
+        "modelBasedDentonSpecUI.biratiosDesc.name=Fixed bi-ratios",
+        "modelBasedDentonSpecUI.biratiosDesc.desc=Fixed bi-ratios"
+    })
+    private EnhancedPropertyDescriptor biratiosDesc() {
+        try {
+            PropertyDescriptor desc = new PropertyDescriptor("FixedBiRatios", this.getClass());
+            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, BIRATIOS_ID);
+            edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
+            desc.setDisplayName(Bundle.modelBasedDentonSpecUI_biratiosDesc_name());
+            desc.setShortDescription(Bundle.modelBasedDentonSpecUI_biratiosDesc_desc());
+//            edesc.setReadOnly(isRo());
+            return edesc;
+        } catch (IntrospectionException ex) {
+            return null;
+        }
+    }
+
     @Override
     public String getDisplayName() {
         return MODELBASEDDENTON; //To change body of generated methods, choose Tools | Templates.
     }
 
-    private static final int TYPE_ID = 10, DIFF_ID = 40, SHOCKS_ID=50;
+    private static final int TYPE_ID = 10, DIFF_ID = 40, SHOCKS_ID=50, BIRATIOS_ID=60;
     private static final String TYPE_NAME = "Type", DIFF_NAME = "Differencing",
             TYPE_DESC = "Type", DIFF_DESC = "Differencing order in the objective function";
 }

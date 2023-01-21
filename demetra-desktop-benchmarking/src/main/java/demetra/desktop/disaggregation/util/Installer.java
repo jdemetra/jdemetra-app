@@ -16,6 +16,8 @@
  */
 package demetra.desktop.disaggregation.util;
 
+import demetra.desktop.disaggregation.descriptors.BiRatioDescriptor;
+import demetra.desktop.disaggregation.descriptors.BiRatioEditor;
 import demetra.desktop.disaggregation.descriptors.ShockDescriptor;
 import demetra.desktop.disaggregation.descriptors.ShocksEditor;
 import demetra.desktop.ui.properties.l2fprod.ArrayRenderer;
@@ -49,11 +51,14 @@ public final class Installer extends ModuleInstall {
         public void restore() {
             CustomPropertyEditorRegistry.INSTANCE.register(ShockDescriptor[].class, new ShocksEditor());
             CustomPropertyRendererFactory.INSTANCE.getRegistry().registerRenderer(ShockDescriptor[].class, new ArrayRenderer());
+            CustomPropertyEditorRegistry.INSTANCE.register(BiRatioDescriptor[].class, new BiRatioEditor());
+            CustomPropertyRendererFactory.INSTANCE.getRegistry().registerRenderer(BiRatioDescriptor[].class, new ArrayRenderer());
         }
 
         @Override
         public void close() {
             CustomPropertyEditorRegistry.INSTANCE.unregister(ShockDescriptor[].class);
+            CustomPropertyEditorRegistry.INSTANCE.unregister(BiRatioDescriptor[].class);
         }
     }
 
