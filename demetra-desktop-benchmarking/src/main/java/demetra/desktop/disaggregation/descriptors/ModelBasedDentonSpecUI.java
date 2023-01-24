@@ -23,7 +23,6 @@ import demetra.tempdisagg.univariate.ModelBasedDentonSpec;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import org.openide.util.NbBundle;
 
@@ -59,14 +58,14 @@ public class ModelBasedDentonSpecUI implements IObjectDescriptor<ModelBasedDento
         core = core.toBuilder().aggregationType(Utility.convert(type)).build();
     }
 
-    public int getDifferencing() {
-        return core.getDifferencing();
-    }
-
-    public void setDifferencing(int diff) {
-        core = core.toBuilder().differencing(diff).build();
-    }
-
+//    public int getDifferencing() {
+//        return core.getDifferencing();
+//    }
+//
+//    public void setDifferencing(int diff) {
+//        core = core.toBuilder().differencing(diff).build();
+//    }
+//
     public ShockDescriptor[] getShocks() {
         return core.getShockVariances()
                 .entrySet()
@@ -106,10 +105,10 @@ public class ModelBasedDentonSpecUI implements IObjectDescriptor<ModelBasedDento
         if (desc != null) {
             props.add(desc);
         }
-        desc = diffDesc();
-        if (desc != null) {
-            props.add(desc);
-        }
+//        desc = diffDesc();
+//        if (desc != null) {
+//            props.add(desc);
+//        }
         desc = shocksDesc();
         if (desc != null) {
             props.add(desc);
@@ -134,18 +133,18 @@ public class ModelBasedDentonSpecUI implements IObjectDescriptor<ModelBasedDento
         }
     }
 
-    private EnhancedPropertyDescriptor diffDesc() {
-        try {
-            PropertyDescriptor desc = new PropertyDescriptor("Differencing", this.getClass());
-            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, DIFF_ID);
-            edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            desc.setDisplayName(DIFF_NAME);
-            desc.setShortDescription(DIFF_DESC);
-            return edesc;
-        } catch (IntrospectionException ex) {
-            return null;
-        }
-    }
+//    private EnhancedPropertyDescriptor diffDesc() {
+//        try {
+//            PropertyDescriptor desc = new PropertyDescriptor("Differencing", this.getClass());
+//            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, DIFF_ID);
+//            edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
+//            desc.setDisplayName(DIFF_NAME);
+//            desc.setShortDescription(DIFF_DESC);
+//            return edesc;
+//        } catch (IntrospectionException ex) {
+//            return null;
+//        }
+//    }
 
     @NbBundle.Messages({
         "modelBasedDentonSpecUI.shocksDesc.name=Shocks",
