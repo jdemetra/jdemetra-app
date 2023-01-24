@@ -4,6 +4,7 @@
  */
 package demetra.desktop.ui.processing;
 
+import demetra.desktop.components.JTsChart;
 import demetra.timeseries.Ts;
 import demetra.timeseries.TsData;
 import demetra.timeseries.TsPeriod;
@@ -72,7 +73,8 @@ public class StaticChartUI implements ItemUI< List<Ts>> {
     @Override
     public JComponent getView(List<Ts> ts) {
 
-        return TsViewToolkit.getChart(transform(ts));
+        JTsChart chart = TsViewToolkit.getChart(transform(ts));
+        return chart;
     }
 
  }

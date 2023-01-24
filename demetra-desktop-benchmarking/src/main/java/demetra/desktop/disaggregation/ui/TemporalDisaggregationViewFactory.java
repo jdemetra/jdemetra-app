@@ -39,7 +39,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
-import jdplus.stats.tests.NiidTests;
 import jdplus.tempdisagg.univariate.TemporalDisaggregationDocument;
 import jdplus.tempdisagg.univariate.TemporalDisaggregationResults;
 import org.openide.util.lookup.ServiceProvider;
@@ -203,6 +202,7 @@ public class TemporalDisaggregationViewFactory extends ProcDocumentViewFactory<T
 //        }
 //    }
     //</editor-fold>
+
     //<editor-fold defaultstate="collapsed" desc="REGISTER SUMMARY">
     @Deprecated
     protected void registerSummary() {

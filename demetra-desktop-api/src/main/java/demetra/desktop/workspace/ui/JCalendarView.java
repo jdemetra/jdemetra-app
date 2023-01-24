@@ -15,6 +15,7 @@ import demetra.timeseries.Ts;
 import demetra.timeseries.TsCollection;
 import demetra.timeseries.TsData;
 import demetra.timeseries.TsDomain;
+import demetra.timeseries.TsMoniker;
 import demetra.timeseries.TsPeriod;
 import demetra.timeseries.TsUnit;
 import demetra.timeseries.calendars.CalendarDefinition;
@@ -127,7 +128,7 @@ public final class JCalendarView extends JComponent {
         TsPeriod domainStart = domain.getStartPeriod();
         TsCollection tss = IntStream
                 .range(0, nx)
-                .mapToObj(i -> Ts.builder().name(getCmpName(i)).data(TsData.of(domainStart, matrix.column(i))).build())
+                .mapToObj(i -> Ts.builder().moniker(TsMoniker.of()).name(getCmpName(i)).data(TsData.of(domainStart, matrix.column(i))).build())
                 .collect(TsCollection.toTsCollection());
 
         tsGrid.setTsCollection(tss);

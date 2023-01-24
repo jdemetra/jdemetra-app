@@ -143,7 +143,7 @@ public final class DataTransferManager implements PropertyChangeSource.WithWeakL
     @NonNull
     public Transferable fromTsData(@NonNull TsData data) {
         requireNonNull(data);
-        return fromTs(Ts.builder().data(data).build());
+        return fromTs(Ts.builder().moniker(TsMoniker.of()).data(data).build());
     }
 
     /**

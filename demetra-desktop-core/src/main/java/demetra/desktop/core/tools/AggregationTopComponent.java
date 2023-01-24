@@ -12,6 +12,7 @@ import demetra.desktop.util.NbComponents;
 import demetra.desktop.components.JTsChart;
 import demetra.desktop.components.JTsTable;
 import demetra.timeseries.TsData;
+import demetra.timeseries.TsMoniker;
 import java.awt.BorderLayout;
 import java.util.Optional;
 import javax.swing.JSplitPane;
@@ -102,7 +103,7 @@ public final class AggregationTopComponent extends TopComponent {
                     .map(ts -> ts.getData())
                     .filter(s->!s.isEmpty())
                     .reduce(TsData::add)
-                    .map(s-> s == null || s.isEmpty() ? null : Ts.builder().data(s).name("Sum").build());
+                    .map(s-> s == null || s.isEmpty() ? null : Ts.builder().moniker(TsMoniker.of()).data(s).name("Sum").build());
             aggChart.setTsCollection(sum.map(TsCollection::of).orElse(TsCollection.EMPTY));
         });
     }

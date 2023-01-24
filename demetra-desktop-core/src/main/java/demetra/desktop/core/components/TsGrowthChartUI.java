@@ -53,7 +53,6 @@ public final class TsGrowthChartUI implements InternalUI<JTsGrowthChart> {
     private JTsGrowthChart target;
 
     private final JTimeSeriesChart chartPanel = new JTimeSeriesChart();
-    private final ListSelectionModel selectionModel = new DefaultListSelectionModel();
 
     private InternalTsSelectionAdapter selectionListener;
     private HasObsFormatResolver obsFormatResolver;
@@ -142,8 +141,7 @@ public final class TsGrowthChartUI implements InternalUI<JTsGrowthChart> {
 
     //<editor-fold defaultstate="collapsed" desc="Interactive stuff">
     private void enableSeriesSelection() {
-        selectionModel.addListSelectionListener(selectionListener);
-        chartPanel.addMouseListener(new SelectionMouseListener(selectionModel, true));
+        chartPanel.getSeriesSelectionModel().addListSelectionListener(selectionListener);
     }
 
     private void enableDropPreview() {
@@ -216,9 +214,9 @@ public final class TsGrowthChartUI implements InternalUI<JTsGrowthChart> {
     }
 
     private void onCollectionChange() {
+        selectionListener.setEnabled(false);
         chartPanel.setDataset(TsXYDataset.of(target.computeGrowthData()));
-        chartPanel.resetZoom();
-//        refreshRange(plot);
+        selectionListener.setEnabled(true);
     }
 
     /**
@@ -226,10 +224,11 @@ public final class TsGrowthChartUI implements InternalUI<JTsGrowthChart> {
      * the chart to lose its zoom level.
      */
     private void onSelectionChange() {
-        selectionListener.setEnabled(false);
-        selectionModel.clearSelection();
-        JLists.addSelectionIndexStream(selectionModel, target.getTsSelectionIndexStream());
-        selectionListener.setEnabled(true);
+        if (selectionListener.isEnabled()) {
+            selectionListener.setEnabled(false);
+            selectionListener.changeSelection(chartPanel.getSeriesSelectionModel());
+            selectionListener.setEnabled(true);
+        }
     }
 
     private void onUpdateModeChange() {

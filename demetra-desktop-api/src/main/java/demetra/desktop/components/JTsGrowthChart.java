@@ -146,7 +146,7 @@ public final class JTsGrowthChart extends JComponent implements TimeSeriesCompon
     private static List<Ts> computeGrowthData(TsCollection input, GrowthKind kind, TimeSelector selector) {
         return input
                 .stream()
-                .map(ts -> Ts.builder().name(ts.getName()).data(computeGrowthData(ts.getData(), kind, selector)).build())
+                .map(ts -> Ts.builder().moniker(TsMoniker.of()).name(ts.getName()).data(computeGrowthData(ts.getData(), kind, selector)).build())
                 .collect(Collectors.toList());
     }
 

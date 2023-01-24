@@ -29,7 +29,7 @@ import org.openide.windows.WindowManager;
  *
  * @author Jean Palate
  */
-@ServiceProvider(service = WorkspaceItemManager.class, position = 1000)
+@ServiceProvider(service = WorkspaceItemManager.class, position = 500)
 public class TramoSeatsSpecManager extends AbstractWorkspaceItemManager<TramoSeatsSpec> {
 
     public static final LinearId ID = new LinearId(TramoSeatsSpec.FAMILY, WorkspaceFactory.SPECIFICATIONS, TramoSeatsSpec.METHOD);

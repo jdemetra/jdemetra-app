@@ -17,6 +17,7 @@
 package demetra.desktop.disaggregation.descriptors;
 
 import demetra.desktop.descriptors.EnhancedPropertyDescriptor;
+import demetra.ssf.SsfInitialization;
 import demetra.tempdisagg.univariate.TemporalDisaggregationSpec;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
@@ -30,11 +31,11 @@ import java.util.List;
 public class AdvancedSpecUI extends BaseTemporalDisaggregationSpecUI {
 
     public static final String DISPLAYNAME = "Advanced options";
-    public static final String EPS_NAME = "Precision", KF_NAME = "Method", ML_NAME = "ML estimation",
-            ZERO_NAME = "Zero initialization", TRUNCATED_NAME = "Truncated rho", DREGS_NAME = "Diffuse regression coefficients";
-    public static final String EPS_DESC = "Precision", KF_DESC = "Kalman filter used for estimation", ML_DESC = "Use Maximum Likelihood or Minimum SSR",
-            ZERO_DESC = "Zero initialization", TRUNCATED_DESC = "Lower bound for the estimated coefficient", DREGS_DESC = "Diffuse regression coefficients";
-    public static final int EPS_ID = 0, KF_ID = 10, ML_ID = 15, ZERO_ID = 20, TRUNCATED_ID = 25, DREGS_ID = 30;
+    public static final String EPS_NAME = "Precision", KF_NAME = "Method", FAST_NAME = "Fast", ALGORITHM_NAME = "Algorithm",
+            ZERO_NAME = "Zero initialization", TRUNCATED_NAME = "Truncated rho", DREGS_NAME = "Diffuse regression coefficients", RESCALE_NAME="Rescale";
+    public static final String EPS_DESC = "Precision", KF_DESC = "Kalman filter used for estimation", FAST_DESC = "Fast processing (Kohn-Ansley)", ALGORITHM_DESC = "Algorithm",
+            ZERO_DESC = "Zero initialization", TRUNCATED_DESC = "Lower bound for the estimated coefficient", DREGS_DESC = "Diffuse regression coefficients", RESCALE_DESC="Rescale the model";
+    public static final int EPS_ID = 0, KF_ID = 10, FAST_ID = 15, ZERO_ID = 20, TRUNCATED_ID = 25, DREGS_ID = 30, RESCALE_ID=40, ALGORITHM_ID=50;
 
     @Override
     public String toString() {
@@ -81,6 +82,17 @@ public class AdvancedSpecUI extends BaseTemporalDisaggregationSpecUI {
                 .build());
     }
 
+    public SsfInitialization getAlgorithm() {
+        return core().getAlgorithm();
+    }
+
+    public void setAlgorithm(SsfInitialization initialization) {
+        update(core()
+                .toBuilder()
+                .algorithm(initialization)
+                .build());
+    }
+
     public boolean isDiffuseRegression() {
         return core().isDiffuseRegressors();
     }
@@ -92,14 +104,25 @@ public class AdvancedSpecUI extends BaseTemporalDisaggregationSpecUI {
                 .build());
     }
 
-    public boolean isML() {
-        return core().isMaximumLikelihood();
+    public boolean isFast() {
+        return core().isFast();
     }
 
-    public void setML(boolean t) {
+    public void setFast(boolean t) {
         update(core()
                 .toBuilder()
-                .maximumLikelihood(t)
+                .fast(t)
+                .build());
+    }
+
+    public boolean isRescale() {
+        return core().isRescale();
+    }
+
+    public void setRescale(boolean t) {
+        update(core()
+                .toBuilder()
+                .rescale(t)
                 .build());
     }
 
@@ -110,14 +133,18 @@ public class AdvancedSpecUI extends BaseTemporalDisaggregationSpecUI {
         if (desc != null) {
             props.add(desc);
         }
-        desc = methodDesc();
+//        desc = algorithmDesc();
+//        if (desc != null) {
+//            props.add(desc);
+//        }
+        desc = fastDesc();
         if (desc != null) {
             props.add(desc);
         }
-        desc = mlDesc();
-        if (desc != null) {
-            props.add(desc);
-        }
+//        desc = rescaleDesc();
+//        if (desc != null) {
+//            props.add(desc);
+//        }
         desc = zeroDesc();
         if (desc != null) {
             props.add(desc);
@@ -176,28 +203,42 @@ public class AdvancedSpecUI extends BaseTemporalDisaggregationSpecUI {
         }
     }
 
-    private EnhancedPropertyDescriptor methodDesc() {
+    private EnhancedPropertyDescriptor fastDesc() {
         try {
-            PropertyDescriptor desc = new PropertyDescriptor("Method", this.getClass());
-            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, KF_ID);
+            PropertyDescriptor desc = new PropertyDescriptor("Fast", this.getClass());
+            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, FAST_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            desc.setDisplayName(KF_NAME);
-            desc.setShortDescription(KF_DESC);
-            edesc.setReadOnly(isRo() || !core().getResidualsModel().hasParameter() || core().getResidualsModel().isStationary());
+            desc.setDisplayName(FAST_NAME);
+            desc.setShortDescription(FAST_DESC);
+            edesc.setReadOnly(isRo());
             return edesc;
         } catch (IntrospectionException ex) {
             return null;
         }
     }
 
-    private EnhancedPropertyDescriptor mlDesc() {
+    private EnhancedPropertyDescriptor algorithmDesc() {
         try {
-            PropertyDescriptor desc = new PropertyDescriptor("ML", this.getClass());
-            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, ML_ID);
+            PropertyDescriptor desc = new PropertyDescriptor("Algorithm", this.getClass());
+            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, ALGORITHM_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            desc.setDisplayName(ML_NAME);
-            desc.setShortDescription(ML_DESC);
-            edesc.setReadOnly(isRo() || !core().getResidualsModel().hasParameter());
+            desc.setDisplayName(ALGORITHM_NAME);
+            desc.setShortDescription(ALGORITHM_DESC);
+            edesc.setReadOnly(isRo());
+            return edesc;
+        } catch (IntrospectionException ex) {
+            return null;
+        }
+    }
+
+    private EnhancedPropertyDescriptor rescaleDesc() {
+        try {
+            PropertyDescriptor desc = new PropertyDescriptor("Rescale", this.getClass());
+            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, RESCALE_ID);
+            edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
+            desc.setDisplayName(RESCALE_NAME);
+            desc.setShortDescription(RESCALE_DESC);
+            edesc.setReadOnly(isRo());
             return edesc;
         } catch (IntrospectionException ex) {
             return null;

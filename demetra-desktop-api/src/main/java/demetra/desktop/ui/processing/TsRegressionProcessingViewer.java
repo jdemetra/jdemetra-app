@@ -12,6 +12,7 @@ import demetra.processing.ProcSpecification;
 import demetra.timeseries.MultiTsDocument;
 import demetra.timeseries.Ts;
 import demetra.timeseries.TsCollection;
+import demetra.timeseries.TsInformationType;
 import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -42,12 +43,12 @@ public class TsRegressionProcessingViewer<S extends ProcSpecification, D extends
 
     public TsRegressionProcessingViewer(DocumentUIServices<S, D> ui, Type type, boolean singleX) {
         super(ui, type);
-        yList = new JTsTable();
+        yList = new JTsTable(TsInformationType.Data);
         yList.setVisible(true);
         yList.setShowHeader(false);
         yList.setTsUpdateMode(TsUpdateMode.Single);
         yList.setColumns(Collections.singletonList(Column.NAME));
-        xList = new JTsTable();
+        xList = new JTsTable(TsInformationType.Data);
         yList.setVisible(true);
         xList.setShowHeader(false);
         if (singleX) {

@@ -20,6 +20,7 @@ import demetra.timeseries.Ts;
 import demetra.timeseries.TsCollection;
 import demetra.timeseries.TsData;
 import demetra.timeseries.TsInformationType;
+import demetra.timeseries.TsMoniker;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
@@ -254,6 +255,7 @@ public final class DifferencingTopComponent extends TopComponent  implements Has
         }
        
         Ts del = Ts.builder()
+                .moniker(TsMoniker.of())
                 .name("Differenced series")
                 .data(s)
                 .build();

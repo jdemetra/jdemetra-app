@@ -14,16 +14,17 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package demetra.desktop.benchmarking.ui;
+package demetra.desktop.disaggregation.ui;
 
 
 import demetra.desktop.benchmarking.documents.DentonDocumentManager;
-import demetra.desktop.ui.processing.Ts2ProcessingViewer;
+import demetra.desktop.disaggregation.documents.ModelBasedDentonDocumentManager;
+import demetra.desktop.ui.processing.TsRegressionProcessingViewer;
 import demetra.desktop.workspace.DocumentUIServices;
 import demetra.desktop.workspace.WorkspaceFactory;
 import demetra.desktop.workspace.WorkspaceItem;
-import demetra.desktop.workspace.ui.WorkspaceTs2TopComponent;
-import jdplus.benchmarking.univariate.DentonDocument;
+import demetra.desktop.workspace.ui.WorkspaceTsRegressionTopComponent;
+import jdplus.tempdisagg.univariate.ModelBasedDentonDocument;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.explorer.ExplorerManager;
@@ -34,68 +35,54 @@ import org.openide.windows.TopComponent;
  * Top component which displays something.
  */
 @TopComponent.Description(
-        preferredID = "DentonTopComponent",
+        preferredID = "ModelBasedDentonTopComponent",
         //iconBase="SET/PATH/TO/ICON/HERE", 
         persistenceType = TopComponent.PERSISTENCE_NEVER)
 @TopComponent.Registration(mode = "editor", openAtStartup = false)
-@ActionID(category = "Window", id = "demetra.desktop.benchmarking.ui.DentonTopComponent")
-@ActionReference(path = "Menu/Statistical methods/Benchmarking", position = 1000)
+@ActionID(category = "Window", id = "demetra.desktop.disaggregation.ui.ModelBasedDentonTopComponent")
+@ActionReference(path = "Menu/Statistical methods/Temporal Disaggregation", position = 1100)
 @TopComponent.OpenActionRegistration(
-        displayName = "#CTL_DentonAction",
-        preferredID = "DentonTopComponent")
+        displayName = "#CTL_ModelBasedDentonAction",
+        preferredID = "ModelBasedDentonTopComponent")
 @NbBundle.Messages({
-    "CTL_DentonAction=Denton",
-    "CTL_DentonTopComponent=Denton Window",
-    "HINT_DentonTopComponent=This is a Denton window"
+    "CTL_ModelBasedDentonAction=Model-based Denton",
+    "CTL_ModelBasedDentonTopComponent=Model-based Denton Window",
+    "HINT_ModelBasedDentonTopComponent=This is a Model-based Denton window"
 })
-public final class DentonTopComponent extends WorkspaceTs2TopComponent<DentonDocument> {
+public final class ModelBasedDentonTopComponent extends WorkspaceTsRegressionTopComponent<ModelBasedDentonDocument> {
 
     private final ExplorerManager mgr = new ExplorerManager();
 
-    private static DentonDocumentManager manager() {
-        return WorkspaceFactory.getInstance().getManager(DentonDocumentManager.class);
+    private static ModelBasedDentonDocumentManager manager() {
+        return WorkspaceFactory.getInstance().getManager(ModelBasedDentonDocumentManager.class);
     }
 
-    public DentonTopComponent() {
+    public ModelBasedDentonTopComponent() {
         this(null);
     }
 
-    public DentonTopComponent(WorkspaceItem<DentonDocument> doc) {
+    public ModelBasedDentonTopComponent(WorkspaceItem<ModelBasedDentonDocument> doc) {
         super(doc);
         initComponents();
-        setToolTipText(Bundle.CTL_DentonTopComponent());
+        setToolTipText(Bundle.CTL_ModelBasedDentonTopComponent());
     }
 
     @Override
-    protected Ts2ProcessingViewer initViewer() {
+    protected TsRegressionProcessingViewer initViewer() {
         //       node=new InternalNode();
-        return Ts2ProcessingViewer.create(this.getElement(), DocumentUIServices.forDocument(DentonDocument.class), "Low-freq series", "High-freq series");
+        return TsRegressionProcessingViewer.create(this.getElement(), DocumentUIServices.forDocument(ModelBasedDentonDocument.class), true);
     }
 
     @Override
-    public WorkspaceItem<DentonDocument> newDocument() {
+    public WorkspaceItem<ModelBasedDentonDocument> newDocument() {
         return manager().create(WorkspaceFactory.getInstance().getActiveWorkspace());
     }
 
     // <editor-fold defaultstate="collapsed" desc="Generated Code">                          
     private void initComponents() {
-
-        setLayout(new javax.swing.BoxLayout(this, javax.swing.BoxLayout.LINE_AXIS));
+        setLayout(new java.awt.BorderLayout());
     }// </editor-fold>                        
 
-    // Variables declaration - do not modify                     
-    // End of variables declaration                   
-    void writeProperties(java.util.Properties p) {
-        // better to version settings since initial version as advocated at
-        // http://wiki.apidesign.org/wiki/PropertyFiles
-        p.setProperty("version", "1.0");
-        // TODO store your settings
-    }
-
-    void readProperties(java.util.Properties p) {
-        String version = p.getProperty("version");
-        // TODO read your settings according to their version
-    }
 
     @Override
     protected String getContextPath() {

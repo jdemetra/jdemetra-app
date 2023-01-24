@@ -42,7 +42,7 @@ import org.openide.windows.WindowManager;
  * @author Mats Maggi
  */
 @ServiceProvider(service = WorkspaceItemManager.class,
-        position = 10)
+        position = 1000)
 public class RegArimaSpecManager extends AbstractWorkspaceItemManager<RegArimaSpec> {
 
     public static final LinearId ID = new LinearId(RegArimaSpec.FAMILY, "specifications", RegArimaSpec.METHOD);

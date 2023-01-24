@@ -53,7 +53,7 @@ public final class SplitIntoYearlyComponentsCommand extends ComponentCommand<Has
     private static Ts dataOf(Range<LocalDateTime> year, TsData data) {
         TsData select = data.select(TimeSelector.between(year));
         TsData result = withYear(2000, select);
-        return Ts.builder().data(result).name(year.start().getYear() + "").build();
+        return Ts.builder().moniker(TsMoniker.of()).data(result).name(year.start().getYear() + "").build();
     }
 
     private static TsData withYear(int year, TsData data) {
