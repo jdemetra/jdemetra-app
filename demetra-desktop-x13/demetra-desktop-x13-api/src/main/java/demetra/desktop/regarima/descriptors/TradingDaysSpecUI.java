@@ -8,7 +8,7 @@ import demetra.data.Parameter;
 import demetra.desktop.descriptors.EnhancedPropertyDescriptor;
 import demetra.desktop.ui.properties.l2fprod.Holidays;
 import demetra.desktop.ui.properties.l2fprod.UserVariables;
-import demetra.desktop.modelling.util.TradingDaysSpecType;
+import demetra.desktop.sa.descriptors.regular.TradingDaysSpecType;
 import demetra.desktop.ui.properties.l2fprod.NamedParameters;
 import demetra.modelling.TransformationType;
 import demetra.regarima.RegressionTestSpec;
@@ -560,7 +560,7 @@ public class TradingDaysSpecUI extends BaseRegArimaSpecUI {
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, TEST_ID);
             desc.setDisplayName(Bundle.tradingDaysSpecUI_testDesc_name());
             desc.setShortDescription(Bundle.tradingDaysSpecUI_testDesc_desc());
-            edesc.setReadOnly(isRo() || hasFixedCoefficients());
+            edesc.setReadOnly(isRo() || hasFixedCoefficients() || inner().isAutomatic());
             return edesc;
         } catch (IntrospectionException ex) {
             return null;

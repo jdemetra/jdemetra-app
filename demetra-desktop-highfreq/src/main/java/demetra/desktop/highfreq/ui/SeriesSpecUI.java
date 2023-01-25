@@ -16,31 +16,30 @@
  */
 package demetra.desktop.highfreq.ui;
 
-import demetra.desktop.sa.descriptors.highfreq.AbstractEasterSpecUI;
+import demetra.desktop.sa.descriptors.highfreq.AbstractSeriesSpecUI;
 import demetra.desktop.sa.descriptors.highfreq.HighFreqSpecUI;
-import demetra.modelling.highfreq.EasterSpec;
+import demetra.modelling.highfreq.SeriesSpec;
 
 /**
  *
  * @author PALATEJ
  */
-public class EasterSpecUI extends AbstractEasterSpecUI {
+public class SeriesSpecUI extends AbstractSeriesSpecUI {
 
-   private final FractionalAirlineSpecRoot root;
-   
-   public EasterSpecUI(FractionalAirlineSpecRoot root){
-       this.root=root;
-   }
+    private final FractionalAirlineSpecRoot root;
+
+    public SeriesSpecUI(FractionalAirlineSpecRoot root) {
+        this.root = root;
+    }
 
     @Override
-    protected EasterSpec spec() {
-        return root.getCore().getRegression().getEaster();
+    protected SeriesSpec spec() {
+        return root.getCore().getSeries();
     }
 
     @Override
     protected HighFreqSpecUI root() {
         return root;
     }
-
 
 }

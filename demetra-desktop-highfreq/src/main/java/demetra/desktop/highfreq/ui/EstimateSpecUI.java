@@ -1,134 +1,44 @@
 /*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ * Copyright 2023 National Bank of Belgium
+ * 
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be approved 
+ * by the European Commission - subsequent versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ * 
+ * https://joinup.ec.europa.eu/software/page/eupl
+ * 
+ * Unless required by applicable law or agreed to in writing, software 
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and 
+ * limitations under the Licence.
  */
 package demetra.desktop.highfreq.ui;
 
-import demetra.desktop.descriptors.DateSelectorUI;
-import demetra.desktop.descriptors.EnhancedPropertyDescriptor;
-import demetra.highfreq.EstimateSpec;
-import demetra.timeseries.TimeSelector;
-import java.beans.IntrospectionException;
-import java.beans.PropertyDescriptor;
-import java.util.ArrayList;
-import java.util.List;
-import org.openide.util.NbBundle;
+import demetra.desktop.sa.descriptors.highfreq.AbstractEstimateSpecUI;
+import demetra.desktop.sa.descriptors.highfreq.HighFreqSpecUI;
+import demetra.modelling.highfreq.EstimateSpec;
 
 /**
  *
  * @author PALATEJ
  */
-public class EstimateSpecUI extends BaseFractionalAirlineSpecUI {
-
-    @Override
-    public String toString() {
-        return "";
-    }
-
-    private EstimateSpec inner() {
-        return core().getEstimate();
-    }
+public class EstimateSpecUI extends AbstractEstimateSpecUI {
+    private final FractionalAirlineSpecRoot root;
 
     public EstimateSpecUI(FractionalAirlineSpecRoot root) {
-        super(root);
-    }
-
-    public DateSelectorUI getSpan() {
-        return new DateSelectorUI(inner().getSpan(), isRo(), selector -> updateSpan(selector));
-    }
-
-    public void updateSpan(TimeSelector span) {
-        update(inner().toBuilder().span(span).build());
-    }
-
-    public boolean isApproximateHessian() {
-        return inner().isApproximateHessian();
-    }
-
-    public void setApproximateHessian(boolean value) {
-        update(inner().toBuilder().approximateHessian(value).build());
-    }
-
-    public double getTol() {
-        return inner().getPrecision();
-    }
-
-    public void setTol(double value) {
-        update(inner().toBuilder().precision(value).build());
+        this.root = root;
     }
 
     @Override
-    public List<EnhancedPropertyDescriptor> getProperties() {
-        ArrayList<EnhancedPropertyDescriptor> descs = new ArrayList<>();
-        EnhancedPropertyDescriptor desc = spanDesc();
-        if (desc != null) {
-            descs.add(desc);
-        }
-        desc = tolDesc();
-        if (desc != null) {
-            descs.add(desc);
-        }
-        desc = hessianDesc();
-        if (desc != null) {
-            descs.add(desc);
-        }
-        return descs;
-    }
-    private static final int SPAN_ID = 0, TOL_ID = 1, HESSIAN_ID = 2;
-
-    @NbBundle.Messages({
-        "estimateSpecUI.spanDesc.name=Model span",
-        "estimateSpecUI.spanDesc.desc=Span used for the estimation of the pre-processing model"
-    })
-    private EnhancedPropertyDescriptor spanDesc() {
-        try {
-            PropertyDescriptor desc = new PropertyDescriptor("span", this.getClass(), "getSpan", null);
-            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, SPAN_ID);
-            edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            desc.setShortDescription(Bundle.estimateSpecUI_spanDesc_desc());
-            desc.setDisplayName(Bundle.estimateSpecUI_spanDesc_name());
-            edesc.setReadOnly(isRo());
-            return edesc;
-        } catch (IntrospectionException ex) {
-            return null;
-        }
-    }
-
-    @NbBundle.Messages({
-        "estimateSpecUI.tolDesc.name=Tolerance",
-        "estimateSpecUI.tolDesc.desc=Precision of the estimation procedure"
-    })
-    private EnhancedPropertyDescriptor tolDesc() {
-        try {
-            PropertyDescriptor desc = new PropertyDescriptor("Tol", this.getClass());
-            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, TOL_ID);
-            edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            desc.setDisplayName(Bundle.estimateSpecUI_tolDesc_name());
-            desc.setShortDescription(Bundle.estimateSpecUI_tolDesc_desc());
-            edesc.setReadOnly(isRo());
-            return edesc;
-        } catch (IntrospectionException ex) {
-            return null;
-        }
-    }
-
-    private EnhancedPropertyDescriptor hessianDesc() {
-        try {
-            PropertyDescriptor desc = new PropertyDescriptor("ApproximateHessian", this.getClass());
-            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, HESSIAN_ID);
-            desc.setDisplayName("approximate hessian");
-            desc.setShortDescription("Use approximate hessian to comput stderr of the parameters");
-            edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            edesc.setReadOnly(isRo());
-            return edesc;
-        } catch (IntrospectionException ex) {
-            return null;
-        }
+    protected EstimateSpec spec() {
+        return root.getCore().getEstimate();
     }
 
     @Override
-    @NbBundle.Messages("estimateSpecUI.getDisplayName=Estimate")
-    public String getDisplayName() {
-        return Bundle.estimateSpecUI_getDisplayName();
+    protected HighFreqSpecUI root() {
+        return root;
     }
+
 }

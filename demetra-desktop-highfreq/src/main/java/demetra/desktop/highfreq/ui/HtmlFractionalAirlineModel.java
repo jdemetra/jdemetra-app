@@ -1,6 +1,18 @@
 /*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ * Copyright 2023 National Bank of Belgium
+ * 
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be approved 
+ * by the European Commission - subsequent versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ * 
+ * https://joinup.ec.europa.eu/software/page/eupl
+ * 
+ * Unless required by applicable law or agreed to in writing, software 
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and 
+ * limitations under the Licence.
  */
 package demetra.desktop.highfreq.ui;
 
@@ -15,12 +27,10 @@ import demetra.html.HtmlTableCell;
 import demetra.html.HtmlTag;
 import demetra.html.modelling.HtmlLikelihood;
 import demetra.math.matrices.Matrix;
-import demetra.modelling.OutlierDescriptor;
 import demetra.timeseries.TsDomain;
 import demetra.timeseries.regression.HolidaysVariable;
 import demetra.timeseries.regression.IOutlier;
 import demetra.timeseries.regression.ITsVariable;
-import demetra.timeseries.regression.ModellingUtility;
 import demetra.timeseries.regression.Variable;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -32,7 +42,6 @@ import jdplus.dstats.T;
 import jdplus.highfreq.ExtendedRegAirlineModel;
 import jdplus.modelling.GeneralLinearModel;
 import jdplus.modelling.regression.RegressionDesc;
-import jdplus.regsarima.regular.RegSarimaModel;
 import jdplus.stats.likelihood.LikelihoodStatistics;
 
 /**

@@ -1,11 +1,23 @@
 /*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ * Copyright 2023 National Bank of Belgium
+ * 
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be approved 
+ * by the European Commission - subsequent versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ * 
+ * https://joinup.ec.europa.eu/software/page/eupl
+ * 
+ * Unless required by applicable law or agreed to in writing, software 
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and 
+ * limitations under the Licence.
  */
 package demetra.desktop.highfreq.ui;
 
-import demetra.data.Parameter;
 import demetra.desktop.descriptors.EnhancedPropertyDescriptor;
+import demetra.desktop.descriptors.IPropertyDescriptors;
 import demetra.highfreq.DecompositionSpec;
 import demetra.highfreq.ExtendedAirlineSpec;
 import java.beans.IntrospectionException;
@@ -18,19 +30,21 @@ import org.openide.util.NbBundle;
  *
  * @author PALATEJ
  */
-public class DecompositionSpecUI extends BaseFractionalAirlineDecompositionSpecUI {
+public class DecompositionSpecUI implements IPropertyDescriptors {
 
     @Override
     public String toString() {
         return "";
     }
+    
+    private final FractionalAirlineDecompositionSpecRoot root;
 
-    private DecompositionSpec inner() {
+    private DecompositionSpec spec() {
         return this.root.getDecomposition();
     }
 
     public DecompositionSpecUI(FractionalAirlineDecompositionSpecRoot root) {
-        super(root);
+        this.root=root;
     }
 
     @Override
@@ -73,12 +87,12 @@ public class DecompositionSpecUI extends BaseFractionalAirlineDecompositionSpecU
     }
     
     public boolean isBias() {
-        return inner().isBiasCorrection();
+        return spec().isBiasCorrection();
     }
 
     public void setBias(boolean bias) {
-        if (bias != inner().isBiasCorrection()) {
-            update(inner().toBuilder()
+        if (bias != spec().isBiasCorrection()) {
+            root.update(spec().toBuilder()
                     .biasCorrection(bias)
                     .build());
         }
@@ -90,7 +104,7 @@ public class DecompositionSpecUI extends BaseFractionalAirlineDecompositionSpecU
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, BIAS_ID);
             desc.setDisplayName("bias");
             desc.setShortDescription("bias correction");
-            edesc.setReadOnly(isRo());
+            edesc.setReadOnly(root.isRo());
             return edesc;
         } catch (IntrospectionException ex) {
             return null;
@@ -98,12 +112,12 @@ public class DecompositionSpecUI extends BaseFractionalAirlineDecompositionSpecU
     }
 
     public boolean isIterative() {
-        return inner().isIterative();
+        return spec().isIterative();
     }
 
     public void setIterative(boolean iter) {
-        if (iter != inner().isIterative()) {
-            update(inner().toBuilder()
+        if (iter != spec().isIterative()) {
+            root.update(spec().toBuilder()
                     .biasCorrection(iter)
                     .build());
         }
@@ -123,7 +137,7 @@ public class DecompositionSpecUI extends BaseFractionalAirlineDecompositionSpecU
     }
 
      public boolean isYearly() {
-        double[] p = inner().getPeriodicities();
+        double[] p = spec().getPeriodicities();
         for (int i = 0; i < p.length; ++i) {
             if (p[i] == 365.25) {
                 return true;
@@ -133,7 +147,7 @@ public class DecompositionSpecUI extends BaseFractionalAirlineDecompositionSpecU
     }
 
     public boolean isWeekly() {
-        double[] p = inner().getPeriodicities();
+        double[] p = spec().getPeriodicities();
         for (int i = 0; i < p.length; ++i) {
             if (p[i] == 7) {
                 return true;
@@ -157,7 +171,7 @@ public class DecompositionSpecUI extends BaseFractionalAirlineDecompositionSpecU
                 p = ExtendedAirlineSpec.NO_PERIOD;
             }
         }
-        update(inner().toBuilder()
+        root.update(spec().toBuilder()
                 .periodicities(p)
                 .build());
     }
@@ -169,7 +183,7 @@ public class DecompositionSpecUI extends BaseFractionalAirlineDecompositionSpecU
             desc.setDisplayName("yearly");
             desc.setShortDescription("Yearly");
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            edesc.setReadOnly(isRo());
+            edesc.setReadOnly(root.isRo());
             return edesc;
         } catch (IntrospectionException ex) {
             return null;
@@ -191,7 +205,7 @@ public class DecompositionSpecUI extends BaseFractionalAirlineDecompositionSpecU
                 p = ExtendedAirlineSpec.NO_PERIOD;
             }
         }
-        update(inner().toBuilder()
+        root.update(spec().toBuilder()
                 .periodicities(p)
                 .build());
     }
@@ -203,7 +217,7 @@ public class DecompositionSpecUI extends BaseFractionalAirlineDecompositionSpecU
             desc.setDisplayName("weekly");
             desc.setShortDescription("Weekly");
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            edesc.setReadOnly(isRo());
+            edesc.setReadOnly(root.isRo());
             return edesc;
         } catch (IntrospectionException ex) {
             return null;
@@ -211,12 +225,12 @@ public class DecompositionSpecUI extends BaseFractionalAirlineDecompositionSpecU
     }
 
     public boolean isStdev() {
-        return inner().isStdev();
+        return spec().isStdev();
     }
 
     public void setStdev(boolean stdev) {
-        if (stdev != inner().isStdev()) {
-            update(inner().toBuilder()
+        if (stdev != spec().isStdev()) {
+            root.update(spec().toBuilder()
                     .stdev(stdev)
                     .build());
         }
@@ -229,7 +243,7 @@ public class DecompositionSpecUI extends BaseFractionalAirlineDecompositionSpecU
             desc.setDisplayName("stdev");
             desc.setShortDescription("Compute stdev");
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            edesc.setReadOnly(isRo());
+            edesc.setReadOnly(root.isRo());
             return edesc;
         } catch (IntrospectionException ex) {
             return null;
@@ -237,29 +251,29 @@ public class DecompositionSpecUI extends BaseFractionalAirlineDecompositionSpecU
     }
 
     public int getForecastsLength() {
-        return inner().getForecastsCount();
+        return spec().getForecastsCount();
     }
 
     public void setForecastsLength(int value) {
-        update(inner().toBuilder().forecastsCount(value).build());
+        root.update(spec().toBuilder().forecastsCount(value).build());
     }
 
     public int getBackcastsLength() {
-        return inner().getBackcastsCount();
+        return spec().getBackcastsCount();
     }
 
     public void setBackcastsLength(int value) {
-        update(inner().toBuilder().backcastsCount(value).build());
+        root.update(spec().toBuilder().backcastsCount(value).build());
     }
 
    
     public boolean isToInt() {
-        return inner().isAdjustToInt();
+        return spec().isAdjustToInt();
     }
 
     public void setToInt(boolean toInt) {
-        if (toInt != inner().isAdjustToInt()) {
-            update(inner().toBuilder()
+        if (toInt != spec().isAdjustToInt()) {
+            root.update(spec().toBuilder()
                     .adjustToInt(toInt)
                     .build());
         }
@@ -272,7 +286,7 @@ public class DecompositionSpecUI extends BaseFractionalAirlineDecompositionSpecU
             desc.setDisplayName("to int");
             desc.setShortDescription("Adjust periods to int values");
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            edesc.setReadOnly(isRo());
+            edesc.setReadOnly(root.isRo());
             return edesc;
         } catch (IntrospectionException ex) {
             return null;
@@ -290,7 +304,7 @@ public class DecompositionSpecUI extends BaseFractionalAirlineDecompositionSpecU
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
             desc.setDisplayName(Bundle.decompositionSpecUI_nbcastsDesc_name());
             desc.setShortDescription(Bundle.decompositionSpecUI_nbcastsDesc_desc());
-            edesc.setReadOnly(isRo());
+            edesc.setReadOnly(root.isRo());
             return edesc;
         } catch (IntrospectionException ex) {
             return null;
@@ -308,7 +322,7 @@ public class DecompositionSpecUI extends BaseFractionalAirlineDecompositionSpecU
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
             desc.setDisplayName(Bundle.decompositionSpecUI_nfcastsDesc_name());
             desc.setShortDescription(Bundle.decompositionSpecUI_nfcastsDesc_desc());
-            edesc.setReadOnly(isRo());
+            edesc.setReadOnly(root.isRo());
             return edesc;
         } catch (IntrospectionException ex) {
             return null;
