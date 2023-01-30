@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 National Bank of Belgium
+ * Copyright 2023 National Bank of Belgium
  *
  * Licensed under the EUPL, Version 1.2 or – as soon they will be approved 
  * by the European Commission - subsequent versions of the EUPL (the "Licence");
@@ -14,12 +14,11 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package demetra.desktop.stl.ui;
+package demetra.desktop.mstl.ui;
 
 import demetra.desktop.descriptors.EnhancedPropertyDescriptor;
 import demetra.stl.MStlSpec;
 import demetra.stl.SeasonalSpec;
-import demetra.stl.StlSpec;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
@@ -30,14 +29,14 @@ import org.openide.util.NbBundle;
  *
  * @author PALATEJ
  */
-public class SeasonalsUI extends BaseStlPlusSpecUI {
+public class SeasonalsUI extends BaseMStlPlusSpecUI {
     
     @Override
     public String toString(){
         return "";
     }
 
-    public SeasonalsUI(StlPlusSpecRoot root) {
+    public SeasonalsUI(MStlPlusSpecRoot root) {
         super(root);
     }
 

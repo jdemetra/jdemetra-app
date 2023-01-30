@@ -127,6 +127,7 @@
                 <artifactId>nbm-maven-plugin</artifactId>
                 <extensions>true</extensions>
                 <configuration>
+                    <requiresRestart>true</requiresRestart>
                     <publicPackages>
                         <publicPackage>demetra.stl.*</publicPackage>
                         <publicPackage>jdplus.stl.*</publicPackage>

@@ -14,17 +14,16 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package demetra.desktop.stl;
+package demetra.desktop.mstl;
 
 import demetra.desktop.descriptors.IObjectDescriptor;
-import demetra.desktop.stl.ui.StlPlusSpecUI;
+import demetra.desktop.mstl.ui.MStlPlusSpecUI;
 import demetra.desktop.ui.processing.IProcDocumentView;
 import demetra.desktop.workspace.DocumentUIServices;
 import demetra.desktop.workspace.WorkspaceItem;
-import demetra.stl.StlPlusSpec;
+import demetra.stl.MStlSpec;
 import java.awt.Color;
 import javax.swing.Icon;
-import jdplus.stlplus.StlPlusDocument;
 import org.openide.util.ImageUtilities;
 import org.openide.util.lookup.ServiceProvider;
 
@@ -33,27 +32,27 @@ import org.openide.util.lookup.ServiceProvider;
  * @author PALATEJ
  */
 @ServiceProvider(service = DocumentUIServices.class)
-public class StlPlusUIFactory implements DocumentUIServices<StlPlusSpec, StlPlusDocument> {
+public class MStlPlusUIFactory implements DocumentUIServices<MStlSpec, MStlPlusDocument> {
 
 //    public static StlPlusUIFactory INSTANCE=new StlPlusUIFactory();
     @Override
-    public IProcDocumentView<StlPlusDocument> getDocumentView(StlPlusDocument document) {
-        return StlPlusViewFactory.getDefault().create(document);
+    public IProcDocumentView<MStlPlusDocument> getDocumentView(MStlPlusDocument document) {
+        return MStlPlusViewFactory.getDefault().create(document);
     }
 
     @Override
-    public IObjectDescriptor<StlPlusSpec> getSpecificationDescriptor(StlPlusSpec spec) {
-        return new StlPlusSpecUI(spec, false);
+    public IObjectDescriptor<MStlSpec> getSpecificationDescriptor(MStlSpec spec) {
+        return new MStlPlusSpecUI(spec, false);
     }
 
     @Override
-    public Class<StlPlusDocument> getDocumentType() {
-        return StlPlusDocument.class;
+    public Class<MStlPlusDocument> getDocumentType() {
+        return MStlPlusDocument.class;
     }
 
     @Override
-    public Class<StlPlusSpec> getSpecType() {
-        return StlPlusSpec.class;
+    public Class<MStlSpec> getSpecType() {
+        return MStlSpec.class;
     }
 
     @Override
@@ -67,11 +66,11 @@ public class StlPlusUIFactory implements DocumentUIServices<StlPlusSpec, StlPlus
     }
 
     @Override
-    public void showDocument(WorkspaceItem<StlPlusDocument> item) {
+    public void showDocument(WorkspaceItem<MStlPlusDocument> item) {
         if (item.isOpen()) {
             item.getView().requestActive();
         } else {
-            StlPlusTopComponent view = new StlPlusTopComponent(item);
+            MStlPlusTopComponent view = new MStlPlusTopComponent(item);
             view.open();
             view.requestActive();
         }

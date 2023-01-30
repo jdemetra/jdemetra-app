@@ -14,12 +14,10 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package demetra.desktop.stl.ui;
+package demetra.desktop.mstl.ui;
 
 import demetra.data.WeightFunction;
 import demetra.desktop.descriptors.EnhancedPropertyDescriptor;
-import demetra.desktop.descriptors.IPropertyDescriptors;
-import demetra.stl.StlSpec;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
@@ -30,22 +28,12 @@ import org.openide.util.NbBundle;
  *
  * @author PALATEJ
  */
-public class AlgorithmUI implements IPropertyDescriptors {
+public class AlgorithmUI extends BaseMStlPlusSpecUI {
     
-    private final StlPlusSpecRoot root;
-
-    public AlgorithmUI(StlPlusSpecRoot root) {
-        this.root = root;
+    public AlgorithmUI(MStlPlusSpecRoot root){
+        super(root);
     }
 
-    public StlSpec spec() {
-        return root.getStl();
-    }
-
-    public boolean isDefault() {
-        return spec() == null;
-    }
- 
     @Override
     public List<EnhancedPropertyDescriptor> getProperties() {
         ArrayList<EnhancedPropertyDescriptor> descs = new ArrayList<>();
@@ -73,33 +61,33 @@ public class AlgorithmUI implements IPropertyDescriptors {
     }
 
     public WeightFunction getRobustWeightFunction() {
-        return spec().getRobustWeightFunction();
+        return root.core.getRobustWeightFunction();
     }
 
     public void setRobustWeightFunction(WeightFunction wfn) {
-        root.update(spec().toBuilder().robustWeightFunction(wfn).build());
+        root.core = root.core.toBuilder().robustWeightFunction(wfn).build();
     }
 
     public double getRobustWeightThreshold() {
-        return spec().getRobustWeightThreshold();
+        return root.core.getRobustWeightThreshold();
     }
 
     public void setRobustWeightThreshold(double wt) {
-        root.update(spec().toBuilder().robustWeightThreshold(wt).build());
+        root.core = root.core.toBuilder().robustWeightThreshold(wt).build();
     }
     
    public boolean isMultiplicative() {
-        return spec().isMultiplicative();
+        return root.core.isMultiplicative();
     }
 
     public void setMultiplicative(boolean mul) {
-        root.update(spec().toBuilder()
+        root.core = root.core.toBuilder()
                 .multiplicative(mul)
-                .build());
+                .build();
     }
 
     public int getInnerLoopCount() {
-        return spec().getInnerLoopsCount();
+        return root.core.getInnerLoopsCount();
     }
 
     public void setInnerLoopCount(int ni) {
@@ -107,22 +95,22 @@ public class AlgorithmUI implements IPropertyDescriptors {
             throw new IllegalArgumentException("Number of inner loops should be ge 1");
         }
 
-        root.update(spec().toBuilder()
+        root.core = root.core.toBuilder()
                 .innerLoopsCount(ni)
-                .build());
+                .build();
     }
 
     public int getOuterLoopCount() {
-        return spec().getOuterLoopsCount();
+        return root.core.getOuterLoopsCount();
     }
 
     public void setOuterLoopCount(int no) {
         if (no < 0) {
             throw new IllegalArgumentException("Number of outer loops should be ge 0");
         }
-        root.update(spec().toBuilder()
+        root.core = root.core.toBuilder()
                 .outerLoopsCount(no)
-                .build());
+                .build();
     }
 
     @NbBundle.Messages({

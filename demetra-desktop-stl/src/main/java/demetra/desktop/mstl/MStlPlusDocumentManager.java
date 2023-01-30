@@ -14,35 +14,32 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package demetra.desktop.stl;
+package demetra.desktop.mstl;
 
-import demetra.desktop.mstl.MStlPlusDocument;
 import demetra.desktop.workspace.AbstractWorkspaceTsItemManager;
 import demetra.desktop.workspace.WorkspaceItemManager;
-import demetra.stl.MStlSpec;
-import demetra.stl.StlPlusSpec;
 import demetra.util.Id;
 import demetra.util.LinearId;
-import jdplus.stlplus.StlPlusDocument;
+import demetra.stl.MStlSpec;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
  *
- * @author palatej
+ * @author Jean Palate
  */
 @ServiceProvider(service = WorkspaceItemManager.class,
         position = 3000)
-public class StlPlusDocumentManager extends AbstractWorkspaceTsItemManager<StlPlusSpec, StlPlusDocument> {
+public class MStlPlusDocumentManager extends AbstractWorkspaceTsItemManager<MStlSpec, MStlPlusDocument> {
 
 
-    public static final LinearId ID = new LinearId(MStlSpec.FAMILY, "documents", StlPlusSpec.METHOD);
-    public static final String PATH = "stlplus.doc";
-    public static final String ITEMPATH = "stlplus.doc.item";
-    public static final String CONTEXTPATH = "stlplus.doc.context";
+    public static final LinearId ID = new LinearId(MStlSpec.FAMILY, "documents", MStlSpec.METHOD);
+    public static final String PATH = "mstlplus.doc";
+    public static final String ITEMPATH = "mstlplus.doc.item";
+    public static final String CONTEXTPATH = "mstlplus.doc.context";
 
     @Override
     protected String getItemPrefix() {
-        return "StlPlusDoc";
+        return "MStlPlusDoc";
     }
 
     @Override
@@ -51,13 +48,13 @@ public class StlPlusDocumentManager extends AbstractWorkspaceTsItemManager<StlPl
     }
 
     @Override
-    public StlPlusDocument createNewObject() {
-        return new StlPlusDocument();
+    public MStlPlusDocument createNewObject() {
+        return new MStlPlusDocument();
     }
 
     @Override
-    public WorkspaceItemManager.ItemType getItemType() {
-        return WorkspaceItemManager.ItemType.Doc;
+    public ItemType getItemType() {
+        return ItemType.Doc;
     }
 
     @Override
@@ -66,13 +63,13 @@ public class StlPlusDocumentManager extends AbstractWorkspaceTsItemManager<StlPl
     }
 
     @Override
-    public WorkspaceItemManager.Status getStatus() {
-        return WorkspaceItemManager.Status.Certified;
+    public Status getStatus() {
+        return Status.Certified;
     }
 
     @Override
-    public Class<StlPlusDocument> getItemClass() {
-        return StlPlusDocument.class;
+    public Class<MStlPlusDocument> getItemClass() {
+        return MStlPlusDocument.class;
     }
 
 }

@@ -14,15 +14,13 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package demetra.desktop.stl;
+package demetra.desktop.mstl;
 
-import demetra.desktop.mstl.*;
 import demetra.desktop.ui.processing.TsProcessingViewer;
 import demetra.desktop.workspace.DocumentUIServices;
 import demetra.desktop.workspace.WorkspaceFactory;
 import demetra.desktop.workspace.WorkspaceItem;
 import demetra.desktop.workspace.ui.WorkspaceTsTopComponent;
-import jdplus.stlplus.StlPlusDocument;
 import org.openide.windows.TopComponent;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
@@ -34,36 +32,36 @@ import org.openide.util.NbBundle;
 /**
  * Top component which displays something.
  */
-@ConvertAsProperties(dtd = "-//demetra.desktop.stl//StlPlus//EN",
+@ConvertAsProperties(dtd = "-//demetra.desktop.stl//MStlPlus//EN",
         autostore = false)
 @TopComponent.Description(preferredID = "StlPlusTopComponent",
         //iconBase="SET/PATH/TO/ICON/HERE", 
         persistenceType = TopComponent.PERSISTENCE_NEVER)
 @TopComponent.Registration(mode = "editor", openAtStartup = false)
-@ActionID(category = "Seasonal Adjustment", id = "demetra.desktop.stlplus.StlPlusTopComponent")
+@ActionID(category = "Seasonal Adjustment", id = "demetra.desktop.stlplus.MStlPlusTopComponent")
 @ActionReference(path = "Menu/Statistical methods/Seasonal Adjustment/Single Analysis", position = 2000)
-@TopComponent.OpenActionRegistration(displayName = "#CTL_StlPlusAction")
+@TopComponent.OpenActionRegistration(displayName = "#CTL_MStlPlusAction")
 @NbBundle.Messages({
-    "CTL_StlPlusAction=STL+",
-    "CTL_StlPlusTopComponent=STL+ Window",
-    "HINT_StlPlusTopComponent=This is a STL+ window"
+    "CTL_MStlPlusAction=MSTL+",
+    "CTL_MStlPlusTopComponent=MSTL+ Window",
+    "HINT_MStlPlusTopComponent=This is a MSTL+ window"
 })
-public final class StlPlusTopComponent extends WorkspaceTsTopComponent<StlPlusDocument> {
+public final class MStlPlusTopComponent extends WorkspaceTsTopComponent<MStlPlusDocument> {
 
     private final ExplorerManager mgr = new ExplorerManager();
 
-    private static StlPlusDocumentManager manager() {
-        return WorkspaceFactory.getInstance().getManager(StlPlusDocumentManager.class);
+    private static MStlPlusDocumentManager manager() {
+        return WorkspaceFactory.getInstance().getManager(MStlPlusDocumentManager.class);
     }
 
-    public StlPlusTopComponent() {
+    public MStlPlusTopComponent() {
         this(null);
     }
 
-    public StlPlusTopComponent(WorkspaceItem<StlPlusDocument> doc) {
+    public MStlPlusTopComponent(WorkspaceItem<MStlPlusDocument> doc) {
         super(doc);
         initComponents();
-        setToolTipText(NbBundle.getMessage(StlPlusTopComponent.class, "HINT_StlPlusTopComponent"));
+        setToolTipText(NbBundle.getMessage(MStlPlusTopComponent.class, "HINT_MStlPlusTopComponent"));
         associateLookup(ExplorerUtils.createLookup(mgr, getActionMap()));
     }
 
@@ -74,12 +72,12 @@ public final class StlPlusTopComponent extends WorkspaceTsTopComponent<StlPlusDo
 
     @Override
     protected TsProcessingViewer initViewer() {
-        return TsProcessingViewer.create(getElement(), DocumentUIServices.forDocument(StlPlusDocument.class));
+        return TsProcessingViewer.create(getElement(), DocumentUIServices.forDocument(MStlPlusDocument.class));
     }
 
 
     @Override
-    public WorkspaceItem<StlPlusDocument> newDocument() {
+    public WorkspaceItem<MStlPlusDocument> newDocument() {
         return manager().create(WorkspaceFactory.getInstance().getActiveWorkspace());
     }
 
@@ -108,6 +106,6 @@ public final class StlPlusTopComponent extends WorkspaceTsTopComponent<StlPlusDo
 
     @Override
     protected String getContextPath() {
-        return StlPlusDocumentManager.CONTEXTPATH;
+        return MStlPlusDocumentManager.CONTEXTPATH;
     }
 }

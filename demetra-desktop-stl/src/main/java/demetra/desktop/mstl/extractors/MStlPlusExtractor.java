@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 National Bank of Belgium
+ * Copyright 20232 National Bank of Belgium
  *
  * Licensed under the EUPL, Version 1.2 or – as soon they will be approved 
  * by the European Commission - subsequent versions of the EUPL (the "Licence");
@@ -14,7 +14,7 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package demetra.desktop.stl.extractors;
+package demetra.desktop.mstl.extractors;
 
 import demetra.information.InformationExtractor;
 import demetra.information.InformationMapping;
@@ -23,7 +23,7 @@ import demetra.timeseries.TsData;
 import demetra.timeseries.TsUnit;
 import demetra.toolkit.dictionaries.RegressionDictionaries;
 import java.time.temporal.ChronoUnit;
-import jdplus.stl.StlPlusResults;
+import jdplus.stl.StlResults;
 import nbbrd.service.ServiceProvider;
 
 /**
@@ -31,9 +31,9 @@ import nbbrd.service.ServiceProvider;
  * @author PALATEJ
  */
 @ServiceProvider(InformationExtractor.class)
-public class StlPlusExtractor extends InformationMapping<StlPlusResults> {
+public class MStlPlusExtractor extends InformationMapping<StlResults> {
     
-    private static int freq(StlPlusResults source){
+    private static int freq(StlResults source){
         TsUnit unit = source.getSeries().getTsUnit();
         int a=unit.getAnnualFrequency();
         if (a > 0)
@@ -49,7 +49,7 @@ public class StlPlusExtractor extends InformationMapping<StlPlusResults> {
 
     public static final String Y = "y", T = "t", S = "s", I = "i", SA = "sa", SY = "sy", SW = "sw";
 
-    public StlPlusExtractor() {
+    public MStlPlusExtractor() {
         set(RegressionDictionaries.Y, TsData.class, source
                 -> source.getSeries());
         set(SaDictionaries.T, TsData.class, source
@@ -79,8 +79,8 @@ public class StlPlusExtractor extends InformationMapping<StlPlusResults> {
     @Override
 public Class
 
-<StlPlusResults> getSourceClass() {
-        return StlPlusResults.class  
+<StlResults> getSourceClass() {
+        return StlResults.class  
 ;
 }
 
