@@ -39,7 +39,7 @@ import org.openide.util.NbBundle;
         persistenceType = TopComponent.PERSISTENCE_NEVER)
 @TopComponent.Registration(mode = "editor", openAtStartup = false)
 @ActionID(category = "Seasonal Adjustment", id = "demetra.desktop.stlplus.MStlPlusTopComponent")
-@ActionReference(path = "Menu/Statistical methods/Seasonal Adjustment/Single Analysis", position = 2000)
+@ActionReference(path = "Menu/Statistical methods/Seasonal Adjustment/Single Analysis", position = 12000)
 @TopComponent.OpenActionRegistration(displayName = "#CTL_MStlPlusAction")
 @NbBundle.Messages({
     "CTL_MStlPlusAction=MSTL+",

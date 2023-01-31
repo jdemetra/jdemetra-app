@@ -168,7 +168,7 @@ public class StlPlusViewFactory extends ProcDocumentViewFactory<StlPlusDocument>
 
         @Override
         public int getPosition() {
-            return 100000;
+            return 1000;
         }
     }
 
