@@ -121,13 +121,13 @@ public abstract class AbstractTradingDaysSpecUI implements IPropertyDescriptors 
                 root().update(TradingDaysSpec.none());
                 break;
             case Default:
-                root().update(automatic ? TradingDaysSpec.automatic(lp, spec.getAutomaticMethod(), spec.getProbabilityForFTest(), auto)
+                root().update(automatic ? TradingDaysSpec.automatic(lp, spec.getAutomaticMethod(), spec.getProbabilityForTest(), auto)
                         : TradingDaysSpec.td(TradingDaysType.TD7, lp,
                                 true,
                                 auto));
                 break;
             case Holidays:
-                root().update(automatic ? TradingDaysSpec.automaticHolidays(CalendarManager.DEF, lp, spec.getAutomaticMethod(), spec.getProbabilityForFTest(), auto)
+                root().update(automatic ? TradingDaysSpec.automaticHolidays(CalendarManager.DEF, lp, spec.getAutomaticMethod(), spec.getProbabilityForTest(), auto)
                         : TradingDaysSpec.holidays(CalendarManager.DEF,
                                 TradingDaysType.TD7, lp,
                                 true,
@@ -266,14 +266,14 @@ public abstract class AbstractTradingDaysSpecUI implements IPropertyDescriptors 
         switch (getOption()) {
             case Default:
                 if (td.isAutomatic()) {
-                    root().update(TradingDaysSpec.automatic(value, td.getAutomaticMethod(), td.getProbabilityForFTest(), td.isAutoAdjust()));
+                    root().update(TradingDaysSpec.automatic(value, td.getAutomaticMethod(), td.getProbabilityForTest(), td.isAutoAdjust()));
                 } else {
                     root().update(TradingDaysSpec.td(td.getTradingDaysType(), value, td.isTest(), td.isAutoAdjust()));
                 }
                 break;
             case Holidays:
                 if (td.isAutomatic()) {
-                    root().update(TradingDaysSpec.automaticHolidays(td.getHolidays(), value, td.getAutomaticMethod(), td.getProbabilityForFTest(), td.isAutoAdjust()));
+                    root().update(TradingDaysSpec.automaticHolidays(td.getHolidays(), value, td.getAutomaticMethod(), td.getProbabilityForTest(), td.isAutoAdjust()));
                 } else {
                     root().update(TradingDaysSpec.holidays(td.getHolidays(), td.getTradingDaysType(), value, td.isTest(), td.isAutoAdjust()));
                 }
@@ -291,7 +291,7 @@ public abstract class AbstractTradingDaysSpecUI implements IPropertyDescriptors 
         switch (getOption()) {
             case Default:
                 if (td.isAutomatic()) {
-                    root().update(TradingDaysSpec.automatic(td.getLengthOfPeriodType(), td.getAutomaticMethod(), td.getProbabilityForFTest(), value));
+                    root().update(TradingDaysSpec.automatic(td.getLengthOfPeriodType(), td.getAutomaticMethod(), td.getProbabilityForTest(), value));
                 } else {
                     root().update(TradingDaysSpec.td(td.getTradingDaysType(), td.getLengthOfPeriodType(),
                             td.isTest(), value));
@@ -299,7 +299,7 @@ public abstract class AbstractTradingDaysSpecUI implements IPropertyDescriptors 
                 break;
             case Holidays:
                 if (td.isAutomatic()) {
-                    root().update(TradingDaysSpec.automaticHolidays(td.getHolidays(), td.getLengthOfPeriodType(), td.getAutomaticMethod(), td.getProbabilityForFTest(), value));
+                    root().update(TradingDaysSpec.automaticHolidays(td.getHolidays(), td.getLengthOfPeriodType(), td.getAutomaticMethod(), td.getProbabilityForTest(), value));
                 } else {
                     root().update(TradingDaysSpec.holidays(td.getHolidays(), td.getTradingDaysType(),
                             td.getLengthOfPeriodType(), td.isTest(),
@@ -316,7 +316,7 @@ public abstract class AbstractTradingDaysSpecUI implements IPropertyDescriptors 
     public void setHolidays(Holidays holidays) {
         TradingDaysSpec td = spec();
         boolean automatic = td.isAutomatic();
-        root().update(automatic ? TradingDaysSpec.automaticHolidays(holidays.getName(), td.getLengthOfPeriodType(), td.getAutomaticMethod(), td.getProbabilityForFTest(), td.isAutoAdjust())
+        root().update(automatic ? TradingDaysSpec.automaticHolidays(holidays.getName(), td.getLengthOfPeriodType(), td.getAutomaticMethod(), td.getProbabilityForTest(), td.isAutoAdjust())
                 : TradingDaysSpec.holidays(holidays.getName(), td.getTradingDaysType(), td.getLengthOfPeriodType(), td.isTest(), td.isAutoAdjust()));
     }
 
@@ -349,15 +349,15 @@ public abstract class AbstractTradingDaysSpecUI implements IPropertyDescriptors 
                     break;
             }
         } else {
-            double pr = td.getProbabilityForFTest();
+            double pr = td.getProbabilityForTest();
             switch (getOption()) {
                 case Default:
                     root().update(TradingDaysSpec.automatic(td.getLengthOfPeriodType(), value,
-                            pr != 0 ? pr : TradingDaysSpec.DEF_PFTD, td.isAutoAdjust()));
+                            pr != 0 ? pr : TradingDaysSpec.DEF_PTD, td.isAutoAdjust()));
                     break;
                 case Holidays:
                     root().update(TradingDaysSpec.automaticHolidays(td.getHolidays(), td.getLengthOfPeriodType(), value,
-                            pr != 0 ? pr : TradingDaysSpec.DEF_PFTD, td.isAutoAdjust()));
+                            pr != 0 ? pr : TradingDaysSpec.DEF_PTD, td.isAutoAdjust()));
                     break;
             }
         }

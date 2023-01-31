@@ -7,7 +7,6 @@ package demetra.desktop.tramoseats.documents;
 import demetra.desktop.tramoseats.descriptors.TramoSeatsSpecUI;
 import demetra.desktop.ui.properties.l2fprod.PropertiesDialog;
 import demetra.desktop.workspace.AbstractWorkspaceItemManager;
-import demetra.desktop.workspace.DocumentUIServices;
 import demetra.desktop.workspace.WorkspaceFactory;
 import demetra.desktop.workspace.WorkspaceItem;
 import demetra.desktop.workspace.WorkspaceItemManager;
