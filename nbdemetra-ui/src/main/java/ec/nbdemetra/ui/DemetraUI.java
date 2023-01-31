@@ -16,9 +16,7 @@
  */
 package ec.nbdemetra.ui;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Ordering;
 import ec.nbdemetra.core.GlobalService;
 import ec.nbdemetra.ui.awt.ListenableBean;
@@ -42,19 +40,20 @@ import ec.ui.view.AutoRegressiveSpectrumView;
 import ec.util.chart.ColorScheme;
 import ec.util.chart.impl.SmartColorScheme;
 import ec.util.various.swing.FontAwesome;
-import java.awt.Color;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.function.Function;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import javax.swing.Icon;
 import org.netbeans.api.options.OptionsDisplayer;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.ServiceProvider;
 
+import javax.swing.*;
+import java.awt.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
+
 /**
- *
  * @author Philippe Charles
  * @author Mats Maggi
  */
@@ -338,11 +337,11 @@ public class DemetraUI extends ListenableBean implements IConfigurable {
         this.properties.selectedSeriesFields = fields;
         firePropertyChange(SELECTED_SERIES_FIELDS_PROPERTY, old, this.properties.selectedSeriesFields);
     }
-    
+
     public int getHtmlZoomRatio() {
         return this.properties.htmlZoomRatio;
     }
-    
+
     public void setHtmlZoomRatio(int htmlZoomRatio) {
         int old = this.properties.htmlZoomRatio;
         this.properties.htmlZoomRatio = htmlZoomRatio >= 10 && htmlZoomRatio <= 200 ? htmlZoomRatio : 100;
@@ -382,7 +381,7 @@ public class DemetraUI extends ListenableBean implements IConfigurable {
     private static <X, Y> X find(Class<X> clazz, Function<? super X, Y> toName, Y... names) {
         Collection<? extends X> items = Lookup.getDefault().lookupAll(clazz);
         for (Y o : names) {
-            Optional<? extends X> result = Iterables.tryFind(items, x -> o.equals(toName.apply(x)));
+            Optional<? extends X> result = items.stream().filter(x -> o.equals(toName.apply(x))).findFirst();
             if (result.isPresent()) {
                 return result.get();
             }

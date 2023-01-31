@@ -1,15 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>eu.europa.ec.joinup.sat</groupId>
     <artifactId>nbdemetra-parent</artifactId>
-    <version>2.2.3</version>
+    <version>2.2.4</version>
     <packaging>pom</packaging>
 
     <name>NbDemetra - Parent</name>
-
+    <description>Econometric software for seasonal adjustment and other time series methods (JDemetra+)</description>
     <url>https://github.com/jdemetra/jdemetra-app</url>
+    <inceptionYear>2013</inceptionYear>
+
     <licenses>
         <license>
             <name>European Union Public Licence (EUPL)</name>
@@ -17,9 +20,24 @@
         </license>
     </licenses>
 
+    <developers>
+        <developer>
+            <name>Philippe Charles</name>
+            <email>philippe.charles@nbb.be</email>
+            <organization>National Bank of Belgium</organization>
+            <organizationUrl>https://www.nbb.be</organizationUrl>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git:git://github.com/jdemetra/jdemetra-app.git</connection>
+        <developerConnection>scm:git:ssh://github.com:jdemetra/jdemetra-app.git</developerConnection>
+        <url>http://github.com/jdemetra/jdemetra-app/tree/master</url>
+    </scm>
+
     <properties>
         <brandingToken>nbdemetra</brandingToken>
-        <netbeans.version>RELEASE112</netbeans.version>
+        <netbeans.version>RELEASE160</netbeans.version>
         <jdemetra.version>${project.version}</jdemetra.version>
     </properties>
 
@@ -48,6 +66,15 @@
                 <scope>import</scope>
             </dependency>
             <!-- < import of jdemetra deps -->
+
+            <!-- dependencies  -->
+            <dependency>
+                <groupId>com.github.nbbrd.java-io-util</groupId>
+                <artifactId>java-io-bom</artifactId>
+                <version>0.0.20</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
 
             <!-- NetBeans deps > -->
             <dependency>
@@ -123,57 +150,7 @@
             <dependency>
                 <groupId>org.netbeans.api</groupId>
                 <artifactId>org-netbeans-modules-javahelp</artifactId>
-                <version>RELEASE80</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.netbeans.api</groupId>
-                        <artifactId>org-netbeans-api-progress</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.netbeans.api</groupId>
-                        <artifactId>org-netbeans-api-progress-nb</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.netbeans.api</groupId>
-                        <artifactId>org-netbeans-spi-quicksearch</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.netbeans.api</groupId>
-                        <artifactId>org-openide-awt</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.netbeans.api</groupId>
-                        <artifactId>org-openide-filesystems</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.netbeans.api</groupId>
-                        <artifactId>org-openide-loaders</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.netbeans.api</groupId>
-                        <artifactId>org-openide-modules</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.netbeans.api</groupId>
-                        <artifactId>org-openide-nodes</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.netbeans.api</groupId>
-                        <artifactId>org-openide-util-ui</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.netbeans.api</groupId>
-                        <artifactId>org-openide-util</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.netbeans.api</groupId>
-                        <artifactId>org-openide-util-lookup</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.netbeans.api</groupId>
-                        <artifactId>org-openide-windows</artifactId>
-                    </exclusion>
-                </exclusions>
+                <version>${netbeans.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.netbeans.api</groupId>
@@ -296,11 +273,127 @@
 
     <dependencies>
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.vintage</groupId>
+            <artifactId>junit-vintage-engine</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <!-- Enforce reproducible builds -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-clean-plugin</artifactId>
+                    <version>3.2.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.10.1</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-deploy-plugin</artifactId>
+                    <version>3.0.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-install-plugin</artifactId>
+                    <version>3.1.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>3.3.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <version>3.3.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-site-plugin</artifactId>
+                    <version>3.12.1</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>3.0.0-M8</version>
+                </plugin>
+                <!-- Other plugins -->
+                <plugin>
+                    <groupId>org.apache.netbeans.utilities</groupId>
+                    <artifactId>nbm-maven-plugin</artifactId>
+                    <version>4.8</version>
+                </plugin>
+                <plugin>
+                    <groupId>com.github.nbbrd.heylogs</groupId>
+                    <artifactId>heylogs-maven-plugin</artifactId>
+                    <version>0.5.0</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+        <plugins>
+            <plugin>
+                <groupId>com.github.nbbrd.heylogs</groupId>
+                <artifactId>heylogs-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>check-changelog</id>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                        <configuration>
+                            <semver>true</semver>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <!-- to have the jar plugin pickup the nbm generated manifest -->
+                    <archive>
+                        <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+                    </archive>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.netbeans.utilities</groupId>
+                <artifactId>nbm-maven-plugin</artifactId>
+                <extensions>true</extensions>
+                <configuration>
+                    <useOSGiDependencies>false</useOSGiDependencies>
+                    <brandingToken>${brandingToken}</brandingToken>
+                    <cluster>${brandingToken}</cluster>
+                </configuration>
+                <executions>
+                    <execution>
+                        <!-- List runtime dependencies for tests -->
+                        <id>list-runtime-dependencies</id>
+                        <phase>generate-test-resources</phase>
+                        <goals>
+                            <goal>manifest</goal>
+                        </goals>
+                        <configuration>
+                            <targetManifestFile>${project.build.testOutputDirectory}/runtime-dependencies.mf</targetManifestFile>
+                            <verifyRuntime>skip</verifyRuntime>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 
     <profiles>
         <!-- Base build java8 -->
@@ -314,24 +407,16 @@
             <properties>
                 <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
                 <maven.compiler.target>1.8</maven.compiler.target>
-                <maven.compiler.source>1.8</maven.compiler.source>                
+                <maven.compiler.source>1.8</maven.compiler.source>
             </properties>
             <build>
                 <plugins>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-compiler-plugin</artifactId>
-                        <version>3.8.1</version>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-jar-plugin</artifactId>
-                        <version>3.2.0</version>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-deploy-plugin</artifactId>
-                        <version>3.0.0-M1</version>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <useModulePath>false</useModulePath>
+                        </configuration>
                     </plugin>
                 </plugins>
             </build>
@@ -347,8 +432,8 @@
                 <maven.compiler.release>8</maven.compiler.release>
             </properties>
         </profile>
-        
-        <!-- Enforce dependency rules -->
+
+        <!-- Enforce dependency & Maven-central rules -->
         <profile>
             <id>enforce-dependency-rules</id>
             <activation>
@@ -361,24 +446,63 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-enforcer-plugin</artifactId>
-                        <version>3.0.0-M3</version>
+                        <version>3.1.0</version>
+                        <dependencies>
+                            <dependency>
+                                <groupId>org.kordamp.maven</groupId>
+                                <artifactId>pomchecker-enforcer-rules</artifactId>
+                                <version>1.6.0</version>
+                            </dependency>
+                            <dependency>
+                                <groupId>org.codehaus.mojo</groupId>
+                                <artifactId>extra-enforcer-rules</artifactId>
+                                <version>1.6.1</version>
+                            </dependency>
+                        </dependencies>
                         <executions>
                             <execution>
                                 <id>enforce</id>
-                                <configuration>
-                                    <rules>
-                                        <requireMavenVersion>
-                                            <version>3.3.9</version>
-                                        </requireMavenVersion>
-                                        <DependencyConvergence/>
-                                        <requireReleaseDeps>
-                                            <onlyWhenRelease>true</onlyWhenRelease>
-                                        </requireReleaseDeps>
-                                    </rules>
-                                </configuration>
                                 <goals>
                                     <goal>enforce</goal>
                                 </goals>
+                                <configuration>
+                                    <rules>
+                                        <!-- Built-In Rules -->
+                                        <banDuplicatePomDependencyVersions/>
+                                        <dependencyConvergence/>
+                                        <reactorModuleConvergence/>
+                                        <requireMavenVersion>
+                                            <version>3.6.0</version>
+                                        </requireMavenVersion>
+                                        <requireNoRepositories>
+                                            <allowSnapshotRepositories>true</allowSnapshotRepositories>
+                                            <allowedRepositories>
+                                                <!-- required by JD+ SNAPSHOTS -->
+                                                <allowedRepository>ossrh-snapshots</allowedRepository>
+                                            </allowedRepositories>
+                                        </requireNoRepositories>
+                                        <requirePluginVersions/>
+                                        <requireReleaseDeps>
+                                            <onlyWhenRelease>true</onlyWhenRelease>
+                                        </requireReleaseDeps>
+                                        <requireUpperBoundDeps/>
+                                        <!-- pomchecker-enforcer-rules -->
+                                        <checkMavenCentral
+                                                implementation="org.kordamp.maven.enforcer.checker.CheckMavenCentral">
+                                            <release>false</release>
+                                            <strict>false</strict>
+                                        </checkMavenCentral>
+                                        <!-- extra-enforcer-rules -->
+                                        <banCircularDependencies/>
+<!--                                        <banDuplicateClasses/>-->
+                                        <enforceBytecodeVersion>
+                                            <maxJdkVersion>8</maxJdkVersion>
+                                            <ignoredScopes>
+                                                <ignoreScope>test</ignoreScope>
+                                            </ignoredScopes>
+                                        </enforceBytecodeVersion>
+                                    </rules>
+                                </configuration>
                             </execution>
                         </executions>
                     </plugin>
@@ -399,7 +523,7 @@
                     <plugin>
                         <groupId>org.gaul</groupId>
                         <artifactId>modernizer-maven-plugin</artifactId>
-                        <version>2.1.0</version>
+                        <version>2.4.0</version>
                         <configuration>
                             <javaVersion>1.8</javaVersion>
                             <exclusionPatterns>
@@ -422,7 +546,7 @@
                 </plugins>
             </build>
         </profile>
-                
+
         <!-- Optional checks -->
         <profile>
             <id>optional-checks</id>
@@ -430,138 +554,159 @@
                 <plugins>
                     <plugin>
                         <groupId>org.jacoco</groupId>
-                        <artifactId>jacoco-maven-plugin</artifactId> 
-                        <version>0.8.5</version> 
-                        <executions> 
-                            <execution> 
-                                <goals> 
-                                    <goal>prepare-agent</goal> 
+                        <artifactId>jacoco-maven-plugin</artifactId>
+                        <version>0.8.8</version>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>prepare-agent</goal>
                                 </goals>
                             </execution>
-                            <execution> 
-                                <id>report</id> 
-                                <phase>prepare-package</phase> 
-                                <goals> 
-                                    <goal>report</goal> 
-                                </goals> 
+                            <execution>
+                                <id>report</id>
+                                <phase>prepare-package</phase>
+                                <goals>
+                                    <goal>report</goal>
+                                </goals>
                             </execution>
                         </executions>
                     </plugin>
                 </plugins>
             </build>
         </profile>
-        
-        <!-- Deploy SNAPSHOTS to jfrog with sources -->
+
+        <!-- Gitflow automation -->
         <profile>
-            <id>deploy-snapshots</id>
+            <id>gitflow-automation</id>
+            <activation>
+                <property>
+                    <name>!skipGitflowAutomation</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.amashchenko.maven.plugin</groupId>
+                        <artifactId>gitflow-maven-plugin</artifactId>
+                        <version>1.19.0</version>
+                        <configuration>
+                            <gitFlowConfig>
+                                <versionTagPrefix>v</versionTagPrefix>
+                            </gitFlowConfig>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <!-- Base deploy -->
+        <profile>
+            <id>base-deploy</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <version>3.2.1</version>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <goals>
+                                    <goal>jar-no-fork</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>3.4.1</version>
+                        <executions>
+                            <execution>
+                                <id>attach-empty-javadocs</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <excludePackageNames>*</excludePackageNames>
+                            <quiet>true</quiet>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.simplify4u.plugins</groupId>
+                        <artifactId>sign-maven-plugin</artifactId>
+                        <version>1.0.1</version>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <!-- Deploy SNAPSHOTS to OSSRH -->
+        <profile>
+            <id>snapshot-deploy</id>
             <distributionManagement>
                 <snapshotRepository>
-                    <id>oss-jfrog-artifactory</id>
-                    <url>https://oss.jfrog.org/artifactory/oss-snapshot-local</url>
+                    <id>ossrh</id>
+                    <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
                 </snapshotRepository>
             </distributionManagement>
             <build>
                 <plugins>
                     <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-deploy-plugin</artifactId>
-                        <version>3.0.0-M1</version>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-source-plugin</artifactId>
-                        <version>3.2.1</version>
-                        <executions>
-                            <execution>
-                                <phase>verify</phase>
-                                <goals>
-                                    <goal>jar-no-fork</goal>
-                                </goals>
-                            </execution>
-                        </executions>
+                        <groupId>org.sonatype.plugins</groupId>
+                        <artifactId>nexus-staging-maven-plugin</artifactId>
+                        <version>1.6.13</version>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <serverId>ossrh</serverId>
+                            <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                            <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                        </configuration>
                     </plugin>
                 </plugins>
             </build>
         </profile>
 
-        <!-- Deploy RELEASES to jfrog with sources -->
+        <!-- Deploy RELEASES to OSSRH -->
         <profile>
-            <id>deploy-releases</id>
+            <id>release-deploy</id>
             <distributionManagement>
                 <repository>
-                    <id>oss-jfrog-artifactory</id>
-                    <url>https://oss.jfrog.org/artifactory/oss-release-local</url>
+                    <id>ossrh</id>
+                    <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
                 </repository>
             </distributionManagement>
             <build>
                 <plugins>
                     <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-deploy-plugin</artifactId>
-                        <version>3.0.0-M1</version>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-source-plugin</artifactId>
-                        <version>3.2.1</version>
-                        <executions>
-                            <execution>
-                                <phase>verify</phase>
-                                <goals>
-                                    <goal>jar-no-fork</goal>
-                                </goals>
-                            </execution>
-                        </executions>
+                        <groupId>org.sonatype.plugins</groupId>
+                        <artifactId>nexus-staging-maven-plugin</artifactId>
+                        <version>1.6.13</version>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <serverId>ossrh</serverId>
+                            <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                            <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                        </configuration>
                     </plugin>
                 </plugins>
             </build>
-        </profile>    
+        </profile>
     </profiles>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <configuration>
-                    <!-- to have the jar plugin pickup the nbm generated manifest -->
-                    <archive>
-                        <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
-                    </archive>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.netbeans.utilities</groupId>
-                <artifactId>nbm-maven-plugin</artifactId>
-                <version>4.5</version>
-                <extensions>true</extensions>
-                <configuration>
-                    <useOSGiDependencies>false</useOSGiDependencies>    
-                    <brandingToken>${brandingToken}</brandingToken>
-                    <cluster>${brandingToken}</cluster>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 
     <repositories>
         <repository>
-            <id>netbeans-releases-mirror</id>
-            <url>https://repo.spring.io/plugins-release</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>oss-jfrog-artifactory-releases</id>
-            <url>https://oss.jfrog.org/artifactory/oss-release-local</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>oss-jfrog-artifactory-snapshots</id>
-            <url>https://oss.jfrog.org/artifactory/oss-snapshot-local</url>
+            <id>ossrh-snapshots</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
             <snapshots>
                 <enabled>true</enabled>
             </snapshots>

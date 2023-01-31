@@ -26,6 +26,7 @@ import ec.util.desktop.Desktop;
 import ec.util.desktop.DesktopManager;
 import ec.util.grid.swing.ext.SpreadSheetView;
 import ec.util.spreadsheet.Book;
+import ec.util.spreadsheet.BookFactoryLoader;
 import ec.util.spreadsheet.helpers.ArrayBook;
 import ec.util.spreadsheet.helpers.ArraySheet;
 import ec.util.various.swing.BasicFileViewer;
@@ -53,7 +54,6 @@ import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.JToolBar;
 import static org.openide.awt.DropDownButtonFactory.createDropDownButton;
-import org.openide.util.Lookup;
 
 /**
  *
@@ -65,7 +65,7 @@ public final class SpreadSheetBasicFileHandler implements BasicFileViewer.BasicF
     private final View uniqueView;
 
     public SpreadSheetBasicFileHandler() {
-        this.factories = Lookup.getDefault().lookupAll(Book.Factory.class);
+        this.factories = BookFactoryLoader.get();
         this.uniqueView = new View();
     }
 

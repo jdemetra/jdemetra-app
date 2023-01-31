@@ -4,57 +4,44 @@
     <parent>
         <groupId>eu.europa.ec.joinup.sat</groupId>
         <artifactId>nbdemetra-parent</artifactId>
-        <version>2.2.3</version>
+        <version>2.2.4</version>
     </parent>
 
     <artifactId>nbdemetra-ui</artifactId>
     <packaging>nbm</packaging>
 
     <name>NbDemetra - UI</name>
-
-    <properties>
-        <miglayout.version>3.7.4</miglayout.version>
-        <l2fprod.version>1.3.0</l2fprod.version>
-        <jcalendar.version>1.4</jcalendar.version>
-        <swinglayout.version>1.0.3</swinglayout.version>
-        <java-desktop-util.version>2.2.4</java-desktop-util.version>
-    </properties>
+    <description>JDemetra+ - UI</description>
+    <url>https://github.com/jdemetra/jdemetra-app</url>
 
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>be.nbb.rd</groupId>
-                <artifactId>java-desktop-util-chart</artifactId>
-                <version>${java-desktop-util.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            <dependency>
-                <groupId>be.nbb.rd</groupId>
-                <artifactId>java-desktop-util-os</artifactId>
-                <version>${java-desktop-util.version}</version>
+                <groupId>com.github.nbbrd.java-desktop-util</groupId>
+                <artifactId>java-desktop-util-bom</artifactId>
+                <version>2.3.0</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
             <dependency>
                 <groupId>com.miglayout</groupId>
                 <artifactId>miglayout</artifactId>
-                <version>${miglayout.version}</version>
+                <version>3.7.4</version>
             </dependency>
             <dependency>
                 <groupId>org.tros</groupId>
                 <artifactId>l2fprod-properties-editor</artifactId>
-                <version>${l2fprod.version}</version>
+                <version>1.3.0</version>
             </dependency>
             <dependency>
                 <groupId>com.toedter</groupId>
                 <artifactId>jcalendar</artifactId>
-                <version>${jcalendar.version}</version> 
+                <version>1.4</version>
             </dependency>
             <dependency>
                 <groupId>org.swinglabs</groupId>
                 <artifactId>swing-layout</artifactId>
-                <version>${swinglayout.version}</version>
+                <version>1.0.3</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -65,6 +52,8 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <scope>provided</scope>
+            <!-- Force version to override the one defined in java-desktop-util imports -->
+            <version>1.18.24</version>
         </dependency>
         <dependency>
             <groupId>org.checkerframework</groupId>
@@ -73,11 +62,6 @@
         </dependency>
         
         <!-- test only -->
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
@@ -191,35 +175,56 @@
         </dependency>
         <dependency>
             <groupId>org.jfree</groupId>
-            <artifactId>jfreechart</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.jfree</groupId>
             <artifactId>jfreesvg</artifactId>
+            <version>3.4.3</version>
         </dependency>
         <dependency>
             <groupId>org.swinglabs</groupId>
             <artifactId>swing-layout</artifactId>
         </dependency>
         <dependency>
-            <groupId>be.nbb.rd</groupId>
+            <groupId>com.github.nbbrd.java-desktop-util</groupId>
             <artifactId>java-desktop-util-swing</artifactId>
-            <version>${java-desktop-util.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.github.nbbrd.java-design-util</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
-            <groupId>be.nbb.rd</groupId>
+            <groupId>com.github.nbbrd.java-desktop-util</groupId>
             <artifactId>java-desktop-util-chart</artifactId>
-            <version>${java-desktop-util.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.github.nbbrd.java-design-util</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
-            <groupId>be.nbb.rd</groupId>
+            <groupId>com.github.nbbrd.java-desktop-util</groupId>
             <artifactId>java-desktop-util-fa</artifactId>
-            <version>${java-desktop-util.version}</version>
         </dependency>
         <dependency>
-            <groupId>be.nbb.rd</groupId>
+            <groupId>com.github.nbbrd.java-desktop-util</groupId>
             <artifactId>java-desktop-util-os</artifactId>
-            <version>${java-desktop-util.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.github.nbbrd.java-io-util</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>com.github.nbbrd.java-io-util</groupId>
+            <artifactId>java-io-win</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.github.nbbrd.java-io-util</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
 
@@ -243,6 +248,7 @@
                         <publicPackage>org.jfree.*</publicPackage>
                         <publicPackage>com.l2fprod.common.*</publicPackage>
                         <publicPackage>com.toedter.*</publicPackage>
+                        <publicPackage>nbbrd.io.win</publicPackage>
                     </publicPackages>
                 </configuration>
             </plugin>

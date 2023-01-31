@@ -4,7 +4,7 @@
     <parent>
         <groupId>eu.europa.ec.joinup.sat</groupId>
         <artifactId>nbdemetra-parent</artifactId>
-        <version>2.2.3</version>
+        <version>2.2.4</version>
     </parent>
 
     <artifactId>nbdemetra-sdmx</artifactId>
@@ -12,8 +12,16 @@
 
     <name>NbDemetra - SDMX</name>
     <description>This module provides basic SDMX IO to Demetra.</description>
+    <url>https://github.com/jdemetra/jdemetra-app</url>
 
     <dependencies>
+        <!-- test only -->
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+
         <!-- Demetra -->
         <dependency>
             <groupId>eu.europa.ec.joinup.sat</groupId>

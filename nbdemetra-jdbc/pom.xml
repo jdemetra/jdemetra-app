@@ -4,7 +4,7 @@
     <parent>
         <groupId>eu.europa.ec.joinup.sat</groupId>
         <artifactId>nbdemetra-parent</artifactId>
-        <version>2.2.3</version>
+        <version>2.2.4</version>
     </parent>
 
     <artifactId>nbdemetra-jdbc</artifactId>
@@ -12,6 +12,7 @@
 
     <name>NbDemetra - JDBC</name>
     <description>This module provides JDBC IO to Demetra.</description>
+    <url>https://github.com/jdemetra/jdemetra-app</url>
 
     <dependencies>
         <!-- compile only -->
@@ -24,6 +25,13 @@
             <groupId>org.checkerframework</groupId>
             <artifactId>checker-qual</artifactId>
             <scope>provided</scope>
+        </dependency>
+
+        <!-- test only -->
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <scope>test</scope>
         </dependency>
 
         <!-- NetBeans -->

@@ -5,13 +5,15 @@
     <parent>
         <groupId>eu.europa.ec.joinup.sat</groupId>
         <artifactId>nbdemetra-parent</artifactId>
-        <version>2.2.3</version>
+        <version>2.2.4</version>
     </parent>
 
     <artifactId>nbdemetra-branding</artifactId>
     <packaging>nbm</packaging>
 
     <name>NbDemetra - Branding</name>
+    <description>JDemetra+ - Branding</description>
+    <url>https://github.com/jdemetra/jdemetra-app</url>
 
     <dependencies>
         <dependency>

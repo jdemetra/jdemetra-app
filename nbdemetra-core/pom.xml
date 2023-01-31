@@ -4,7 +4,7 @@
     <parent>
         <groupId>eu.europa.ec.joinup.sat</groupId>
         <artifactId>nbdemetra-parent</artifactId>
-        <version>2.2.3</version>
+        <version>2.2.4</version>
     </parent>
 
     <artifactId>nbdemetra-core</artifactId>
@@ -12,6 +12,7 @@
 
     <name>NbDemetra - Core</name>
     <description>Wrapper module for Demetra core libraries.</description>
+    <url>https://github.com/jdemetra/jdemetra-app</url>
 
     <dependencyManagement>
         <dependencies>
@@ -37,7 +38,14 @@
             <artifactId>checker-qual</artifactId>
             <scope>provided</scope>
         </dependency>
-        
+
+        <!-- test only -->
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+
         <!-- NetBeans -->
         <dependency>
             <groupId>org.netbeans.api</groupId>
@@ -130,6 +138,8 @@
                         <publicPackage>javax.xml.bind.*</publicPackage>
                         <publicPackage>net.jcip.annotations</publicPackage>
                         <publicPackage>nbbrd.io.*</publicPackage>
+                        <!-- strange bug (that appeared after guava update in demetra-core) solved by this: -->
+                        <publicPackage>org.checkerframework.checker.nullness.qual</publicPackage>
                     </publicPackages>
                 </configuration>
             </plugin>

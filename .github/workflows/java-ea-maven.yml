@@ -1,0 +1,37 @@
+name: Java-EA with Maven
+
+on:
+  push:
+    branches:
+      - develop
+  workflow_dispatch:
+
+jobs:
+  build-and-test-job:
+    strategy:
+      fail-fast: false
+      matrix:
+        java: [ '-ea' ]
+        os: [ ubuntu-latest ]
+
+    name: JDK${{ matrix.java }} on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+          fetch-depth: 0
+
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: ${{ matrix.java }}
+          cache: 'maven'
+
+      - name: Build and (headless) test with Maven
+        uses: GabrielBB/xvfb-action@v1
+        with:
+          run: mvn -U -B -ntp package

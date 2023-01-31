@@ -1,31 +1,26 @@
 /*
  * Copyright 2016 National Bank of Belgium
  *
- * Licensed under the EUPL, Version 1.1 or – as soon they will be approved 
+ * Licensed under the EUPL, Version 1.1 or – as soon they will be approved
  * by the European Commission - subsequent versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  * You may obtain a copy of the Licence at:
- * 
+ *
  * http://ec.europa.eu/idabc/eupl
- * 
- * Unless required by applicable law or agreed to in writing, software 
+ *
+ * Unless required by applicable law or agreed to in writing, software
  * distributed under the Licence is distributed on an "AS IS" basis,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the Licence for the specific language governing permissions and 
+ * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
  */
 package ec.nbdemetra.ui.ns;
 
-import com.google.common.collect.Iterables;
 import ec.nbdemetra.ui.Config;
 import ec.nbdemetra.ui.IConfigurable;
 import ec.nbdemetra.ui.IResetable;
 import ec.nbdemetra.ui.nodes.AbstractNodeBuilder;
-import java.awt.Image;
-import java.awt.event.ActionEvent;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import javax.swing.AbstractAction;
-import javax.swing.Action;
 import org.openide.explorer.ExplorerManager;
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
@@ -34,8 +29,13 @@ import org.openide.nodes.Sheet;
 import org.openide.util.lookup.AbstractLookup;
 import org.openide.util.lookup.InstanceContent;
 
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
+
 /**
- *
  * @author Philippe Charles
  */
 public class NamedServiceNode extends AbstractNode {
@@ -99,7 +99,7 @@ public class NamedServiceNode extends AbstractNode {
     }
 
     public static void loadAll(ExplorerManager em, Iterable<? extends INamedService> items) {
-        Iterable<NamedServiceNode> nodes = Iterables.transform(items, o -> new NamedServiceNode(o));
+        Stream<NamedServiceNode> nodes = StreamSupport.stream(items.spliterator(), false).map(o -> new NamedServiceNode(o));
         em.setRootContext(new AbstractNodeBuilder().add(nodes).build());
     }
 

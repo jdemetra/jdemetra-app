@@ -5,20 +5,20 @@
     <parent>
         <groupId>eu.europa.ec.joinup.sat</groupId>
         <artifactId>nbdemetra-parent</artifactId>
-        <version>2.2.3</version>
+        <version>2.2.4</version>
     </parent>
 
     <artifactId>nbdemetra-app</artifactId>
     <packaging>nbm-application</packaging>
 
     <name>NbDemetra</name>
+    <description>JDemetra+</description>
+    <url>https://github.com/jdemetra/jdemetra-app</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <netbeans.run.params.ide/>
         <netbeans.run.params>${netbeans.run.params.ide}</netbeans.run.params>
-        <project.x.binaries>${project.build.directory}/binaries</project.x.binaries>
-        <project.x.zipname>jdemetra-${project.version}-bin</project.x.zipname>
     </properties>
 
     <dependencies>
@@ -28,26 +28,36 @@
             <artifactId>platform</artifactId>
             <type>pom</type>
             <exclusions>
-                <exclusion> 
-                    <groupId>org.netbeans.api</groupId> 
-                    <artifactId>org-netbeans-libs-testng</artifactId> 
-                </exclusion> 
-                <exclusion> 
-                    <groupId>org.netbeans.modules</groupId> 
-                    <artifactId>org-netbeans-modules-junitlib</artifactId> 
-                </exclusion> 
+                <exclusion>
+                    <groupId>org.netbeans.api</groupId>
+                    <artifactId>org-netbeans-libs-testng</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.netbeans.modules</groupId>
+                    <artifactId>org-netbeans-modules-junitlib</artifactId>
+                </exclusion>
                 <exclusion>
                     <groupId>org.netbeans.api</groupId>
                     <artifactId>org-netbeans-modules-javahelp</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>commons-io</groupId>
+                    <artifactId>commons-io</artifactId>
+                </exclusion>
             </exclusions>
+        </dependency>
+        <!-- force specific version of commons-io to avoid dependency convergence issue with POI -->
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.11.0</version>
         </dependency>
 
         <!-- NB additional modules -->
         <dependency>
             <groupId>org.netbeans.modules</groupId>
             <artifactId>org-netbeans-modules-dbapi</artifactId>
-            <version>${netbeans.version}</version> 
+            <version>${netbeans.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.netbeans.api</groupId>
@@ -58,7 +68,7 @@
         <dependency>
             <groupId>org.netbeans.modules</groupId>
             <artifactId>org-netbeans-modules-projectapi-nb</artifactId>
-            <version>${netbeans.version}</version> 
+            <version>${netbeans.version}</version>
         </dependency>
 
         <!-- JD+ modules -->
@@ -72,7 +82,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>nbdemetra-ui</artifactId>   
+            <artifactId>nbdemetra-ui</artifactId>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -111,61 +121,123 @@
                 <groupId>org.apache.netbeans.utilities</groupId>
                 <artifactId>nbm-maven-plugin</artifactId>
                 <configuration>
-                    <finalName>${project.x.zipname}</finalName>
-                    <installersFilePrefix>jdemetra-${project.version}-setup</installersFilePrefix>
-                    <!--<installerPack200Enable>false</installerPack200Enable>-->
                     <etcConfFile>src/main/resources/nbdemetra.conf</etcConfFile>
-                </configuration>
-            </plugin>
-            
-            <!-- Generates binaries folder -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <version>3.0.0</version>
-                <executions>
-                    <execution>
-                        <phase>verify</phase>
-                        <configuration>
-                            <target>
-                                <copy file="${project.build.directory}/${project.x.zipname}.zip" 
-                                      tofile="${project.x.binaries}/${project.x.zipname}.zip"/>
-                            </target>
-                        </configuration>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            
-            <!-- Generates SHA256 on binaries -->
-            <plugin>
-                <groupId>net.nicoulaj.maven.plugins</groupId>
-                <artifactId>checksum-maven-plugin</artifactId>
-                <version>1.8</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>files</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <algorithms>
-                        <algorithm>SHA-256</algorithm>
-                    </algorithms>
-                    <fileSets>
-                        <fileSet>
-                            <directory>${project.x.binaries}</directory>
-                            <excludes>
-                                <exclude>*.sha256</exclude>
-                            </excludes>
-                        </fileSet>
-                    </fileSets>
-                    <csvSummary>false</csvSummary>
                 </configuration>
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>full-release</id>
+            <properties>
+                <project.x.src>${project.build.directory}/${project.build.finalName}</project.x.src>
+                <project.x.dst>jdemetra-${project.version}</project.x.dst>
+            </properties>
+            <build>
+                <plugins>
+                    <!-- Generates setups -->
+                    <plugin>
+                        <groupId>org.apache.netbeans.utilities</groupId>
+                        <artifactId>nbm-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <phase>install</phase>
+                                <goals>
+                                    <goal>build-installers</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <!-- Extract changelog -->
+                    <plugin>
+                        <groupId>com.github.nbbrd.heylogs</groupId>
+                        <artifactId>heylogs-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>extract-changelog</id>
+                                <goals>
+                                    <goal>extract</goal>
+                                </goals>
+                                <configuration>
+                                    <inputFile>${project.parent.basedir}/CHANGELOG.md</inputFile>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <!-- Release assets -->
+                    <plugin>
+                        <groupId>org.jreleaser</groupId>
+                        <artifactId>jreleaser-maven-plugin</artifactId>
+                        <version>1.4.0</version>
+                        <executions>
+                            <execution>
+                                <phase>install</phase>
+                                <goals>
+                                    <goal>full-release</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <jreleaser>
+                                <release>
+                                    <github>
+                                        <skipTag>true</skipTag>
+                                        <draft>true</draft>
+                                        <!-- Fix default value -->
+                                        <branch>master</branch>
+                                        <changelog>
+                                            <external>${project.build.directory}/CHANGELOG.md</external>
+                                        </changelog>
+                                    </github>
+                                </release>
+                                <checksum>
+                                    <individual>true</individual>
+                                </checksum>
+                                <signing>
+                                    <active>ALWAYS</active>
+                                    <!-- Fix default value -->
+                                    <armored>true</armored>
+                                </signing>
+                                <distributions>
+                                    <!-- Name is here ! -->
+                                    <jdemetra>
+                                        <type>JAVA_BINARY</type>
+                                        <artifacts>
+                                            <artifact>
+                                                <path>${project.x.src}.zip</path>
+                                                <transform>${project.x.dst}-bin.zip</transform>
+                                            </artifact>
+                                            <artifact>
+                                                <path>${project.x.src}-linux.sh</path>
+                                                <transform>${project.x.dst}-setup-linux.sh</transform>
+                                                <platform>linux</platform>
+                                            </artifact>
+                                            <artifact>
+                                                <path>${project.x.src}-macosx.tgz</path>
+                                                <transform>${project.x.dst}-setup-macosx.tgz</transform>
+                                                <platform>osx</platform>
+                                            </artifact>
+                                            <artifact>
+                                                <path>${project.x.src}-solaris.sh</path>
+                                                <transform>${project.x.dst}-setup-solaris.sh</transform>
+                                                <platform>sunos</platform>
+                                            </artifact>
+                                            <artifact>
+                                                <path>${project.x.src}-windows.exe</path>
+                                                <transform>${project.x.dst}-setup-windows.exe</transform>
+                                                <platform>windows</platform>
+                                            </artifact>
+                                        </artifacts>
+                                    </jdemetra>
+                                </distributions>
+                            </jreleaser>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

@@ -29,6 +29,7 @@ import ec.tss.TsInformationType;
 import ec.tss.tsproviders.spreadsheet.engine.SpreadSheetFactory;
 import ec.tss.tsproviders.spreadsheet.engine.TsExportOptions;
 import ec.util.spreadsheet.Book;
+import ec.util.spreadsheet.BookFactoryLoader;
 import ec.util.spreadsheet.helpers.ArraySheet;
 import ec.util.various.swing.OnAnyThread;
 import ec.util.various.swing.OnEDT;
@@ -41,7 +42,6 @@ import org.netbeans.api.progress.ProgressHandle;
 import org.openide.filesystems.FileChooserBuilder;
 import org.openide.nodes.Sheet;
 import org.openide.util.ImageUtilities;
-import org.openide.util.Lookup;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -55,7 +55,7 @@ public final class SpreadsheetTsSave implements ITsSave {
     private final OptionsBean options;
 
     public SpreadsheetTsSave() {
-        this.fileChooser = TsSaveUtil.fileChooser(SpreadsheetTsSave.class).setFileFilter(new SaveFileFilter());
+        this.fileChooser = TsSaveUtil.fileChooser(SpreadsheetTsSave.class, new SaveFileFilter());
         this.options = new OptionsBean();
     }
 
@@ -114,12 +114,15 @@ public final class SpreadsheetTsSave implements ITsSave {
 
         ph.progress("Writing file");
         getFactoryByFile(file)
-                .orElseThrow(() -> new IOException("Cannot find spreadsheet factory"))
+                .orElseThrow(() -> new IOException("Cannot find spreadsheet factory for file '" + file + "'"))
                 .store(file, sheet.toBook());
     }
 
     private static Optional<? extends Book.Factory> getFactoryByFile(File file) {
-        return Lookup.getDefault().lookupAll(Book.Factory.class).stream().filter(o -> o.canStore() && o.accept(file)).findFirst();
+        return BookFactoryLoader.get()
+                .stream()
+                .filter(factory -> factory.canStore() && factory.accept(file))
+                .findFirst();
     }
 
     private static final class SaveFileFilter extends FileFilter {
