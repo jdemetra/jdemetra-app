@@ -7,6 +7,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [2.2.4] - 2023-01-31
+
 This the release of JDemetra+ v2.2.4.  
 [Java SE 8 or later](https://adoptium.net/) version is required to run it.
 
@@ -133,7 +135,8 @@ This the release of JDemetra+ v2.2.2.
 ## [1.5.4] - 2014-12-18
 
 
-[Unreleased]: https://github.com/jdemetra/jdemetra-app/compare/v2.2.3...HEAD
+[Unreleased]: https://github.com/jdemetra/jdemetra-app/compare/v2.2.4...HEAD
+[2.2.4]: https://github.com/jdemetra/jdemetra-app/compare/v2.2.3...2.2.4
 [2.2.3]: https://github.com/jdemetra/jdemetra-app/compare/v2.2.2...2.2.3
 [2.2.2]: https://github.com/jdemetra/jdemetra-app/compare/v2.2.1...2.2.2
 [2.2.1]: https://github.com/jdemetra/jdemetra-app/compare/v2.2.0...2.2.1
