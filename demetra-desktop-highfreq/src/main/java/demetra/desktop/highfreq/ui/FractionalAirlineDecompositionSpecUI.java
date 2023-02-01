@@ -1,6 +1,18 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright 2023 National Bank of Belgium
+ * 
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be approved 
+ * by the European Commission - subsequent versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ * 
+ * https://joinup.ec.europa.eu/software/page/eupl
+ * 
+ * Unless required by applicable law or agreed to in writing, software 
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and 
+ * limitations under the Licence.
  */
 package demetra.desktop.highfreq.ui;
 
@@ -30,6 +42,10 @@ public class FractionalAirlineDecompositionSpecUI implements IObjectDescriptor<E
         root=new FractionalAirlineDecompositionSpecRoot(spec, ro);
     }
 
+   public SeriesSpecUI getSeries() {
+        return new SeriesSpecUI(root.getPreprocessing());
+    }
+
     public TransformSpecUI getTransform() {
         return new TransformSpecUI(root.getPreprocessing());
     }
@@ -54,7 +70,11 @@ public class FractionalAirlineDecompositionSpecUI implements IObjectDescriptor<E
     public List<EnhancedPropertyDescriptor> getProperties() {
         // regression
         ArrayList<EnhancedPropertyDescriptor> descs = new ArrayList<>();
-        EnhancedPropertyDescriptor desc = transformDesc();
+        EnhancedPropertyDescriptor desc = seriesDesc();
+        if (desc != null) {
+            descs.add(desc);
+        }
+        desc = transformDesc();
         if (desc != null) {
             descs.add(desc);
         }
@@ -81,7 +101,7 @@ public class FractionalAirlineDecompositionSpecUI implements IObjectDescriptor<E
         return descs;
     }
     ///////////////////////////////////////////////////////////////////////////
-    private static final int TRANSFORM_ID = 2, REGRESSION_ID = 3, STOCHASTIC_ID = 4, OUTLIER_ID = 5, ESTIMATE_ID = 7, DECOMPOSITION_ID=8;
+    private static final int SERIES_ID=1, TRANSFORM_ID = 2, REGRESSION_ID = 3, STOCHASTIC_ID = 4, OUTLIER_ID = 5, ESTIMATE_ID = 7, DECOMPOSITION_ID=8;
 
     @Messages({"fractionalAirlineDecompositionSpecUI.regressionDesc.name=REGRESSION",
         "fractionalAirlineDecompositionSpecUI.regressionDesc.desc="
@@ -99,7 +119,24 @@ public class FractionalAirlineDecompositionSpecUI implements IObjectDescriptor<E
         }
     }
 
-    @Messages({"fractionalAirlineDecompositionSpecUI.transformDesc.name=SERIES",
+
+    @Messages({"fractionalAirlineDecompositionSpecUI.seriesDesc.name=SERIES",
+        "fractionalAirlineDecompositionSpecUI.seriesDesc.desc="
+    })
+    private EnhancedPropertyDescriptor seriesDesc() {
+        try {
+            PropertyDescriptor desc = new PropertyDescriptor("transform", this.getClass(), "getSeries", null);
+            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, SERIES_ID);
+            desc.setDisplayName(Bundle.fractionalAirlineDecompositionSpecUI_seriesDesc_name());
+            desc.setShortDescription(Bundle.fractionalAirlineDecompositionSpecUI_seriesDesc_desc());
+            //edesc.setReadOnly(true);
+            return edesc;
+        } catch (IntrospectionException ex) {
+            return null;
+        }
+    }
+
+    @Messages({"fractionalAirlineDecompositionSpecUI.transformDesc.name=TRANSFORM",
         "fractionalAirlineDecompositionSpecUI.transformDesc.desc="
     })
     private EnhancedPropertyDescriptor transformDesc() {

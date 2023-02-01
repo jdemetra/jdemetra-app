@@ -1,11 +1,24 @@
 /*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ * Copyright 2023 National Bank of Belgium
+ * 
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be approved 
+ * by the European Commission - subsequent versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at:
+ * 
+ * https://joinup.ec.europa.eu/software/page/eupl
+ * 
+ * Unless required by applicable law or agreed to in writing, software 
+ * distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and 
+ * limitations under the Licence.
  */
 package demetra.desktop.highfreq.ui;
 
 import demetra.data.Parameter;
 import demetra.desktop.descriptors.EnhancedPropertyDescriptor;
+import demetra.desktop.descriptors.IPropertyDescriptors;
 import demetra.highfreq.ExtendedAirlineSpec;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
@@ -17,19 +30,20 @@ import org.openide.util.NbBundle;
  *
  * @author PALATEJ
  */
-public class StochasticSpecUI extends BaseFractionalAirlineSpecUI {
+public class StochasticSpecUI implements IPropertyDescriptors {
 
-    @Override
+    private final FractionalAirlineSpecRoot root;
+
+    public StochasticSpecUI(FractionalAirlineSpecRoot root) {
+        this.root = root;
+    }
+   @Override
     public String toString() {
         return "";
     }
 
-    private ExtendedAirlineSpec inner() {
-        return core().getStochastic();
-    }
-
-    public StochasticSpecUI(FractionalAirlineSpecRoot root) {
-        super(root);
+    private ExtendedAirlineSpec spec() {
+        return root.getCore().getStochastic();
     }
 
     @Override
@@ -64,12 +78,12 @@ public class StochasticSpecUI extends BaseFractionalAirlineSpecUI {
     }
     
     public boolean isMean() {
-        return inner().isMean();
+        return spec().isMean();
     }
 
     public void setMean(boolean mean) {
-        if (mean != inner().isMean()) {
-            update(inner().toBuilder()
+        if (mean != spec().isMean()) {
+            root.update(spec().toBuilder()
                     .mean(mean)
                     .build());
         }
@@ -81,7 +95,7 @@ public class StochasticSpecUI extends BaseFractionalAirlineSpecUI {
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, MEAN_ID);
             desc.setDisplayName("mean");
             desc.setShortDescription("mean correction");
-            edesc.setReadOnly(isRo());
+            edesc.setReadOnly(root.isRo());
             return edesc;
         } catch (IntrospectionException ex) {
             return null;
@@ -89,7 +103,7 @@ public class StochasticSpecUI extends BaseFractionalAirlineSpecUI {
     }
 
      public boolean isYearly() {
-        double[] p = inner().getPeriodicities();
+        double[] p = spec().getPeriodicities();
         for (int i = 0; i < p.length; ++i) {
             if (p[i] == 365.25) {
                 return true;
@@ -99,7 +113,7 @@ public class StochasticSpecUI extends BaseFractionalAirlineSpecUI {
     }
 
     public boolean isWeekly() {
-        double[] p = inner().getPeriodicities();
+        double[] p = spec().getPeriodicities();
         for (int i = 0; i < p.length; ++i) {
             if (p[i] == 7) {
                 return true;
@@ -123,7 +137,7 @@ public class StochasticSpecUI extends BaseFractionalAirlineSpecUI {
                 p = ExtendedAirlineSpec.NO_PERIOD;
             }
         }
-        update(inner().toBuilder()
+        root.update(spec().toBuilder()
                 .periodicities(p)
                 .build());
     }
@@ -135,7 +149,7 @@ public class StochasticSpecUI extends BaseFractionalAirlineSpecUI {
             desc.setDisplayName("yearly");
             desc.setShortDescription("Yearly");
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            edesc.setReadOnly(isRo());
+            edesc.setReadOnly(root.isRo());
             return edesc;
         } catch (IntrospectionException ex) {
             return null;
@@ -157,7 +171,7 @@ public class StochasticSpecUI extends BaseFractionalAirlineSpecUI {
                 p = ExtendedAirlineSpec.NO_PERIOD;
             }
         }
-        update(inner().toBuilder()
+        root.update(spec().toBuilder()
                 .periodicities(p)
                 .build());
     }
@@ -169,7 +183,7 @@ public class StochasticSpecUI extends BaseFractionalAirlineSpecUI {
             desc.setDisplayName("weekly");
             desc.setShortDescription("Weekly");
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            edesc.setReadOnly(isRo());
+            edesc.setReadOnly(root.isRo());
             return edesc;
         } catch (IntrospectionException ex) {
             return null;
@@ -177,12 +191,12 @@ public class StochasticSpecUI extends BaseFractionalAirlineSpecUI {
     }
 
     public boolean isAr() {
-        return inner().hasAr();
+        return spec().hasAr();
     }
 
     public void setAr(boolean ar) {
-        if (ar != inner().hasAr()) {
-            update(inner().toBuilder()
+        if (ar != spec().hasAr()) {
+            root.update(spec().toBuilder()
                     .phi(ar ? Parameter.undefined() : null )
                     .theta(ar ? null : Parameter.undefined())
                     .build());
@@ -196,7 +210,7 @@ public class StochasticSpecUI extends BaseFractionalAirlineSpecUI {
             desc.setDisplayName("ar");
             desc.setShortDescription("Auto-regressive parameter");
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            edesc.setReadOnly(isRo());
+            edesc.setReadOnly(root.isRo());
             return edesc;
         } catch (IntrospectionException ex) {
             return null;
@@ -204,12 +218,12 @@ public class StochasticSpecUI extends BaseFractionalAirlineSpecUI {
     }
 
     public int getDifferencing() {
-        return inner().getDifferencingOrder();
+        return spec().getDifferencingOrder();
     }
 
     public void setDifferencing(int diff) {
-        if (diff != inner().getDifferencingOrder()) {
-            update(inner().toBuilder()
+        if (diff != spec().getDifferencingOrder()) {
+            root.update(spec().toBuilder()
                     .differencingOrder(diff)
                     .build());
         }
@@ -222,7 +236,7 @@ public class StochasticSpecUI extends BaseFractionalAirlineSpecUI {
             desc.setDisplayName("differencing");
             desc.setShortDescription("Differencing order (-1 to default differencing) ");
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            edesc.setReadOnly(isRo());
+            edesc.setReadOnly(root.isRo());
             return edesc;
         } catch (IntrospectionException ex) {
             return null;
@@ -230,12 +244,12 @@ public class StochasticSpecUI extends BaseFractionalAirlineSpecUI {
     }
     
     public boolean isToInt() {
-        return inner().isAdjustToInt();
+        return spec().isAdjustToInt();
     }
 
     public void setToInt(boolean toInt) {
-        if (toInt != inner().isAdjustToInt()) {
-            update(inner().toBuilder()
+        if (toInt != spec().isAdjustToInt()) {
+            root.update(spec().toBuilder()
                     .adjustToInt(toInt)
                     .build());
         }
@@ -248,7 +262,7 @@ public class StochasticSpecUI extends BaseFractionalAirlineSpecUI {
             desc.setDisplayName("to int");
             desc.setShortDescription("Adjust periods to int values");
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            edesc.setReadOnly(isRo());
+            edesc.setReadOnly(root.isRo());
             return edesc;
         } catch (IntrospectionException ex) {
             return null;

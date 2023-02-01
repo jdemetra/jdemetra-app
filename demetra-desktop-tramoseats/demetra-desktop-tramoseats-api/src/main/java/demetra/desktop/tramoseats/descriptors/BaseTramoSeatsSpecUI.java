@@ -6,7 +6,6 @@ package demetra.desktop.tramoseats.descriptors;
 
 import demetra.desktop.descriptors.IPropertyDescriptors;
 import demetra.seats.DecompositionSpec;
-import demetra.tramo.TramoSpec;
 
 /**
  *
@@ -20,7 +19,6 @@ public abstract class BaseTramoSeatsSpecUI implements IPropertyDescriptors{
         this.root =root;
     }
     
-    TramoSpec tramo(){return root.getTramo().getCore();}
     DecompositionSpec seats(){return root.getSeats();}
     
     boolean isRo(){return root.isRo();}

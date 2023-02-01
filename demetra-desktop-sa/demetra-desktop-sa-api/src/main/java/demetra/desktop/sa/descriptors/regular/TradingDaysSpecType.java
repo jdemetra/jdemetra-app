@@ -1,4 +1,4 @@
-package demetra.desktop.modelling.util;
+package demetra.desktop.sa.descriptors.regular;
 public enum TradingDaysSpecType {
     None, 
     Default, 

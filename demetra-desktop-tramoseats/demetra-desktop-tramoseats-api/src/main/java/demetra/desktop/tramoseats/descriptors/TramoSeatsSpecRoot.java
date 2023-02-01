@@ -7,7 +7,6 @@ package demetra.desktop.tramoseats.descriptors;
 import demetra.desktop.tramo.descriptors.TramoSpecRoot;
 import demetra.sa.benchmarking.SaBenchmarkingSpec;
 import demetra.seats.DecompositionSpec;
-import demetra.tramo.TramoSpec;
 import demetra.tramoseats.TramoSeatsSpec;
 /**
  *

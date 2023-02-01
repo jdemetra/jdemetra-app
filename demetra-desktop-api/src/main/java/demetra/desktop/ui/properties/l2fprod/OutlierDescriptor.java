@@ -215,9 +215,6 @@ public class OutlierDescriptor implements IPropertyDescriptors {
     }
     
     private EnhancedPropertyDescriptor parameterDesc() {
-        if (!parameter.isFixed()) {
-            return null;
-        }
         try {
             PropertyDescriptor desc = new PropertyDescriptor("parameter", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, PARAMETER_ID);

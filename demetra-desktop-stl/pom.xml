@@ -100,6 +100,21 @@
         <!-- compile & runtime -->
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>demetra-stl-io</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>demetra-sa-workspace</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>demetra-toolkit-workspace</artifactId>
+                </exclusion>
+            </exclusions>
+            <version>${jd3-stl.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>demetra-stl-core</artifactId>
             <exclusions>
                 <exclusion>
@@ -127,6 +142,7 @@
                 <artifactId>nbm-maven-plugin</artifactId>
                 <extensions>true</extensions>
                 <configuration>
+                    <requiresRestart>true</requiresRestart>
                     <publicPackages>
                         <publicPackage>demetra.stl.*</publicPackage>
                         <publicPackage>jdplus.stl.*</publicPackage>

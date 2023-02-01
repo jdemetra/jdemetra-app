@@ -18,6 +18,8 @@ package demetra.desktop.stl.ui;
 
 import demetra.data.WeightFunction;
 import demetra.desktop.descriptors.EnhancedPropertyDescriptor;
+import demetra.desktop.descriptors.IPropertyDescriptors;
+import demetra.stl.StlSpec;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
@@ -28,12 +30,22 @@ import org.openide.util.NbBundle;
  *
  * @author PALATEJ
  */
-public class AlgorithmUI extends BaseStlPlusSpecUI {
+public class AlgorithmUI implements IPropertyDescriptors {
     
-    public AlgorithmUI(StlPlusSpecRoot root){
-        super(root);
+    private final StlPlusSpecRoot root;
+
+    public AlgorithmUI(StlPlusSpecRoot root) {
+        this.root = root;
     }
 
+    public StlSpec spec() {
+        return root.getStl();
+    }
+
+    public boolean isDefault() {
+        return spec() == null;
+    }
+ 
     @Override
     public List<EnhancedPropertyDescriptor> getProperties() {
         ArrayList<EnhancedPropertyDescriptor> descs = new ArrayList<>();
@@ -61,33 +73,33 @@ public class AlgorithmUI extends BaseStlPlusSpecUI {
     }
 
     public WeightFunction getRobustWeightFunction() {
-        return root.core.getRobustWeightFunction();
+        return spec().getRobustWeightFunction();
     }
 
     public void setRobustWeightFunction(WeightFunction wfn) {
-        root.core = root.core.toBuilder().robustWeightFunction(wfn).build();
+        root.update(spec().toBuilder().robustWeightFunction(wfn).build());
     }
 
     public double getRobustWeightThreshold() {
-        return root.core.getRobustWeightThreshold();
+        return spec().getRobustWeightThreshold();
     }
 
     public void setRobustWeightThreshold(double wt) {
-        root.core = root.core.toBuilder().robustWeightThreshold(wt).build();
+        root.update(spec().toBuilder().robustWeightThreshold(wt).build());
     }
     
    public boolean isMultiplicative() {
-        return root.core.isMultiplicative();
+        return spec().isMultiplicative();
     }
 
     public void setMultiplicative(boolean mul) {
-        root.core = root.core.toBuilder()
+        root.update(spec().toBuilder()
                 .multiplicative(mul)
-                .build();
+                .build());
     }
 
     public int getInnerLoopCount() {
-        return root.core.getInnerLoopsCount();
+        return spec().getInnerLoopsCount();
     }
 
     public void setInnerLoopCount(int ni) {
@@ -95,22 +107,22 @@ public class AlgorithmUI extends BaseStlPlusSpecUI {
             throw new IllegalArgumentException("Number of inner loops should be ge 1");
         }
 
-        root.core = root.core.toBuilder()
+        root.update(spec().toBuilder()
                 .innerLoopsCount(ni)
-                .build();
+                .build());
     }
 
     public int getOuterLoopCount() {
-        return root.core.getOuterLoopsCount();
+        return spec().getOuterLoopsCount();
     }
 
     public void setOuterLoopCount(int no) {
         if (no < 0) {
             throw new IllegalArgumentException("Number of outer loops should be ge 0");
         }
-        root.core = root.core.toBuilder()
+        root.update(spec().toBuilder()
                 .outerLoopsCount(no)
-                .build();
+                .build());
     }
 
     @NbBundle.Messages({
