@@ -50,7 +50,7 @@
               <Image iconType="3" name="/demetra/desktop/icons/list-add_16x16.png"/>
             </Property>
             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-              <ResourceString bundle="demetra/desktop/ui/Bundle.properties" key="PathsPanel.addButton.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+              <ResourceString bundle="demetra/desktop/ui/options/Bundle.properties" key="PathsPanel.addButton.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
             </Property>
             <Property name="actionCommand" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
               <ResourceString bundle="demetra/desktop/ui/Bundle.properties" key="PathsPanel.addButton.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
@@ -58,7 +58,7 @@
             <Property name="focusable" type="boolean" value="false"/>
             <Property name="horizontalTextPosition" type="int" value="0"/>
             <Property name="label" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-              <ResourceString bundle="demetra/desktop/ui/Bundle.properties" key="PathsPanel.addButton.label" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+              <ResourceString bundle="demetra/desktop/ui/options/Bundle.properties" key="PathsPanel.addButton.label" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
             </Property>
             <Property name="verticalTextPosition" type="int" value="3"/>
           </Properties>
@@ -72,7 +72,7 @@
               <Image iconType="3" name="/demetra/desktop/icons/list-remove_16x16.png"/>
             </Property>
             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-              <ResourceString bundle="demetra/desktop/ui/Bundle.properties" key="PathsPanel.removeButton.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+              <ResourceString bundle="demetra/desktop/ui/options/Bundle.properties" key="PathsPanel.removeButton.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
             </Property>
             <Property name="actionCommand" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
               <ResourceString bundle="demetra/desktop/ui/Bundle.properties" key="PathsPanel.removeButton.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
@@ -81,7 +81,7 @@
             <Property name="focusable" type="boolean" value="false"/>
             <Property name="horizontalTextPosition" type="int" value="0"/>
             <Property name="label" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-              <ResourceString bundle="demetra/desktop/ui/Bundle.properties" key="PathsPanel.removeButton.label" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+              <ResourceString bundle="demetra/desktop/ui/options/Bundle.properties" key="PathsPanel.removeButton.label" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
             </Property>
             <Property name="verticalTextPosition" type="int" value="3"/>
           </Properties>
@@ -95,7 +95,7 @@
               <Image iconType="3" name="/demetra/desktop/icons/go-up_16x16.png"/>
             </Property>
             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-              <ResourceString bundle="demetra/desktop/ui/Bundle.properties" key="PathsPanel.moveUpButton.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+              <ResourceString bundle="demetra/desktop/ui/options/Bundle.properties" key="PathsPanel.moveUpButton.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
             </Property>
             <Property name="actionCommand" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
               <ResourceString bundle="demetra/desktop/ui/Bundle.properties" key="PathsPanel.moveUpButton.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
@@ -104,7 +104,7 @@
             <Property name="focusable" type="boolean" value="false"/>
             <Property name="horizontalTextPosition" type="int" value="0"/>
             <Property name="label" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-              <ResourceString bundle="demetra/desktop/ui/Bundle.properties" key="PathsPanel.moveUpButton.label" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+              <ResourceString bundle="demetra/desktop/ui/options/Bundle.properties" key="PathsPanel.moveUpButton.label" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
             </Property>
             <Property name="verticalTextPosition" type="int" value="3"/>
           </Properties>
@@ -118,7 +118,7 @@
               <Image iconType="3" name="/demetra/desktop/icons/go-down_16x16.png"/>
             </Property>
             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-              <ResourceString bundle="demetra/desktop/ui/Bundle.properties" key="PathsPanel.moveDownButton.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+              <ResourceString bundle="demetra/desktop/ui/options/Bundle.properties" key="PathsPanel.moveDownButton.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
             </Property>
             <Property name="actionCommand" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
               <ResourceString bundle="demetra/desktop/ui/Bundle.properties" key="PathsPanel.moveDownButton.text" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
@@ -127,7 +127,7 @@
             <Property name="focusable" type="boolean" value="false"/>
             <Property name="horizontalTextPosition" type="int" value="0"/>
             <Property name="label" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-              <ResourceString bundle="demetra/desktop/ui/Bundle.properties" key="PathsPanel.moveDownButton.label" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
+              <ResourceString bundle="demetra/desktop/ui/options/Bundle.properties" key="PathsPanel.moveDownButton.label" replaceFormat="org.openide.util.NbBundle.getMessage({sourceFileName}.class, &quot;{key}&quot;)"/>
             </Property>
             <Property name="verticalTextPosition" type="int" value="3"/>
           </Properties>
@@ -138,11 +138,6 @@
       </SubComponents>
     </Container>
     <Component class="org.openide.explorer.view.TreeTableView" name="pathView">
-      <Properties>
-        <Property name="properties" type="[Lorg.openide.nodes.Node$Property;" editor="org.netbeans.modules.form.ComponentChooserEditor">
-          <ComponentRef name="default"/>
-        </Property>
-      </Properties>
     </Component>
   </SubComponents>
 </Form>

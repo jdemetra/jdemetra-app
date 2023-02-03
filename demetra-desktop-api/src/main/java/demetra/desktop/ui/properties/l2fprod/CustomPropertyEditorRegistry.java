@@ -32,12 +32,14 @@ public enum CustomPropertyEditorRegistry {
         register(InterventionVariableDescriptor[].class, new InterventionVariablesEditor());
         register(Sequence[].class, new SequencesEditor());
         register(OutlierDescriptor[].class, new OutlierDescriptorsEditor());
+        register(HighFreqOutlierDescriptor[].class, new HighFreqOutlierDescriptorsEditor());
         register(String[].class, new StringCollectionEditor());
         register(Holidays.class, new HolidaysSelector());
         register(UserVariable.class, new UserVariableSelector());
         register(UserVariables.class, new UserVariablesEditor());
         register(Coefficients.class, new FixedCoefficientsEditor());
         registerEnumEditor(OutlierDescriptor.OutlierType.class, new OutlierTypeSelector());
+        registerEnumEditor(HighFreqOutlierDescriptor.OutlierType.class, new HighFreqOutlierTypeSelector());
         register(NamedParameters.class, new NamedParametersEditor());
     }
 

@@ -35,6 +35,10 @@ public interface HighFreqSpecUI {
     
     boolean hasFixedCoefficients();
     
+    TransformSpec transform();
+    
+    OutlierSpec outlier();
+    
     void update(EstimateSpec spec);
 
     void update(OutlierSpec spec);

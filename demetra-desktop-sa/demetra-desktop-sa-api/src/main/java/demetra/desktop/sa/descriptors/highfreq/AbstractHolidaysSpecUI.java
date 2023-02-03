@@ -33,7 +33,7 @@ import org.openide.util.NbBundle;
  *
  * @author PALATEJ
  */
-public abstract class AbstractCalendarSpecUI implements IPropertyDescriptors {
+public abstract class AbstractHolidaysSpecUI implements IPropertyDescriptors {
 
     @Override
     public String toString() {
@@ -43,11 +43,11 @@ public abstract class AbstractCalendarSpecUI implements IPropertyDescriptors {
     protected abstract HolidaysSpec spec();
 
     protected abstract HighFreqSpecUI root();
-    
-    public boolean isro(){
+
+    public boolean isro() {
         return root().isRo() || spec().hasFixedCoefficients();
     }
-    
+
     @Override
     public List<EnhancedPropertyDescriptor> getProperties() {
         // regression
@@ -70,7 +70,7 @@ public abstract class AbstractCalendarSpecUI implements IPropertyDescriptors {
         }
         return descs;
     }
-    
+
     public Holidays getHolidays() {
         return new Holidays(spec().getHolidays());
     }
@@ -79,12 +79,16 @@ public abstract class AbstractCalendarSpecUI implements IPropertyDescriptors {
         root().update(spec().toBuilder().holidays(holidays.getName()).build());
     }
 
+    @NbBundle.Messages({
+        "highfreq.holidaysSpecUI.calendarDesc.name=Calendar",
+        "highfreq.holidaysSpecUI.calendarDesc.desc=Calendar used to generate the variables"
+    })
     private EnhancedPropertyDescriptor calendarDesc() {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("holidays", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, CALENDAR_ID);
-            desc.setDisplayName("calendar");
-            desc.setShortDescription("Calendar");
+            desc.setDisplayName(Bundle.highfreq_holidaysSpecUI_calendarDesc_name());
+            desc.setShortDescription(Bundle.highfreq_holidaysSpecUI_calendarDesc_desc());
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
             edesc.setReadOnly(root().isRo());
             return edesc;
@@ -105,12 +109,20 @@ public abstract class AbstractCalendarSpecUI implements IPropertyDescriptors {
         }
     }
 
+    @NbBundle.Messages({
+        "highfreq.holidaysSpecUI.hoptionDesc.name=Option",
+        "highfreq.holidaysSpecUI.hoptionDesc.desc=Skip: holdays falling a non-working days are discarded, "
+                + "Default: no special treatment, Next/Previous: moving to the next/previous working days"
+    })
     private EnhancedPropertyDescriptor hoptionDesc() {
+        if (!spec().isUsed()) {
+            return null;
+        }
         try {
             PropertyDescriptor desc = new PropertyDescriptor("HolidaysOption", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, HOPTION_ID);
-            desc.setDisplayName("option");
-            desc.setShortDescription("Holiday option");
+            desc.setDisplayName(Bundle.highfreq_holidaysSpecUI_hoptionDesc_name());
+            desc.setShortDescription(Bundle.highfreq_holidaysSpecUI_hoptionDesc_desc());
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
             edesc.setReadOnly(root().isRo());
             return edesc;
@@ -118,7 +130,7 @@ public abstract class AbstractCalendarSpecUI implements IPropertyDescriptors {
             return null;
         }
     }
-    
+
     public boolean isSingle() {
         return spec().isSingle();
     }
@@ -131,12 +143,19 @@ public abstract class AbstractCalendarSpecUI implements IPropertyDescriptors {
         }
     }
 
+    @NbBundle.Messages({
+        "highfreq.holidaysSpecUI.singleDesc.name=Single",
+        "highfreq.holidaysSpecUI.singleDesc.desc=A single variable is used for all the holidays"
+    })
     private EnhancedPropertyDescriptor singleDesc() {
+        if (!spec().isUsed()) {
+            return null;
+        }
         try {
             PropertyDescriptor desc = new PropertyDescriptor("Single", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, SINGLE_ID);
-            desc.setDisplayName("single");
-            desc.setShortDescription("single holiday variable");
+            desc.setDisplayName(Bundle.highfreq_holidaysSpecUI_singleDesc_name());
+            desc.setShortDescription(Bundle.highfreq_holidaysSpecUI_singleDesc_desc());
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
             edesc.setReadOnly(root().isRo());
             return edesc;
@@ -144,7 +163,7 @@ public abstract class AbstractCalendarSpecUI implements IPropertyDescriptors {
             return null;
         }
     }
-    
+
     public boolean isWeekEnd() {
         return Arrays.equals(spec().getNonWorkingDays(), HolidaysVariable.NONWORKING_WE);
     }
@@ -157,12 +176,19 @@ public abstract class AbstractCalendarSpecUI implements IPropertyDescriptors {
         }
     }
 
+    @NbBundle.Messages({
+        "highfreq.holidaysSpecUI.nwDesc.name=Non working week-ends",
+        "highfreq.holidaysSpecUI.nwDesc.desc=Week-ends are considered as non-working days. Otherwise, only the Sundays are considered as non-working days"
+    })
     private EnhancedPropertyDescriptor nwDesc() {
+        if (!spec().isUsed()) {
+            return null;
+        }
         try {
             PropertyDescriptor desc = new PropertyDescriptor("WeekEnd", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, NONWORKING_ID);
-            desc.setDisplayName("week-end");
-            desc.setShortDescription("Non wokring days: week-end");
+            desc.setDisplayName(Bundle.highfreq_holidaysSpecUI_nwDesc_name());
+            desc.setShortDescription(Bundle.highfreq_holidaysSpecUI_nwDesc_name());
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
             edesc.setReadOnly(root().isRo());
             return edesc;
@@ -171,12 +197,12 @@ public abstract class AbstractCalendarSpecUI implements IPropertyDescriptors {
         }
     }
 
-    private static final int CALENDAR_ID = 3, HOPTION_ID=4, SINGLE_ID = 5, NONWORKING_ID=6;
+    private static final int CALENDAR_ID = 3, HOPTION_ID = 4, SINGLE_ID = 5, NONWORKING_ID = 6;
 
     @Override
-    @NbBundle.Messages("calendarSpecUI.getDisplayName=Holidays")
+    @NbBundle.Messages("highfreq.holidaysSpecUI.displayName=Holidays")
     public String getDisplayName() {
-        return Bundle.calendarSpecUI_getDisplayName();
+        return Bundle.highfreq_holidaysSpecUI_displayName();
     }
-    
+
 }

@@ -84,7 +84,18 @@ public class FractionalAirlineSpecRoot implements HighFreqSpecUI {
     public void update(HolidaysSpec spec) {
         update(core.getRegression()
                 .toBuilder()
-                .calendar(spec)
+                .holidays(spec)
                 .build());
     }
+
+    @Override
+    public TransformSpec transform() {
+        return core.getTransform();
+    }
+
+    @Override
+    public OutlierSpec outlier() {
+        return core.getOutlier();
+    }
+
 }

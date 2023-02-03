@@ -45,7 +45,11 @@ public class StlPlusSpecUI implements IObjectDescriptor<StlPlusSpec> {
    public SeriesSpecUI getSeries() {
         return new SeriesSpecUI(root);
     }
-
+   
+   public boolean isPreprocessing(){
+       return root.getPreprocessing().isEnabled();
+   }
+   
     public TransformSpecUI getTransform() {
         return new TransformSpecUI(root);
     }
@@ -82,10 +86,10 @@ public class StlPlusSpecUI implements IObjectDescriptor<StlPlusSpec> {
         if (desc != null) {
             descs.add(desc);
         }
-        desc = stochasticDesc();
-        if (desc != null) {
-            descs.add(desc);
-        }
+//        desc = stochasticDesc();
+//        if (desc != null) {
+//            descs.add(desc);
+//        }
         desc = outlierDesc();
         if (desc != null) {
             descs.add(desc);
@@ -103,6 +107,8 @@ public class StlPlusSpecUI implements IObjectDescriptor<StlPlusSpec> {
         "stlPlusSpecUI.regressionDesc.desc="
     })
     private EnhancedPropertyDescriptor regressionDesc() {
+        if (! root.isPreprocessing())
+            return null;
         try {
             PropertyDescriptor desc = new PropertyDescriptor("regression", this.getClass(), "getRegression", null);
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, REGRESSION_ID);
@@ -114,7 +120,6 @@ public class StlPlusSpecUI implements IObjectDescriptor<StlPlusSpec> {
             return null;
         }
     }
-
 
     @Messages({"stlPlusSpecUI.seriesDesc.name=SERIES",
         "stlPlusSpecUI.seriesDesc.desc="
@@ -136,6 +141,8 @@ public class StlPlusSpecUI implements IObjectDescriptor<StlPlusSpec> {
         "stlPlusSpecUI.transformDesc.desc="
     })
     private EnhancedPropertyDescriptor transformDesc() {
+        if (! root.isPreprocessing())
+            return null;
         try {
             PropertyDescriptor desc = new PropertyDescriptor("transform", this.getClass(), "getTransform", null);
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, TRANSFORM_ID);
@@ -152,6 +159,8 @@ public class StlPlusSpecUI implements IObjectDescriptor<StlPlusSpec> {
         "stlPlusSpecUI.outlierDesc.desc="
     })
     private EnhancedPropertyDescriptor outlierDesc() {
+        if (! root.isPreprocessing())
+            return null;
         try {
             PropertyDescriptor desc = new PropertyDescriptor("outlier", this.getClass(), "getOutlier", null);
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, OUTLIER_ID);
@@ -164,26 +173,28 @@ public class StlPlusSpecUI implements IObjectDescriptor<StlPlusSpec> {
         }
     }
 
-    @Messages({"stlPlusSpecUI.stochasticDesc.name=MODEL",
-        "stlPlusSpecUI.stochasticDesc.desc="
-    })
-    private EnhancedPropertyDescriptor stochasticDesc() {
-        try {
-            PropertyDescriptor desc = new PropertyDescriptor("stochastic", this.getClass(), "getStochastic", null);
-            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, STOCHASTIC_ID);
-            desc.setDisplayName(Bundle.stlPlusSpecUI_stochasticDesc_name());
-            desc.setShortDescription(Bundle.stlPlusSpecUI_stochasticDesc_desc());
-            //edesc.setReadOnly(true);
-            return edesc;
-        } catch (IntrospectionException ex) {
-            return null;
-        }
-    }
-
+//    @Messages({"stlPlusSpecUI.stochasticDesc.name=MODEL",
+//        "stlPlusSpecUI.stochasticDesc.desc="
+//    })
+//    private EnhancedPropertyDescriptor stochasticDesc() {
+//        try {
+//            PropertyDescriptor desc = new PropertyDescriptor("stochastic", this.getClass(), "getStochastic", null);
+//            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, STOCHASTIC_ID);
+//            desc.setDisplayName(Bundle.stlPlusSpecUI_stochasticDesc_name());
+//            desc.setShortDescription(Bundle.stlPlusSpecUI_stochasticDesc_desc());
+//            //edesc.setReadOnly(true);
+//            return edesc;
+//        } catch (IntrospectionException ex) {
+//            return null;
+//        }
+//    }
+//
     @Messages({"stlPlusSpecUI.estimateDesc.name=ESTIMATE",
         "stlPlusSpecUI.estimateDesc.desc="
     })
     private EnhancedPropertyDescriptor estimateDesc() {
+        if (! root.isPreprocessing())
+            return null;
         try {
             PropertyDescriptor desc = new PropertyDescriptor("estimate", this.getClass(), "getEstimate", null);
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, ESTIMATE_ID);

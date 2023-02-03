@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/NetBeansModuleDevelopment-files/template_mypluginPanel.java to edit this template
  */
-package demetra.desktop.ui;
+package demetra.desktop.ui.options;
 
 import demetra.desktop.ColorSchemeManager;
 import demetra.desktop.DemetraUI;
@@ -12,6 +12,7 @@ import demetra.desktop.components.JObsFormatComponent;
 import demetra.desktop.components.JTsChart;
 import demetra.desktop.components.parts.HasColorSchemeSupport;
 import demetra.desktop.components.parts.HasTsCollection;
+import demetra.desktop.ui.DemoTsBuilder;
 import ec.util.chart.ColorScheme;
 import java.awt.Image;
 import java.beans.PropertyChangeEvent;
@@ -32,9 +33,10 @@ final class CommonUIPanel extends javax.swing.JPanel implements VetoableChangeLi
         this.controller = controller;
         initComponents();
         colorSchemePreviewer = new JTsChart();
-        colorSchemePreviewer.setTsCollection(DemoTsBuilder.randomTsCollection(3));
         colorSchemePreviewer.setTsAction(TsActionManager.NO_ACTION);
         colorSchemePreviewer.setTsUpdateMode(HasTsCollection.TsUpdateMode.None);
+        colorSchemePreviewer.setTsCollection(DemoTsBuilder.randomTsCollection(3));
+       
         chartPreviewPanel.add(colorSchemePreviewer);
 
         jSlider1.setMinimum(10);
@@ -75,9 +77,8 @@ final class CommonUIPanel extends javax.swing.JPanel implements VetoableChangeLi
         popupMenuPanel = new javax.swing.JPanel();
         iconsVisibleCB = new javax.swing.JCheckBox();
 
-        setLayout(new javax.swing.BoxLayout(this, javax.swing.BoxLayout.PAGE_AXIS));
-
         chartsPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(CommonUIPanel.class, "CommonUIPanel.chartsPanel.border.title"))); // NOI18N
+        chartsPanel.setPreferredSize(new java.awt.Dimension(348, 314));
         chartsPanel.setLayout(new java.awt.BorderLayout(0, 15));
 
         jPanel2.setLayout(new java.awt.BorderLayout(10, 0));
@@ -103,12 +104,6 @@ final class CommonUIPanel extends javax.swing.JPanel implements VetoableChangeLi
         org.openide.awt.Mnemonics.setLocalizedText(dataFormatLabel, org.openide.util.NbBundle.getMessage(CommonUIPanel.class, "CommonUIPanel.dataFormatLabel.text")); // NOI18N
         jPanel3.add(dataFormatLabel, java.awt.BorderLayout.WEST);
         jPanel3.add(dataFormatComponent, java.awt.BorderLayout.CENTER);
-
-        chartsPanel.add(jPanel3, java.awt.BorderLayout.SOUTH);
-
-        add(chartsPanel);
-
-        variousPanel.setLayout(new javax.swing.BoxLayout(variousPanel, javax.swing.BoxLayout.PAGE_AXIS));
 
         growthChartsPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(CommonUIPanel.class, "CommonUIPanel.growthChartsPanel.border.title"))); // NOI18N
 
@@ -136,13 +131,9 @@ final class CommonUIPanel extends javax.swing.JPanel implements VetoableChangeLi
                     .addComponent(growthLastYears, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
         );
 
-        variousPanel.add(growthChartsPanel);
-
         htmlFontPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(CommonUIPanel.class, "CommonUIPanel.htmlFontPanel.border.title"))); // NOI18N
-        htmlFontPanel.setLayout(new java.awt.GridLayout());
+        htmlFontPanel.setLayout(new java.awt.GridLayout(1, 0));
         htmlFontPanel.add(jSlider1);
-
-        variousPanel.add(htmlFontPanel);
 
         popupMenuPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(org.openide.util.NbBundle.getMessage(CommonUIPanel.class, "CommonUIPanel.popupMenuPanel.border.title"))); // NOI18N
         popupMenuPanel.setPreferredSize(new java.awt.Dimension(562, 46));
@@ -152,9 +143,41 @@ final class CommonUIPanel extends javax.swing.JPanel implements VetoableChangeLi
         iconsVisibleCB.setFocusPainted(false);
         popupMenuPanel.add(iconsVisibleCB, java.awt.BorderLayout.CENTER);
 
-        variousPanel.add(popupMenuPanel);
+        javax.swing.GroupLayout variousPanelLayout = new javax.swing.GroupLayout(variousPanel);
+        variousPanel.setLayout(variousPanelLayout);
+        variousPanelLayout.setHorizontalGroup(
+            variousPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(growthChartsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(htmlFontPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(popupMenuPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+        );
+        variousPanelLayout.setVerticalGroup(
+            variousPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(variousPanelLayout.createSequentialGroup()
+                .addComponent(growthChartsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, 0)
+                .addComponent(htmlFontPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, 0)
+                .addComponent(popupMenuPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE))
+        );
 
-        add(variousPanel);
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
+        this.setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(chartsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 498, Short.MAX_VALUE)
+            .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(variousPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(chartsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 206, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(20, 20, 20)
+                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(10, 10, 10)
+                .addComponent(variousPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        );
     }// </editor-fold>//GEN-END:initComponents
 
     void load() {

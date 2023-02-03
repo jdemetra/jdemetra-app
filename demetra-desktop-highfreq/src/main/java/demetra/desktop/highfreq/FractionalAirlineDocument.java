@@ -4,6 +4,7 @@
  */
 package demetra.desktop.highfreq;
 
+import demetra.data.Parameter;
 import demetra.highfreq.ExtendedAirlineModellingSpec;
 import demetra.highfreq.ExtendedAirlineSpec;
 import demetra.processing.DefaultProcessingLog;
@@ -16,9 +17,9 @@ import demetra.timeseries.calendars.CalendarDefinition;
 import demetra.timeseries.calendars.Holiday;
 import demetra.timeseries.regression.ModellingContext;
 import java.time.temporal.ChronoUnit;
-import jdplus.highfreq.ExtendedAirlineKernel;
-import jdplus.highfreq.ExtendedAirlineEstimation;
-import jdplus.highfreq.ExtendedRegAirlineModel;
+import jdplus.highfreq.extendedairline.ExtendedAirlineKernel;
+import jdplus.highfreq.extendedairline.ExtendedAirlineEstimation;
+import jdplus.highfreq.regarima.HighFreqRegArimaModel;
 import jdplus.math.matrices.FastMatrix;
 import jdplus.timeseries.calendars.HolidaysUtility;
 
@@ -26,7 +27,7 @@ import jdplus.timeseries.calendars.HolidaysUtility;
  *
  * @author PALATEJ
  */
-public class FractionalAirlineDocument extends AbstractTsDocument<ExtendedAirlineModellingSpec, ExtendedRegAirlineModel> {
+public class FractionalAirlineDocument extends AbstractTsDocument<ExtendedAirlineModellingSpec, HighFreqRegArimaModel> {
 
     private final ModellingContext context;
 
@@ -41,7 +42,7 @@ public class FractionalAirlineDocument extends AbstractTsDocument<ExtendedAirlin
     }
 
     @Override
-    protected ExtendedRegAirlineModel internalProcess(ExtendedAirlineModellingSpec spec, TsData data) {
+    protected HighFreqRegArimaModel internalProcess(ExtendedAirlineModellingSpec spec, TsData data) {
         // modify the spec and prepare data according to the time series
         ExtendedAirlineSpec sspec = spec.getStochastic();
         TsDomain domain = data.getDomain();

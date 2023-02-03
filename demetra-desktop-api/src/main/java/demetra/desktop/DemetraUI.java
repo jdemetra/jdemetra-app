@@ -106,6 +106,21 @@ public final class DemetraUI implements PropertyChangeSource.WithWeakListeners, 
     }
 
     @SwingProperty
+    public static final String LOW_LEVEL_OPTIONS_PROPERTY = "lowLevelOptions";
+    private static final boolean DEFAULT_LOW_LEVEL_OPTIONS = false;
+    private boolean lowLevelOptions = DEFAULT_LOW_LEVEL_OPTIONS;
+
+    public boolean isLowLevelOptions() {
+        return lowLevelOptions;
+    }
+
+    public void setLowLevelOptions(boolean lowOptions) {
+        boolean old = this.lowLevelOptions;
+        lowLevelOptions = lowOptions;
+        broadcaster.firePropertyChange(LOW_LEVEL_OPTIONS_PROPERTY, old, lowLevelOptions);
+    }
+
+    @SwingProperty
     public static final String PRESPECIFIED_OUTLIERS_EDITOR_PROPERTY = "prespecifiedOutliersEditor";
     private static final OutlierDescriptorsEditor.PrespecificiedOutliersEditor DEFAULT_PRESPECIFIED_OUTLIERS_EDITOR = OutlierDescriptorsEditor.PrespecificiedOutliersEditor.LIST;
     private OutlierDescriptorsEditor.PrespecificiedOutliersEditor prespecifiedOutliersEditor = DEFAULT_PRESPECIFIED_OUTLIERS_EDITOR;
@@ -170,6 +185,11 @@ public final class DemetraUI implements PropertyChangeSource.WithWeakListeners, 
                     PropertyHandler.onEnum(PRESPECIFIED_OUTLIERS_EDITOR_PROPERTY, DEFAULT_PRESPECIFIED_OUTLIERS_EDITOR),
                     DemetraUI::getPrespecifiedOutliersEditor,
                     DemetraUI::setPrespecifiedOutliersEditor
+            )
+            .with(
+                    PropertyHandler.onBoolean(LOW_LEVEL_OPTIONS_PROPERTY, DEFAULT_LOW_LEVEL_OPTIONS),
+                    DemetraUI::isLowLevelOptions,
+                    DemetraUI::setLowLevelOptions
             )
             .build();
 }

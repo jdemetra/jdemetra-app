@@ -34,8 +34,8 @@ import demetra.timeseries.TsDocument;
 import demetra.util.Id;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
-import jdplus.highfreq.ExtendedAirlineEstimation;
-import jdplus.highfreq.ExtendedRegAirlineModel;
+import jdplus.highfreq.extendedairline.ExtendedAirlineEstimation;
+import jdplus.highfreq.regarima.HighFreqRegArimaModel;
 import jdplus.regsarima.regular.RegSarimaModel;
 import org.openide.util.lookup.ServiceProvider;
 
@@ -47,9 +47,9 @@ public class FractionalAirlineViewFactory extends ProcDocumentViewFactory<Fracti
 
     private static final AtomicReference<IProcDocumentViewFactory<FractionalAirlineDocument>> INSTANCE = new AtomicReference();
 
-    private final static Function<FractionalAirlineDocument, ExtendedRegAirlineModel> MODELEXTRACTOR = doc -> doc.getResult();
+    private final static Function<FractionalAirlineDocument, HighFreqRegArimaModel> MODELEXTRACTOR = doc -> doc.getResult();
     private final static Function<FractionalAirlineDocument, DoubleSeq> RESEXTRACTOR = doc -> {
-        ExtendedRegAirlineModel result = doc.getResult();
+        HighFreqRegArimaModel result = doc.getResult();
         return result == null ? null : result.getResiduals().getRes();
     };
 

@@ -30,7 +30,7 @@ import demetra.toolkit.dictionaries.Dictionary;
 import demetra.util.Id;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
-import jdplus.highfreq.ExtendedRegAirlineModel;
+import jdplus.highfreq.regarima.HighFreqRegArimaModel;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -41,9 +41,9 @@ public class FractionalAirlineDecompositionViewFactory extends ProcDocumentViewF
 
     private static final AtomicReference<IProcDocumentViewFactory<FractionalAirlineDecompositionDocument>> INSTANCE = new AtomicReference();
 
-    private final static Function<FractionalAirlineDecompositionDocument, ExtendedRegAirlineModel> MODELEXTRACTOR = doc -> doc.getResult().getPreprocessing();
+    private final static Function<FractionalAirlineDecompositionDocument, HighFreqRegArimaModel> MODELEXTRACTOR = doc -> doc.getResult().getPreprocessing();
     private final static Function<FractionalAirlineDecompositionDocument, DoubleSeq> RESEXTRACTOR = doc -> {
-        ExtendedRegAirlineModel result = doc.getResult().getPreprocessing();
+        HighFreqRegArimaModel result = doc.getResult().getPreprocessing();
         return result == null ? null : result.getResiduals().getRes();
     };
 

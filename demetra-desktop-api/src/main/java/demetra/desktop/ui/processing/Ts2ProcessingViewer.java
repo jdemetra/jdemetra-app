@@ -106,7 +106,7 @@ public class Ts2ProcessingViewer<S extends ProcSpecification, D extends MultiTsD
                 tsLabelz.setVisible(true);
             }
             ProcSpecification spec = doc.getSpecification();
-            specLabel.setText("Spec: " + (spec != null ? spec.toString() : ""));
+            specLabel.setText("Spec: " + (spec != null ? spec.display(): ""));
             specLabel.setVisible(true);
         }
         this.toolBar.doLayout();

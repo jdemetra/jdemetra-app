@@ -29,7 +29,7 @@ import jdplus.stl.StlToolkit;
 public class MStlPlusDocument extends AbstractTsDocument<MStlSpec, StlResults> {
 
     public MStlPlusDocument() {
-        super(MStlSpec.DEFAULT);
+        super(MStlSpec.DEF_W);
     }
 
     @Override

@@ -16,6 +16,7 @@
  */
 package demetra.desktop.disaggregation.descriptors;
 
+import demetra.desktop.DemetraUI;
 import demetra.desktop.descriptors.EnhancedPropertyDescriptor;
 import demetra.ssf.SsfInitialization;
 import demetra.tempdisagg.univariate.TemporalDisaggregationSpec;
@@ -133,18 +134,18 @@ public class AdvancedSpecUI extends BaseTemporalDisaggregationSpecUI {
         if (desc != null) {
             props.add(desc);
         }
-//        desc = algorithmDesc();
-//        if (desc != null) {
-//            props.add(desc);
-//        }
+        desc = algorithmDesc();
+        if (desc != null) {
+            props.add(desc);
+        }
         desc = fastDesc();
         if (desc != null) {
             props.add(desc);
         }
-//        desc = rescaleDesc();
-//        if (desc != null) {
-//            props.add(desc);
-//        }
+        desc = rescaleDesc();
+        if (desc != null) {
+            props.add(desc);
+        }
         desc = zeroDesc();
         if (desc != null) {
             props.add(desc);
@@ -204,6 +205,9 @@ public class AdvancedSpecUI extends BaseTemporalDisaggregationSpecUI {
     }
 
     private EnhancedPropertyDescriptor fastDesc() {
+        if (!DemetraUI.get().isLowLevelOptions()) {
+            return null;
+        }
         try {
             PropertyDescriptor desc = new PropertyDescriptor("Fast", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, FAST_ID);
@@ -218,6 +222,9 @@ public class AdvancedSpecUI extends BaseTemporalDisaggregationSpecUI {
     }
 
     private EnhancedPropertyDescriptor algorithmDesc() {
+        if (!DemetraUI.get().isLowLevelOptions()) {
+            return null;
+        }
         try {
             PropertyDescriptor desc = new PropertyDescriptor("Algorithm", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, ALGORITHM_ID);
@@ -232,6 +239,9 @@ public class AdvancedSpecUI extends BaseTemporalDisaggregationSpecUI {
     }
 
     private EnhancedPropertyDescriptor rescaleDesc() {
+        if (!DemetraUI.get().isLowLevelOptions()) {
+            return null;
+        }
         try {
             PropertyDescriptor desc = new PropertyDescriptor("Rescale", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, RESCALE_ID);
@@ -246,6 +256,8 @@ public class AdvancedSpecUI extends BaseTemporalDisaggregationSpecUI {
     }
 
     private EnhancedPropertyDescriptor dregsDesc() {
+        if (! core().isParameterEstimation())
+            return null;
         try {
             PropertyDescriptor desc = new PropertyDescriptor("DiffuseRegression", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, DREGS_ID);

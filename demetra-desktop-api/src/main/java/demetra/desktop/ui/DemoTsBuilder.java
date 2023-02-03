@@ -99,7 +99,7 @@ public final class DemoTsBuilder {
     }
 
     public Ts build() {
-        Ts.Builder result = Ts.builder().name(name);
+        Ts.Builder result = Ts.builder().name(name).moniker(TsMoniker.of());
         double[] values = generator.apply(obsCount, rng);
         if (missingCount > 0 && values.length > 0) {
             for (int x = 0; x < missingCount; x++) {

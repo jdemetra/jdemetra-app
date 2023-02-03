@@ -67,6 +67,11 @@ public class StlPlusSpecRoot implements RegularSpecUI {
         return preprocessing.getRegression().hasFixedCoefficients();
     }
 
+    @Override
+    public void update(ModellingSpec spec) {
+        preprocessing=spec;
+    }
+
     public void update(StlSpec spec) {
         stl = spec;
     }
@@ -74,6 +79,11 @@ public class StlPlusSpecRoot implements RegularSpecUI {
     @Override
     public boolean isAdjust() {
         return preprocessing.getTransform().getAdjust() != LengthOfPeriodType.None;
+    }
+
+    @Override
+    public ModellingSpec preprocessing() {
+        return preprocessing;
     }
 
     @Override
@@ -138,5 +148,10 @@ public class StlPlusSpecRoot implements RegularSpecUI {
                         .calendar(calendar)
                         .build()
                 ).build();
+    }
+
+    @Override
+    public boolean isPreprocessing() {
+        return preprocessing.isEnabled();
     }
 }

@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package demetra.desktop.ui;
+package demetra.desktop.ui.options;
 
 import demetra.desktop.TsManager;
 import demetra.desktop.nodes.AbstractNodeBuilder;

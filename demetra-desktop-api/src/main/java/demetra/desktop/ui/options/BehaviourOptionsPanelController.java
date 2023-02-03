@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/NetBeansModuleDevelopment-files/template_mypluginOptionsPanelController.java to edit this template
  */
-package demetra.desktop.ui;
+package demetra.desktop.ui.options;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;

@@ -18,7 +18,6 @@ package demetra.desktop.highfreq.ui;
 
 import demetra.data.DoubleSeq;
 import demetra.data.DoubleSeqCursor;
-import demetra.highfreq.ExtendedAirlineSpec;
 import demetra.html.AbstractHtmlElement;
 import demetra.html.Bootstrap4;
 import demetra.html.HtmlStream;
@@ -38,8 +37,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import jdplus.arima.ArimaModel;
 import jdplus.dstats.T;
-import jdplus.highfreq.ExtendedRegAirlineModel;
+import jdplus.highfreq.extendedairline.ExtendedAirlineDescription;
+import jdplus.highfreq.regarima.HighFreqRegArimaModel;
 import jdplus.modelling.GeneralLinearModel;
 import jdplus.modelling.regression.RegressionDesc;
 import jdplus.stats.likelihood.LikelihoodStatistics;
@@ -50,10 +51,10 @@ import jdplus.stats.likelihood.LikelihoodStatistics;
  */
 public class HtmlFractionalAirlineModel extends AbstractHtmlElement {
 
-    private final ExtendedRegAirlineModel model;
+    private final HighFreqRegArimaModel<ArimaModel, ExtendedAirlineDescription> model;
     private final boolean summary;
 
-    public HtmlFractionalAirlineModel(final ExtendedRegAirlineModel model, boolean summary) {
+    public HtmlFractionalAirlineModel(final HighFreqRegArimaModel model, boolean summary) {
         this.model = model;
         this.summary = summary;
     }
@@ -104,7 +105,7 @@ public class HtmlFractionalAirlineModel extends AbstractHtmlElement {
 
     public void writeModel(HtmlStream stream) throws IOException {
         GeneralLinearModel.Estimation estimation = model.getEstimation();
-        GeneralLinearModel.Description<ExtendedAirlineSpec> description = model.getDescription();
+        GeneralLinearModel.Description<ExtendedAirlineDescription> description = model.getDescription();
         LikelihoodStatistics ll = estimation.getStatistics();
         int nhp = estimation.getParameters().getValues().length();
 
@@ -127,7 +128,7 @@ public class HtmlFractionalAirlineModel extends AbstractHtmlElement {
         List<String> headers = new ArrayList<>();
         String header;
         stream.open(HtmlTag.TABLEROW);
-        if (description.getStochasticComponent().hasAr()) {
+        if (description.getStochasticComponent().getSpec().hasAr()) {
             header = "Phi(1)";
         } else {
             header = "Theta(1)";
@@ -143,10 +144,10 @@ public class HtmlFractionalAirlineModel extends AbstractHtmlElement {
         stream.write(new HtmlTableCell(df4.format(prob)).withWidth(100));
         stream.close(HtmlTag.TABLEROW);
 
-        double[] f = description.getStochasticComponent().getPeriodicities();
+        double[] f = description.getStochasticComponent().getSpec().getPeriodicities();
         for (int j = 1, k = 0; j < nhp; ++j) {
             stream.open(HtmlTag.TABLEROW);
-            if (description.getStochasticComponent().isAdjustToInt()) {
+            if (description.getStochasticComponent().getSpec().isAdjustToInt()) {
                 header = "Theta(" + ((int) f[k++]) + ")";
             } else {
                 header = "Theta(" + df2.format(f[k++]) + ")";
@@ -210,7 +211,7 @@ public class HtmlFractionalAirlineModel extends AbstractHtmlElement {
     }
 
     private void writeOutliers(HtmlStream stream) throws IOException {
-        GeneralLinearModel.Description<ExtendedAirlineSpec> description = model.getDescription();
+        GeneralLinearModel.Description<ExtendedAirlineDescription> description = model.getDescription();
         Set<ITsVariable> outliers = Arrays.stream(description.getVariables())
                 .filter(var -> var.getCore() instanceof IOutlier)
                 .map(var -> var.getCore()).collect(Collectors.toSet());
@@ -227,7 +228,7 @@ public class HtmlFractionalAirlineModel extends AbstractHtmlElement {
 
     private void writeHolidays(HtmlStream stream) throws IOException {
         String header = "Holidays";
-        GeneralLinearModel.Description<ExtendedAirlineSpec> description = model.getDescription();
+        GeneralLinearModel.Description<ExtendedAirlineDescription> description = model.getDescription();
         Set<ITsVariable> hol = Arrays.stream(description.getVariables())
                 .filter(var -> var.getCore() instanceof HolidaysVariable)
                 .map(var -> var.getCore()).collect(Collectors.toSet());

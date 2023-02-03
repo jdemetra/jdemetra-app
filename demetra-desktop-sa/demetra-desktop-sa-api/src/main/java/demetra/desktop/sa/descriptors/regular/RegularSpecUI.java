@@ -18,30 +18,36 @@ package demetra.desktop.sa.descriptors.regular;
 
 import demetra.modelling.regular.EasterSpec;
 import demetra.modelling.regular.EstimateSpec;
+import demetra.modelling.regular.ModellingSpec;
 import demetra.modelling.regular.OutlierSpec;
 import demetra.modelling.regular.SeriesSpec;
 import demetra.modelling.regular.TradingDaysSpec;
 import demetra.modelling.regular.TransformSpec;
 import demetra.modelling.regular.RegressionSpec;
 
-
 /**
  *
  * @author palatej
  */
 public interface RegularSpecUI {
-    
+
     boolean isRo();
-    
+
     boolean hasFixedCoefficients();
-    
+
     boolean isAdjust();
-    
+
+    boolean isPreprocessing();
+
+    ModellingSpec preprocessing();
+
     TradingDaysSpec td();
-    
+
     TransformSpec transform();
-    
+
     OutlierSpec outlier();
+
+    void update(ModellingSpec spec);
 
     void update(EstimateSpec spec);
 

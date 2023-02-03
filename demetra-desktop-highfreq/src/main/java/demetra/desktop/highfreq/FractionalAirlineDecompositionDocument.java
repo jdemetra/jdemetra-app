@@ -15,8 +15,8 @@ import demetra.timeseries.TsDomain;
 import demetra.timeseries.TsUnit;
 import demetra.timeseries.regression.ModellingContext;
 import java.time.temporal.ChronoUnit;
-import jdplus.highfreq.ExtendedAirlineDecompositionKernel;
-import jdplus.highfreq.ExtendedAirlineResults;
+import jdplus.highfreq.extendedairline.decomposiiton.ExtendedAirlineDecompositionKernel;
+import jdplus.highfreq.extendedairline.ExtendedAirlineResults;
 
 /**
  *

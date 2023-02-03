@@ -16,7 +16,7 @@
  */
 package demetra.desktop.highfreq.ui;
 
-import demetra.desktop.sa.descriptors.highfreq.AbstractCalendarSpecUI;
+import demetra.desktop.sa.descriptors.highfreq.AbstractHolidaysSpecUI;
 import demetra.desktop.sa.descriptors.highfreq.HighFreqSpecUI;
 import demetra.modelling.highfreq.HolidaysSpec;
 
@@ -24,7 +24,7 @@ import demetra.modelling.highfreq.HolidaysSpec;
  *
  * @author PALATEJ
  */
-public class CalendarSpecUI  extends AbstractCalendarSpecUI {
+public class CalendarSpecUI  extends AbstractHolidaysSpecUI {
 
    private final FractionalAirlineSpecRoot root;
    
@@ -34,7 +34,7 @@ public class CalendarSpecUI  extends AbstractCalendarSpecUI {
 
     @Override
     protected HolidaysSpec spec() {
-        return root.getCore().getRegression().getCalendar();
+        return root.getCore().getRegression().getHolidays();
     }
 
     @Override
