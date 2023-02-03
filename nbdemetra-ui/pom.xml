@@ -53,7 +53,7 @@
             <artifactId>lombok</artifactId>
             <scope>provided</scope>
             <!-- Force version to override the one defined in java-desktop-util imports -->
-            <version>1.18.24</version>
+            <version>1.18.26</version>
         </dependency>
         <dependency>
             <groupId>org.checkerframework</groupId>
