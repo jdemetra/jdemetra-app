@@ -24,6 +24,9 @@ public abstract class ForecastsFactory<D extends TsDocument<?, ?>>
     protected ForecastsFactory(Class<D> documentType, Id id, Function<D, RegSarimaModel> extractor) {
         super(documentType, id, (D source) -> {
             RegSarimaModel model = extractor.apply(source);
+            if (model == null) {
+                return null;
+            }
             TsData orig = model.getDescription().getSeries();
             TimeSelector sel = TimeSelector.last(3 * orig.getAnnualFrequency());
             RegSarimaModel.Forecasts fcasts = model.forecasts(-2);

@@ -23,7 +23,10 @@ public abstract class NiidTestsFactory<D extends TsDocument<?, ?>>
         extends ProcDocumentItemFactory<D, HtmlElement> {
 
     protected NiidTestsFactory(Class<D> documentType, Id id, Function<D, RegSarimaModel> extractor) {
-        super(documentType, id, extractor.andThen( source -> {
+        super(documentType, id, extractor.andThen(source -> {
+            if (source == null) {
+                return null;
+            }
             TsData res = source.fullResiduals();
             NiidTests niid = NiidTests.builder()
                     .data(res.getValues())

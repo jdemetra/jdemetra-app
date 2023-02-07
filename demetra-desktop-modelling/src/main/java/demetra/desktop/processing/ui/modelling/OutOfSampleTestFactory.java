@@ -19,30 +19,25 @@ import jdplus.regsarima.regular.RegSarimaModel;
  * @author PALATEJ
  * @param <D>
  */
-public abstract class OutOfSampleTestFactory <D extends TsDocument<?, ?>>
-            extends ProcDocumentItemFactory<D, HtmlElement> {
+public abstract class OutOfSampleTestFactory<D extends TsDocument<?, ?>>
+        extends ProcDocumentItemFactory<D, HtmlElement> {
 
-        protected OutOfSampleTestFactory(Class<D> documentType, Id id, Function<D, RegSarimaModel> extractor) {
-            super(documentType, id, extractor.andThen(source->{
-                    int lback;
-                    int freq = source.getDescription().getSeries().getAnnualFrequency();
-                    switch (freq) {
-                        case 12:
-                            lback = 18;
-                            break;
-                        case 6:
-                            lback = 9;
-                            break;
-                        case 4:
-                            lback = 6;
-                            break;
-                        default:
-                            lback = 5;
-                            break;
-                    }
-                    RegSarimaComputer processor = RegSarimaComputer.builder().build();
-                    OneStepAheadForecastingTest test =  OneStepAheadForecastingTest.of(source.regarima(), processor, lback);
-                    return new demetra.html.modelling.HtmlOneStepAheadForecastingTest(test);
-            }), new HtmlItemUI());
-        }
+    protected OutOfSampleTestFactory(Class<D> documentType, Id id, Function<D, RegSarimaModel> extractor) {
+        super(documentType, id, extractor.andThen(source -> {
+            if (source == null) {
+                return null;
+            }
+            int lback;
+            int freq = source.getDescription().getSeries().getAnnualFrequency();
+            lback = switch (freq) {
+                case 12 -> 18;
+                case 6 -> 9;
+                case 4 -> 6;
+                default -> 5;
+            };
+            RegSarimaComputer processor = RegSarimaComputer.builder().build();
+            OneStepAheadForecastingTest test = OneStepAheadForecastingTest.of(source.regarima(), processor, lback);
+            return new demetra.html.modelling.HtmlOneStepAheadForecastingTest(test);
+        }), new HtmlItemUI());
     }
+}

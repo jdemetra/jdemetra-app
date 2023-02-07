@@ -105,7 +105,7 @@ public class StlPlusViewFactory extends ProcDocumentViewFactory<StlPlusDocument>
     };
 
     private final static Function<StlPlusDocument, TsData> RESEXTRACTOR = MODELEXTRACTOR
-            .andThen(regarima -> regarima.fullResiduals());
+            .andThen(regarima -> regarima == null ? null : regarima.fullResiduals());
 
     private static String generateId(String name, String id) {
         return TsDynamicProvider.CompositeTs.builder()
@@ -229,7 +229,7 @@ public class StlPlusViewFactory extends ProcDocumentViewFactory<StlPlusDocument>
         }
 
     }
-    
+
     @ServiceProvider(service = IProcDocumentItemFactory.class, position = 2400)
     public static class MainSiFactory extends SIFactory<StlPlusDocument> {
 
@@ -248,7 +248,6 @@ public class StlPlusViewFactory extends ProcDocumentViewFactory<StlPlusDocument>
             return 2400;
         }
     }
-    
 
 //<editor-fold defaultstate="collapsed" desc="PREPROCESSING">
     @ServiceProvider(service = IProcDocumentItemFactory.class, position = 3000)
@@ -651,7 +650,12 @@ public class StlPlusViewFactory extends ProcDocumentViewFactory<StlPlusDocument>
                 if (rslt == null) {
                     return null;
                 }
-                TsData s = rslt.getPreprocessing().transformedSeries();
+                TsData s;
+                if (rslt.getPreprocessing() != null) {
+                    s = rslt.getPreprocessing().transformedSeries();
+                } else {
+                    s = rslt.getDecomposition().getSeries();
+                }
                 if (s == null) {
                     return null;
                 }
@@ -673,7 +677,7 @@ public class StlPlusViewFactory extends ProcDocumentViewFactory<StlPlusDocument>
         public LinSeasonalityFactory() {
             super(StlPlusDocument.class, SaViews.DIAGNOSTICS_LSEASONALITY, (StlPlusDocument doc) -> {
                 StlPlusResults rslt = doc.getResult();
-                if (rslt == null) {
+                if (rslt == null || rslt.getPreprocessing() == null) {
                     return null;
                 }
                 TsData s = rslt.getPreprocessing().linearizedSeries();
@@ -698,7 +702,7 @@ public class StlPlusViewFactory extends ProcDocumentViewFactory<StlPlusDocument>
         public ResSeasonalityFactory() {
             super(StlPlusDocument.class, SaViews.DIAGNOSTICS_RSEASONALITY, (StlPlusDocument doc) -> {
                 StlPlusResults rslt = doc.getResult();
-                if (rslt == null) {
+                if (rslt == null || rslt.getPreprocessing() == null) {
                     return null;
                 }
                 TsData s = rslt.getPreprocessing().fullResiduals();
@@ -779,7 +783,7 @@ public class StlPlusViewFactory extends ProcDocumentViewFactory<StlPlusDocument>
         public LastResSeasonalityFactory() {
             super(StlPlusDocument.class, SaViews.DIAGNOSTICS_LASTRSEASONALITY, (StlPlusDocument doc) -> {
                 StlPlusResults rslt = doc.getResult();
-                if (rslt == null) {
+                if (rslt == null || rslt.getPreprocessing() == null) {
                     return null;
                 }
                 TsData s = rslt.getPreprocessing().fullResiduals();
@@ -905,11 +909,11 @@ public class StlPlusViewFactory extends ProcDocumentViewFactory<StlPlusDocument>
         public DiagnosticsSpectrumIFactory() {
             super(StlPlusDocument.class, SaViews.DIAGNOSTICS_SPECTRUM_I,
                     DECOMPOSITIONEXTRACTOR.andThen(
-                            (StlResults seats) -> {
-                                if (seats == null) {
+                            (StlResults stl) -> {
+                                if (stl == null) {
                                     return null;
                                 }
-                                TsData s = seats.getIrregular();
+                                TsData s = stl.getIrregular();
                                 if (s == null) {
                                     return null;
                                 }
@@ -917,7 +921,7 @@ public class StlPlusViewFactory extends ProcDocumentViewFactory<StlPlusDocument>
                                 if (ny > 0) {
                                     s = s.drop(Math.max(0, s.length() - s.getAnnualFrequency() * ny), 0);
                                 }
-                                return s;
+                                return stl.isMultiplicative()? s.log() : s;
                             }
                     ),
                     new SpectrumUI(false));
@@ -935,11 +939,11 @@ public class StlPlusViewFactory extends ProcDocumentViewFactory<StlPlusDocument>
         public DiagnosticsSpectrumSaFactory() {
             super(StlPlusDocument.class, SaViews.DIAGNOSTICS_SPECTRUM_SA,
                     DECOMPOSITIONEXTRACTOR.andThen(
-                            (StlResults seats) -> {
-                                if (seats == null) {
+                            (StlResults stl) -> {
+                                if (stl == null) {
                                     return null;
                                 }
-                                TsData s = seats.getSa();
+                                TsData s = stl.getSa();
                                 if (s == null) {
                                     return null;
                                 }
