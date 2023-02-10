@@ -18,7 +18,7 @@ package demetra.desktop.highfreq.ui;
 
 import demetra.desktop.descriptors.EnhancedPropertyDescriptor;
 import demetra.desktop.descriptors.IObjectDescriptor;
-import demetra.highfreq.ExtendedAirlineModellingSpec;
+import demetra.highfreq.ExtendedAirlineDecompositionSpec;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
@@ -29,45 +29,41 @@ import org.openide.util.NbBundle.Messages;
  *
  * @author Jean Palate
  */
-public class FractionalAirlineSpecUI implements IObjectDescriptor<ExtendedAirlineModellingSpec> {
-
-    private final FractionalAirlineSpecRoot root;
-
+public class ExtendedAirlineDecompositionSpecUI implements IObjectDescriptor<ExtendedAirlineDecompositionSpec> {
+    
+    private final ExtendedAirlineDecompositionSpecRoot root;
+    
     @Override
-    public ExtendedAirlineModellingSpec getCore(){
+    public ExtendedAirlineDecompositionSpec getCore(){
         return root.getCore();
     }
 
-    public FractionalAirlineSpecUI(ExtendedAirlineModellingSpec spec, boolean ro) {
-        root=new FractionalAirlineSpecRoot(spec, ro);
+    public ExtendedAirlineDecompositionSpecUI(ExtendedAirlineDecompositionSpec spec, boolean ro) {
+        root=new ExtendedAirlineDecompositionSpecRoot(spec, ro);
     }
 
-    public FractionalAirlineSpecUI(FractionalAirlineSpecRoot root) {
-        this.root=root;
-    }
-
-    public SeriesSpecUI getSeries() {
-        return new SeriesSpecUI(root);
+   public SeriesSpecUI getSeries() {
+        return new SeriesSpecUI(root.getPreprocessing());
     }
 
     public TransformSpecUI getTransform() {
-        return new TransformSpecUI(root);
+        return new TransformSpecUI(root.getPreprocessing());
     }
 
     public RegressionSpecUI getRegression() {
-        return new RegressionSpecUI(root);
+        return new RegressionSpecUI(root.getPreprocessing());
     }
 
     public StochasticSpecUI getStochastic() {
-        return new StochasticSpecUI(root);
+        return new StochasticSpecUI(root.getPreprocessing());
     }
 
     public OutlierSpecUI getOutlier() {
-        return new OutlierSpecUI(root);
+        return new OutlierSpecUI(root.getPreprocessing());
     }
 
     public EstimateSpecUI getEstimate() {
-        return new EstimateSpecUI(root);
+        return new EstimateSpecUI(root.getPreprocessing());
     }
 
     @Override
@@ -98,20 +94,24 @@ public class FractionalAirlineSpecUI implements IObjectDescriptor<ExtendedAirlin
         if (desc != null) {
             descs.add(desc);
         }
+        desc = decompositionDesc();
+        if (desc != null) {
+            descs.add(desc);
+        }
         return descs;
     }
     ///////////////////////////////////////////////////////////////////////////
-    private static final int SERIES_ID=1, TRANSFORM_ID = 2, REGRESSION_ID = 3, STOCHASTIC_ID = 4, OUTLIER_ID = 5, ESTIMATE_ID = 7;
+    private static final int SERIES_ID=1, TRANSFORM_ID = 2, REGRESSION_ID = 3, STOCHASTIC_ID = 4, OUTLIER_ID = 5, ESTIMATE_ID = 7, DECOMPOSITION_ID=8;
 
-    @Messages({"fractionalAirlineSpecUI.regressionDesc.name=REGRESSION",
-        "fractionalAirlineSpecUI.regressionDesc.desc="
+    @Messages({"fractionalAirlineDecompositionSpecUI.regressionDesc.name=REGRESSION",
+        "fractionalAirlineDecompositionSpecUI.regressionDesc.desc="
     })
     private EnhancedPropertyDescriptor regressionDesc() {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("regression", this.getClass(), "getRegression", null);
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, REGRESSION_ID);
-            desc.setDisplayName(Bundle.fractionalAirlineSpecUI_regressionDesc_name());
-            desc.setShortDescription(Bundle.fractionalAirlineSpecUI_regressionDesc_desc());
+            desc.setDisplayName(Bundle.fractionalAirlineDecompositionSpecUI_regressionDesc_name());
+            desc.setShortDescription(Bundle.fractionalAirlineDecompositionSpecUI_regressionDesc_desc());
             //edesc.setReadOnly(true);
             return edesc;
         } catch (IntrospectionException ex) {
@@ -119,15 +119,16 @@ public class FractionalAirlineSpecUI implements IObjectDescriptor<ExtendedAirlin
         }
     }
 
-    @Messages({"fractionalAirlineSpecUI.seriesDesc.name=SERIES",
-        "fractionalAirlineSpecUI.seriesDesc.desc="
+
+    @Messages({"fractionalAirlineDecompositionSpecUI.seriesDesc.name=SERIES",
+        "fractionalAirlineDecompositionSpecUI.seriesDesc.desc="
     })
     private EnhancedPropertyDescriptor seriesDesc() {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("transform", this.getClass(), "getSeries", null);
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, SERIES_ID);
-            desc.setDisplayName(Bundle.fractionalAirlineSpecUI_seriesDesc_name());
-            desc.setShortDescription(Bundle.fractionalAirlineSpecUI_seriesDesc_desc());
+            desc.setDisplayName(Bundle.fractionalAirlineDecompositionSpecUI_seriesDesc_name());
+            desc.setShortDescription(Bundle.fractionalAirlineDecompositionSpecUI_seriesDesc_desc());
             //edesc.setReadOnly(true);
             return edesc;
         } catch (IntrospectionException ex) {
@@ -135,15 +136,15 @@ public class FractionalAirlineSpecUI implements IObjectDescriptor<ExtendedAirlin
         }
     }
 
-    @Messages({"fractionalAirlineSpecUI.transformDesc.name=TRANSFORM",
-        "fractionalAirlineSpecUI.transformDesc.desc="
+    @Messages({"fractionalAirlineDecompositionSpecUI.transformDesc.name=TRANSFORM",
+        "fractionalAirlineDecompositionSpecUI.transformDesc.desc="
     })
     private EnhancedPropertyDescriptor transformDesc() {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("transform", this.getClass(), "getTransform", null);
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, TRANSFORM_ID);
-            desc.setDisplayName(Bundle.fractionalAirlineSpecUI_transformDesc_name());
-            desc.setShortDescription(Bundle.fractionalAirlineSpecUI_transformDesc_desc());
+            desc.setDisplayName(Bundle.fractionalAirlineDecompositionSpecUI_transformDesc_name());
+            desc.setShortDescription(Bundle.fractionalAirlineDecompositionSpecUI_transformDesc_desc());
             //edesc.setReadOnly(true);
             return edesc;
         } catch (IntrospectionException ex) {
@@ -151,15 +152,15 @@ public class FractionalAirlineSpecUI implements IObjectDescriptor<ExtendedAirlin
         }
     }
 
-    @Messages({"fractionalAirlineSpecUI.outlierDesc.name=OUTLIERS",
-        "fractionalAirlineSpecUI.outlierDesc.desc="
+    @Messages({"fractionalAirlineDecompositionSpecUI.outlierDesc.name=OUTLIERS",
+        "fractionalAirlineDecompositionSpecUI.outlierDesc.desc="
     })
     private EnhancedPropertyDescriptor outlierDesc() {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("outlier", this.getClass(), "getOutlier", null);
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, OUTLIER_ID);
-            desc.setDisplayName(Bundle.fractionalAirlineSpecUI_outlierDesc_name());
-            desc.setShortDescription(Bundle.fractionalAirlineSpecUI_outlierDesc_desc());
+            desc.setDisplayName(Bundle.fractionalAirlineDecompositionSpecUI_outlierDesc_name());
+            desc.setShortDescription(Bundle.fractionalAirlineDecompositionSpecUI_outlierDesc_desc());
             //edesc.setReadOnly(true);
             return edesc;
         } catch (IntrospectionException ex) {
@@ -167,15 +168,15 @@ public class FractionalAirlineSpecUI implements IObjectDescriptor<ExtendedAirlin
         }
     }
 
-    @Messages({"fractionalAirlineSpecUI.stochasticDesc.name=MODEL",
-        "fractionalAirlineSpecUI.stochasticDesc.desc="
+    @Messages({"fractionalAirlineDecompositionSpecUI.stochasticDesc.name=MODEL",
+        "fractionalAirlineDecompositionSpecUI.stochasticDesc.desc="
     })
     private EnhancedPropertyDescriptor stochasticDesc() {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("stochastic", this.getClass(), "getStochastic", null);
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, STOCHASTIC_ID);
-            desc.setDisplayName(Bundle.fractionalAirlineSpecUI_stochasticDesc_name());
-            desc.setShortDescription(Bundle.fractionalAirlineSpecUI_stochasticDesc_desc());
+            desc.setDisplayName(Bundle.fractionalAirlineDecompositionSpecUI_stochasticDesc_name());
+            desc.setShortDescription(Bundle.fractionalAirlineDecompositionSpecUI_stochasticDesc_desc());
             //edesc.setReadOnly(true);
             return edesc;
         } catch (IntrospectionException ex) {
@@ -183,15 +184,15 @@ public class FractionalAirlineSpecUI implements IObjectDescriptor<ExtendedAirlin
         }
     }
 
-    @Messages({"fractionalAirlineSpecUI.estimateDesc.name=ESTIMATE",
-        "fractionalAirlineSpecUI.estimateDesc.desc="
+    @Messages({"fractionalAirlineDecompositionSpecUI.estimateDesc.name=ESTIMATE",
+        "fractionalAirlineDecompositionSpecUI.estimateDesc.desc="
     })
     private EnhancedPropertyDescriptor estimateDesc() {
         try {
             PropertyDescriptor desc = new PropertyDescriptor("estimate", this.getClass(), "getEstimate", null);
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, ESTIMATE_ID);
-            desc.setDisplayName(Bundle.fractionalAirlineSpecUI_estimateDesc_name());
-            desc.setShortDescription(Bundle.fractionalAirlineSpecUI_estimateDesc_desc());
+            desc.setDisplayName(Bundle.fractionalAirlineDecompositionSpecUI_estimateDesc_name());
+            desc.setShortDescription(Bundle.fractionalAirlineDecompositionSpecUI_estimateDesc_desc());
             //edesc.setReadOnly(true);
             return edesc;
         } catch (IntrospectionException ex) {
@@ -199,10 +200,29 @@ public class FractionalAirlineSpecUI implements IObjectDescriptor<ExtendedAirlin
         }
     }
 
-    @Messages("fractionalAirlineSpecUI.getDisplayName=Fractional airline")
+    @Messages("fractionalAirlineDecompositionSpecUI.getDisplayName=Fractional airline decomposition")
     @Override
     public String getDisplayName() {
-        return Bundle.fractionalAirlineSpecUI_getDisplayName();
+        return Bundle.fractionalAirlineDecompositionSpecUI_getDisplayName();
     }
- 
+
+    public DecompositionSpecUI getDecomposition() {
+        return new DecompositionSpecUI(root);
+    }
+
+    @Messages({"fractionalAirlineDecompositionSpecUI.decompositionDesc.name=DECOMPOSITION",
+        "fractionalAirlineDecompositionSpecUI.decompositionDesc.desc=Includes the settings relevant to the decomposition step"
+    })
+    private EnhancedPropertyDescriptor decompositionDesc() {
+        try {
+            PropertyDescriptor desc = new PropertyDescriptor("seats", this.getClass(), "getDecomposition", null);
+            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, DECOMPOSITION_ID);
+            desc.setDisplayName(Bundle.fractionalAirlineDecompositionSpecUI_decompositionDesc_name());
+            desc.setShortDescription(Bundle.fractionalAirlineDecompositionSpecUI_decompositionDesc_desc());
+            return edesc;
+        } catch (IntrospectionException ex) {
+            return null;
+        }
+    }
+
 }

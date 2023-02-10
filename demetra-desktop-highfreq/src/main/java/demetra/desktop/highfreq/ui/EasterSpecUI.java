@@ -26,9 +26,9 @@ import demetra.modelling.highfreq.EasterSpec;
  */
 public class EasterSpecUI extends AbstractEasterSpecUI {
 
-   private final FractionalAirlineSpecRoot root;
+   private final ExtendedAirlineSpecRoot root;
    
-   public EasterSpecUI(FractionalAirlineSpecRoot root){
+   public EasterSpecUI(ExtendedAirlineSpecRoot root){
        this.root=root;
    }
 

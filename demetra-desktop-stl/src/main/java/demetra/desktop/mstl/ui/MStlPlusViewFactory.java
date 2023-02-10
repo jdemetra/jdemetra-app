@@ -2,23 +2,33 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package demetra.desktop.mstl;
+package demetra.desktop.mstl.ui;
 
+import demetra.data.DoubleSeq;
 import demetra.desktop.TsDynamicProvider;
+import demetra.desktop.highfreq.ui.HtmlFractionalAirlineModel;
 import demetra.desktop.processing.ui.modelling.InputFactory;
 import demetra.desktop.processing.ui.modelling.RegSarimaViews;
 import demetra.desktop.sa.ui.SaViews;
-import demetra.desktop.mstl.extractors.MStlPlusExtractor;
 import demetra.desktop.ui.processing.GenericChartUI;
 import demetra.desktop.ui.processing.GenericTableUI;
+import demetra.desktop.ui.processing.HtmlItemUI;
 import demetra.desktop.ui.processing.IProcDocumentItemFactory;
 import demetra.desktop.ui.processing.IProcDocumentViewFactory;
 import demetra.desktop.ui.processing.ProcDocumentItemFactory;
 import demetra.desktop.ui.processing.ProcDocumentViewFactory;
+import demetra.desktop.ui.processing.stats.DistributionUI;
+import demetra.desktop.ui.processing.stats.PeriodogramUI;
+import demetra.html.HtmlElement;
+import demetra.modelling.ModellingDictionary;
 import demetra.sa.SaDictionaries;
+import demetra.stl.StlDictionaries;
 import demetra.timeseries.TsDocument;
 import demetra.util.Id;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
+import jdplus.highfreq.regarima.HighFreqRegArimaModel;
+import jdplus.mstlplus.MStlPlusDocument;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -28,6 +38,11 @@ import org.openide.util.lookup.ServiceProvider;
 public class MStlPlusViewFactory extends ProcDocumentViewFactory<MStlPlusDocument> {
 
     private static final AtomicReference<IProcDocumentViewFactory<MStlPlusDocument>> INSTANCE = new AtomicReference();
+    private final static Function<MStlPlusDocument, HighFreqRegArimaModel> MODELEXTRACTOR = doc -> doc.getResult().getPreprocessing();
+    private final static Function<MStlPlusDocument, DoubleSeq> RESEXTRACTOR = doc -> {
+        HighFreqRegArimaModel result = doc.getResult().getPreprocessing();
+        return result == null ? null : result.getResiduals().getRes();
+    };
 
     public static IProcDocumentViewFactory<MStlPlusDocument> getDefault() {
         IProcDocumentViewFactory<MStlPlusDocument> fac = INSTANCE.get();
@@ -60,18 +75,19 @@ public class MStlPlusViewFactory extends ProcDocumentViewFactory<MStlPlusDocumen
 
     public static String[] lowSeries() {
         return new String[]{
-            generateId("Series", MStlPlusExtractor.Y),
-            generateId("Seasonally adjusted", MStlPlusExtractor.SA),
-            generateId("Trend", MStlPlusExtractor.T)
+            generateId("Series", SaDictionaries.Y),
+            generateId("Seasonally adjusted", SaDictionaries.SA),
+            generateId("Trend", SaDictionaries.T)
         };
     }
 
     public static String[] highSeries() {
         return new String[]{
-            generateId("Yearly seasonal", MStlPlusExtractor.SY),
-            generateId("Weekly seasonal", MStlPlusExtractor.SW),
-            generateId("Irregular", MStlPlusExtractor.I)
-        };
+            generateId("Seasonal", StlDictionaries.S),
+            generateId("Yearly seasonal", StlDictionaries.SY),
+            generateId("Weekly seasonal", StlDictionaries.SW),
+            generateId("Irregular", SaDictionaries.I),
+            generateId("Calendar effects", ModellingDictionary.CAL)};
     }
 
     public static String[] finalSeries() {
@@ -103,7 +119,7 @@ public class MStlPlusViewFactory extends ProcDocumentViewFactory<MStlPlusDocumen
 //            return 100010;
 //        }
 //    }
-    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 100000)
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 1000)
     public static class Input extends InputFactory<MStlPlusDocument> {
 
         public Input() {
@@ -112,29 +128,36 @@ public class MStlPlusViewFactory extends ProcDocumentViewFactory<MStlPlusDocumen
 
         @Override
         public int getPosition() {
-            return 100000;
+            return 1000;
         }
     }
 
 //</editor-fold>
 //
 //<editor-fold defaultstate="collapsed" desc="REGISTER SUMMARY">
-//    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 100000 + 1000)
-//    public static class SummaryFactory extends ProcDocumentItemFactory<StlPlusDocument, HtmlElement> {
-//
-//        public SummaryFactory() {
-//            super(StlPlusDocument.class, RegSarimaViews.MODEL_SUMMARY,
-//                    source -> new HtmlFractionalAirlineModel(source.getResult(), false),
-//                    new HtmlItemUI());
-//        }
-//
-//        @Override
-//        public int getPosition() {
-//            return 101000;
-//        }
-//    }
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 3000)
+    public static class SummaryFactory extends ProcDocumentItemFactory<MStlPlusDocument, HtmlElement> {
+
+        public SummaryFactory() {
+            super(MStlPlusDocument.class, RegSarimaViews.MODEL_SUMMARY,
+                    source -> {
+                        HighFreqRegArimaModel preprocessing = source.getResult().getPreprocessing();
+                        if (preprocessing == null) {
+                            return null;
+                        }
+                        return new HtmlFractionalAirlineModel(preprocessing, false);
+                    },
+                    new HtmlItemUI());
+        }
+
+        @Override
+        public int getPosition() {
+            return 3000;
+        }
+    }
 //</editor-fold>
-       @ServiceProvider(service = IProcDocumentItemFactory.class, position = 2000)
+
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 2000)
     public static class MainLowChart extends ProcDocumentItemFactory<MStlPlusDocument, TsDocument> {
 
         public MainLowChart() {
@@ -146,7 +169,7 @@ public class MStlPlusViewFactory extends ProcDocumentViewFactory<MStlPlusDocumen
             return 2000;
         }
     }
-    
+
     @ServiceProvider(service = IProcDocumentItemFactory.class, position = 2100)
     public static class MainHighChart extends ProcDocumentItemFactory<MStlPlusDocument, TsDocument> {
 
@@ -159,7 +182,7 @@ public class MStlPlusViewFactory extends ProcDocumentViewFactory<MStlPlusDocumen
             return 2100;
         }
     }
-    
+
     @ServiceProvider(service = IProcDocumentItemFactory.class, position = 2200)
     public static class MainTable extends ProcDocumentItemFactory<MStlPlusDocument, TsDocument> {
 
@@ -264,62 +287,35 @@ public class MStlPlusViewFactory extends ProcDocumentViewFactory<MStlPlusDocumen
 //    }
 //</editor-fold>
 //<editor-fold defaultstate="collapsed" desc="REGISTER RESIDUALS">
-//    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 400000 + 1000)
-//    public static class ModelResFactory extends ProcDocumentItemFactory<FractionalAirlineDocument, TsData> {
-//
-//        public ModelResFactory() {
-//            super(StlPlusDocument.class, RegSarimaViews.MODEL_RES, RESEXTRACTOR,
-//                    new ResidualsUI()
-//            );
-//        }
-//
-//        @Override
-//        public int getPosition() {
-//            return 401000;
-//        }
-//    }
-//
-//    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 400000 + 2000)
-//    public static class ModelResStatsFactory extends NiidTestsFactory<FractionalAirlineDocument> {
-//
-//        public ModelResStatsFactory() {
-//            super(StlPlusDocument.class, RegSarimaViews.MODEL_RES_STATS, MODELEXTRACTOR);
-//        }
-//
-//        @Override
-//        public int getPosition() {
-//            return 402000;
-//        }
-//    }
-//
-//    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 400000 + 3000)
-//    public static class ModelResDist extends ProcDocumentItemFactory<StlPlusDocument, DoubleSeq> {
-//
-//        public ModelResDist() {
-//            super(StlPlusDocument.class, RegSarimaViews.MODEL_RES_DIST, RESEXTRACTOR,
-//                    new DistributionUI());
-//
-//        }
-//
-//        @Override
-//        public int getPosition() {
-//            return 403000;
-//        }
-//    }
-//    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 400000 + 4000)
-//    public static class ModelResSpectrum extends ProcDocumentItemFactory<StlPlusDocument, DoubleSeq> {
-//
-//        public ModelResSpectrum() {
-//            super(StlPlusDocument.class, RegSarimaViews.MODEL_RES_SPECTRUM, RESEXTRACTOR,
-//                    new PeriodogramUI());
-//
-//        }
-//
-//        @Override
-//        public int getPosition() {
-//            return 404000;
-//        }
-//    }
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 3100)
+    public static class ModelResDist extends ProcDocumentItemFactory<MStlPlusDocument, DoubleSeq> {
+
+        public ModelResDist() {
+            super(MStlPlusDocument.class, RegSarimaViews.MODEL_RES_DIST, RESEXTRACTOR,
+                    new DistributionUI());
+
+        }
+
+        @Override
+        public int getPosition() {
+            return 3100;
+        }
+    }
+
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 3200)
+    public static class ModelResSpectrum extends ProcDocumentItemFactory<MStlPlusDocument, DoubleSeq> {
+
+        public ModelResSpectrum() {
+            super(MStlPlusDocument.class, RegSarimaViews.MODEL_RES_SPECTRUM, RESEXTRACTOR,
+                    new PeriodogramUI());
+
+        }
+
+        @Override
+        public int getPosition() {
+            return 3200;
+        }
+    }
 //</editor-fold>
 //<editor-fold defaultstate="collapsed" desc="REGISTER DETAILS">
 //    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 500000)

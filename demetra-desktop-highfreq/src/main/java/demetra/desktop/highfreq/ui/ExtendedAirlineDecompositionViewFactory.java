@@ -2,11 +2,11 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package demetra.desktop.highfreq;
+package demetra.desktop.highfreq.ui;
 
 import demetra.data.DoubleSeq;
 import demetra.desktop.TsDynamicProvider;
-import demetra.desktop.highfreq.ui.HtmlFractionalAirlineModel;
+import jdplus.highfreq.extendedairline.decomposiiton.ExtendedAirlineDecompositionDocument;
 import demetra.desktop.processing.ui.modelling.InputFactory;
 import demetra.desktop.processing.ui.modelling.RegSarimaViews;
 import demetra.desktop.ui.processing.GenericChartUI;
@@ -21,7 +21,7 @@ import demetra.desktop.ui.processing.stats.PeriodogramUI;
 import demetra.desktop.sa.ui.SaViews;
 import demetra.highfreq.ExtendedAirlineDictionaries;
 import demetra.html.HtmlElement;
-import demetra.information.BasicInformationExtractor;
+import demetra.information.InformationSet;
 import demetra.modelling.ModellingDictionary;
 import demetra.modelling.SeriesInfo;
 import demetra.sa.SaDictionaries;
@@ -37,31 +37,31 @@ import org.openide.util.lookup.ServiceProvider;
  *
  * @author Jean Palate
  */
-public class FractionalAirlineDecompositionViewFactory extends ProcDocumentViewFactory<FractionalAirlineDecompositionDocument> {
+public class ExtendedAirlineDecompositionViewFactory extends ProcDocumentViewFactory<ExtendedAirlineDecompositionDocument> {
 
-    private static final AtomicReference<IProcDocumentViewFactory<FractionalAirlineDecompositionDocument>> INSTANCE = new AtomicReference();
+    private static final AtomicReference<IProcDocumentViewFactory<ExtendedAirlineDecompositionDocument>> INSTANCE = new AtomicReference();
 
-    private final static Function<FractionalAirlineDecompositionDocument, HighFreqRegArimaModel> MODELEXTRACTOR = doc -> doc.getResult().getPreprocessing();
-    private final static Function<FractionalAirlineDecompositionDocument, DoubleSeq> RESEXTRACTOR = doc -> {
+    private final static Function<ExtendedAirlineDecompositionDocument, HighFreqRegArimaModel> MODELEXTRACTOR = doc -> doc.getResult().getPreprocessing();
+    private final static Function<ExtendedAirlineDecompositionDocument, DoubleSeq> RESEXTRACTOR = doc -> {
         HighFreqRegArimaModel result = doc.getResult().getPreprocessing();
         return result == null ? null : result.getResiduals().getRes();
     };
 
-    public static IProcDocumentViewFactory<FractionalAirlineDecompositionDocument> getDefault() {
-        IProcDocumentViewFactory<FractionalAirlineDecompositionDocument> fac = INSTANCE.get();
+    public static IProcDocumentViewFactory<ExtendedAirlineDecompositionDocument> getDefault() {
+        IProcDocumentViewFactory<ExtendedAirlineDecompositionDocument> fac = INSTANCE.get();
         if (fac == null) {
-            fac = new FractionalAirlineDecompositionViewFactory();
+            fac = new ExtendedAirlineDecompositionViewFactory();
             INSTANCE.lazySet(fac);
         }
         return fac;
     }
 
-    public static void setDefault(IProcDocumentViewFactory<FractionalAirlineDecompositionDocument> factory) {
+    public static void setDefault(IProcDocumentViewFactory<ExtendedAirlineDecompositionDocument> factory) {
         INSTANCE.set(factory);
     }
 
-    public FractionalAirlineDecompositionViewFactory() {
-        registerFromLookup(FractionalAirlineDecompositionDocument.class);
+    public ExtendedAirlineDecompositionViewFactory() {
+        registerFromLookup(ExtendedAirlineDecompositionDocument.class);
     }
 
     @Override
@@ -105,10 +105,10 @@ public class FractionalAirlineDecompositionViewFactory extends ProcDocumentViewF
         };
     }
     @ServiceProvider(service = IProcDocumentItemFactory.class, position = 2000)
-    public static class MainLowChart extends ProcDocumentItemFactory<FractionalAirlineDecompositionDocument, TsDocument> {
+    public static class MainLowChart extends ProcDocumentItemFactory<ExtendedAirlineDecompositionDocument, TsDocument> {
 
         public MainLowChart() {
-            super(FractionalAirlineDecompositionDocument.class, SaViews.MAIN_CHARTS_LOW, s -> s, new GenericChartUI(false, lowSeries()));
+            super(ExtendedAirlineDecompositionDocument.class, SaViews.MAIN_CHARTS_LOW, s -> s, new GenericChartUI(false, lowSeries()));
         }
 
         @Override
@@ -118,10 +118,10 @@ public class FractionalAirlineDecompositionViewFactory extends ProcDocumentViewF
     }
     
     @ServiceProvider(service = IProcDocumentItemFactory.class, position = 2100)
-    public static class MainHighChart extends ProcDocumentItemFactory<FractionalAirlineDecompositionDocument, TsDocument> {
+    public static class MainHighChart extends ProcDocumentItemFactory<ExtendedAirlineDecompositionDocument, TsDocument> {
 
         public MainHighChart() {
-            super(FractionalAirlineDecompositionDocument.class, SaViews.MAIN_CHARTS_HIGH, s -> s, new GenericChartUI(false, highSeries()));
+            super(ExtendedAirlineDecompositionDocument.class, SaViews.MAIN_CHARTS_HIGH, s -> s, new GenericChartUI(false, highSeries()));
         }
 
         @Override
@@ -131,10 +131,10 @@ public class FractionalAirlineDecompositionViewFactory extends ProcDocumentViewF
     }
     
     @ServiceProvider(service = IProcDocumentItemFactory.class, position = 2200)
-    public static class MainTable extends ProcDocumentItemFactory<FractionalAirlineDecompositionDocument, TsDocument> {
+    public static class MainTable extends ProcDocumentItemFactory<ExtendedAirlineDecompositionDocument, TsDocument> {
 
         public MainTable() {
-            super(FractionalAirlineDecompositionDocument.class, SaViews.MAIN_TABLE, s -> s, new GenericTableUI(false, finalSeries()));
+            super(ExtendedAirlineDecompositionDocument.class, SaViews.MAIN_TABLE, s -> s, new GenericTableUI(false, finalSeries()));
         }
 
         @Override
@@ -145,7 +145,7 @@ public class FractionalAirlineDecompositionViewFactory extends ProcDocumentViewF
     }
     
 //<editor-fold defaultstate="collapsed" desc="REGISTER SPEC">
-//    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 100010)
+//    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 1010)
 //    public static class SpecFactory extends ProcDocumentItemFactory<FractionalAirlineDecompositionDocument, HtmlElement> {
 //
 //        public SpecFactory() {
@@ -160,38 +160,38 @@ public class FractionalAirlineDecompositionViewFactory extends ProcDocumentViewF
 //
 //        @Override
 //        public int getPosition() {
-//            return 100010;
+//            return 1010;
 //        }
 //    }
 
-    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 100000)
-    public static class Input extends InputFactory<FractionalAirlineDecompositionDocument> {
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 1000)
+    public static class Input extends InputFactory<ExtendedAirlineDecompositionDocument> {
 
         public Input() {
-            super(FractionalAirlineDecompositionDocument.class, RegSarimaViews.INPUT_SERIES);
+            super(ExtendedAirlineDecompositionDocument.class, RegSarimaViews.INPUT_SERIES);
         }
 
         @Override
         public int getPosition() {
-            return 100000;
+            return 1000;
         }
     }
 
 //</editor-fold>
 //
 //<editor-fold defaultstate="collapsed" desc="REGISTER SUMMARY">
-    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 100000 + 1000)
-    public static class SummaryFactory extends ProcDocumentItemFactory<FractionalAirlineDecompositionDocument, HtmlElement> {
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 3000)
+    public static class SummaryFactory extends ProcDocumentItemFactory<ExtendedAirlineDecompositionDocument, HtmlElement> {
 
         public SummaryFactory() {
-            super(FractionalAirlineDecompositionDocument.class, RegSarimaViews.MODEL_SUMMARY,
+            super(ExtendedAirlineDecompositionDocument.class, RegSarimaViews.MODEL_SUMMARY,
                     source -> new HtmlFractionalAirlineModel(source.getResult().getPreprocessing(), false),
                     new HtmlItemUI());
         }
 
         @Override
         public int getPosition() {
-            return 101000;
+            return 3000;
         }
     }
 
@@ -316,33 +316,33 @@ public class FractionalAirlineDecompositionViewFactory extends ProcDocumentViewF
 //        }
 //    }
 //
-    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 400000 + 3000)
-    public static class ModelResDist extends ProcDocumentItemFactory<FractionalAirlineDecompositionDocument, DoubleSeq> {
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 3100)
+    public static class ModelResDist extends ProcDocumentItemFactory<ExtendedAirlineDecompositionDocument, DoubleSeq> {
 
         public ModelResDist() {
-            super(FractionalAirlineDecompositionDocument.class, RegSarimaViews.MODEL_RES_DIST, RESEXTRACTOR,
+            super(ExtendedAirlineDecompositionDocument.class, RegSarimaViews.MODEL_RES_DIST, RESEXTRACTOR,
                     new DistributionUI());
 
         }
 
         @Override
         public int getPosition() {
-            return 403000;
+            return 3100;
         }
     }
 
-    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 400000 + 4000)
-    public static class ModelResSpectrum extends ProcDocumentItemFactory<FractionalAirlineDecompositionDocument, DoubleSeq> {
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 3200)
+    public static class ModelResSpectrum extends ProcDocumentItemFactory<ExtendedAirlineDecompositionDocument, DoubleSeq> {
 
         public ModelResSpectrum() {
-            super(FractionalAirlineDecompositionDocument.class, RegSarimaViews.MODEL_RES_SPECTRUM, RESEXTRACTOR,
+            super(ExtendedAirlineDecompositionDocument.class, RegSarimaViews.MODEL_RES_SPECTRUM, RESEXTRACTOR,
                     new PeriodogramUI());
 
         }
 
         @Override
         public int getPosition() {
-            return 404000;
+            return 3200;
         }
     }
 

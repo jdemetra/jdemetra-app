@@ -16,124 +16,227 @@
  */
 package demetra.desktop.mstl.ui;
 
-import demetra.desktop.stl.ui.LoessSpecUI;
 import demetra.desktop.descriptors.EnhancedPropertyDescriptor;
 import demetra.desktop.descriptors.IObjectDescriptor;
-import demetra.stl.MStlSpec;
+import demetra.stl.MStlPlusSpec;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
 import java.util.List;
-import org.openide.util.NbBundle;
 import org.openide.util.NbBundle.Messages;
 
 /**
  *
  * @author Jean Palate
  */
-public class MStlPlusSpecUI implements IObjectDescriptor<MStlSpec> {
+public class MStlPlusSpecUI implements IObjectDescriptor<MStlPlusSpec> {
 
     private final MStlPlusSpecRoot root;
 
     @Override
-    public MStlSpec getCore() {
-        return root.core;
+    public MStlPlusSpec getCore() {
+        return root.getCore();
     }
 
-    public MStlPlusSpecUI(MStlSpec spec, boolean ro) {
+    public MStlPlusSpecUI(MStlPlusSpec spec, boolean ro) {
         root = new MStlPlusSpecRoot(spec, ro);
     }
 
-    public MStlPlusSpecUI(MStlPlusSpecRoot root) {
-        this.root = root;
+    public SeriesSpecUI getSeries() {
+        return new SeriesSpecUI(root);
     }
 
-    public LoessSpecUI getTrendFilter() {
-        return new LoessSpecUI(root.core.getTrendSpec(), root.ro, spec -> {
-            root.core = root.core.toBuilder().trendSpec(spec).build();
-        });
+    public TransformSpecUI getTransform() {
+        return new TransformSpecUI(root);
     }
 
-    public AlgorithmUI getAlgorithm() {
-        return new AlgorithmUI(root);
+    public RegressionSpecUI getRegression() {
+        return new RegressionSpecUI(root);
     }
 
-    public SeasonalsUI getSeasonalFilters() {
-        return new SeasonalsUI(root);
+    public StochasticSpecUI getStochastic() {
+        return new StochasticSpecUI(root);
+    }
+
+    public OutlierSpecUI getOutlier() {
+        return new OutlierSpecUI(root);
+    }
+
+    public EstimateSpecUI getEstimate() {
+        return new EstimateSpecUI(root);
     }
 
     @Override
     public List<EnhancedPropertyDescriptor> getProperties() {
+        // regression
         ArrayList<EnhancedPropertyDescriptor> descs = new ArrayList<>();
-        EnhancedPropertyDescriptor desc = algDesc();
+        EnhancedPropertyDescriptor desc = seriesDesc();
         if (desc != null) {
             descs.add(desc);
         }
-        desc = trendDesc();
+        desc = transformDesc();
         if (desc != null) {
             descs.add(desc);
         }
-        desc = seasDesc();
+        desc = estimateDesc();
+        if (desc != null) {
+            descs.add(desc);
+        }
+        desc = regressionDesc();
+        if (desc != null) {
+            descs.add(desc);
+        }
+        desc = stochasticDesc();
+        if (desc != null) {
+            descs.add(desc);
+        }
+        desc = outlierDesc();
+        if (desc != null) {
+            descs.add(desc);
+        }
+        desc = decompositionDesc();
         if (desc != null) {
             descs.add(desc);
         }
         return descs;
     }
-//    ///////////////////////////////////////////////////////////////////////////
-    private static final int ALG_ID = 1, TREND_ID = 2, SEAS_ID = 3;
-//
-    @NbBundle.Messages({
-        "mstlPlusSpecUI.trendDesc.name=TREND",
-        "mstlPlusSpecUI.trendDesc.desc=Trend specification."
+    ///////////////////////////////////////////////////////////////////////////
+    private static final int SERIES_ID = 1, TRANSFORM_ID = 2, REGRESSION_ID = 3, STOCHASTIC_ID = 4, OUTLIER_ID = 5, ESTIMATE_ID = 7, DECOMPOSITION_ID = 8;
+
+    @Messages({"fractionalAirlineDecompositionSpecUI.regressionDesc.name=REGRESSION",
+        "fractionalAirlineDecompositionSpecUI.regressionDesc.desc="
     })
-    private EnhancedPropertyDescriptor trendDesc() {
+    private EnhancedPropertyDescriptor regressionDesc() {
+        if (!root.isPreprocessingEnabled()) {
+            return null;
+        }
         try {
-            PropertyDescriptor desc = new PropertyDescriptor("TrendFilter", this.getClass(), "getTrendFilter", null);
-            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, TREND_ID);
-            desc.setDisplayName(Bundle.mstlPlusSpecUI_trendDesc_name());
-            desc.setShortDescription(Bundle.mstlPlusSpecUI_trendDesc_desc());
+            PropertyDescriptor desc = new PropertyDescriptor("regression", this.getClass(), "getRegression", null);
+            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, REGRESSION_ID);
+            desc.setDisplayName(Bundle.fractionalAirlineDecompositionSpecUI_regressionDesc_name());
+            desc.setShortDescription(Bundle.fractionalAirlineDecompositionSpecUI_regressionDesc_desc());
+            //edesc.setReadOnly(true);
             return edesc;
         } catch (IntrospectionException ex) {
             return null;
         }
     }
 
-    @NbBundle.Messages({
-        "mstlPlusSpecUI.seasDesc.name=SEASONALS",
-        "mstlPlusSpecUI.seasDesc.desc=Seasonal specifications."
+    @Messages({"fractionalAirlineDecompositionSpecUI.seriesDesc.name=SERIES",
+        "fractionalAirlineDecompositionSpecUI.seriesDesc.desc="
     })
-    private EnhancedPropertyDescriptor seasDesc() {
+    private EnhancedPropertyDescriptor seriesDesc() {
         try {
-            PropertyDescriptor desc = new PropertyDescriptor("SeasonalFilters", this.getClass(), "getSeasonalFilters", null);
-            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, SEAS_ID);
-            desc.setDisplayName(Bundle.mstlPlusSpecUI_seasDesc_name());
-            desc.setShortDescription(Bundle.mstlPlusSpecUI_seasDesc_desc());
+            PropertyDescriptor desc = new PropertyDescriptor("transform", this.getClass(), "getSeries", null);
+            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, SERIES_ID);
+            desc.setDisplayName(Bundle.fractionalAirlineDecompositionSpecUI_seriesDesc_name());
+            desc.setShortDescription(Bundle.fractionalAirlineDecompositionSpecUI_seriesDesc_desc());
+            //edesc.setReadOnly(true);
             return edesc;
         } catch (IntrospectionException ex) {
             return null;
         }
     }
 
-   @NbBundle.Messages({
-        "mstlPlusSpecUI.algDesc.name=ALGORITHM",
-        "mstlPlusSpecUI.algDesc.desc=STL+ Algorithm"
+    @Messages({"fractionalAirlineDecompositionSpecUI.transformDesc.name=TRANSFORM",
+        "fractionalAirlineDecompositionSpecUI.transformDesc.desc="
     })
-    private EnhancedPropertyDescriptor algDesc() {
+    private EnhancedPropertyDescriptor transformDesc() {
+        if (!root.isPreprocessingEnabled()) {
+            return null;
+        }
         try {
-            PropertyDescriptor desc = new PropertyDescriptor("Algorithm", this.getClass(), "getAlgorithm", null);
-            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, ALG_ID);
-            desc.setDisplayName(Bundle.mstlPlusSpecUI_algDesc_name());
-            desc.setShortDescription(Bundle.mstlPlusSpecUI_algDesc_desc());
+            PropertyDescriptor desc = new PropertyDescriptor("transform", this.getClass(), "getTransform", null);
+            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, TRANSFORM_ID);
+            desc.setDisplayName(Bundle.fractionalAirlineDecompositionSpecUI_transformDesc_name());
+            desc.setShortDescription(Bundle.fractionalAirlineDecompositionSpecUI_transformDesc_desc());
+            //edesc.setReadOnly(true);
             return edesc;
         } catch (IntrospectionException ex) {
             return null;
         }
     }
 
-    @Messages("mstlPlusSpecUI.getDisplayName=STL+")
+    @Messages({"fractionalAirlineDecompositionSpecUI.outlierDesc.name=OUTLIERS",
+        "fractionalAirlineDecompositionSpecUI.outlierDesc.desc="
+    })
+    private EnhancedPropertyDescriptor outlierDesc() {
+        if (!root.isPreprocessingEnabled()) {
+            return null;
+        }
+        try {
+            PropertyDescriptor desc = new PropertyDescriptor("outlier", this.getClass(), "getOutlier", null);
+            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, OUTLIER_ID);
+            desc.setDisplayName(Bundle.fractionalAirlineDecompositionSpecUI_outlierDesc_name());
+            desc.setShortDescription(Bundle.fractionalAirlineDecompositionSpecUI_outlierDesc_desc());
+            //edesc.setReadOnly(true);
+            return edesc;
+        } catch (IntrospectionException ex) {
+            return null;
+        }
+    }
+
+    @Messages({"fractionalAirlineDecompositionSpecUI.stochasticDesc.name=MODEL",
+        "fractionalAirlineDecompositionSpecUI.stochasticDesc.desc="
+    })
+    private EnhancedPropertyDescriptor stochasticDesc() {
+        if (!root.isPreprocessingEnabled()) {
+            return null;
+        }
+        try {
+            PropertyDescriptor desc = new PropertyDescriptor("stochastic", this.getClass(), "getStochastic", null);
+            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, STOCHASTIC_ID);
+            desc.setDisplayName(Bundle.fractionalAirlineDecompositionSpecUI_stochasticDesc_name());
+            desc.setShortDescription(Bundle.fractionalAirlineDecompositionSpecUI_stochasticDesc_desc());
+            //edesc.setReadOnly(true);
+            return edesc;
+        } catch (IntrospectionException ex) {
+            return null;
+        }
+    }
+
+    @Messages({"fractionalAirlineDecompositionSpecUI.estimateDesc.name=ESTIMATE",
+        "fractionalAirlineDecompositionSpecUI.estimateDesc.desc="
+    })
+    private EnhancedPropertyDescriptor estimateDesc() {
+        if (!root.isPreprocessingEnabled()) {
+            return null;
+        }
+        try {
+            PropertyDescriptor desc = new PropertyDescriptor("estimate", this.getClass(), "getEstimate", null);
+            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, ESTIMATE_ID);
+            desc.setDisplayName(Bundle.fractionalAirlineDecompositionSpecUI_estimateDesc_name());
+            desc.setShortDescription(Bundle.fractionalAirlineDecompositionSpecUI_estimateDesc_desc());
+            //edesc.setReadOnly(true);
+            return edesc;
+        } catch (IntrospectionException ex) {
+            return null;
+        }
+    }
+
+    @Messages("fractionalAirlineDecompositionSpecUI.getDisplayName=Fractional airline decomposition")
     @Override
     public String getDisplayName() {
-        return Bundle.mstlPlusSpecUI_getDisplayName();
+        return Bundle.fractionalAirlineDecompositionSpecUI_getDisplayName();
+    }
+
+    public MStlSpecUI getDecomposition() {
+        return new MStlSpecUI(root);
+    }
+
+    @Messages({"fractionalAirlineDecompositionSpecUI.decompositionDesc.name=DECOMPOSITION",
+        "fractionalAirlineDecompositionSpecUI.decompositionDesc.desc=Includes the settings relevant to the decomposition step"
+    })
+    private EnhancedPropertyDescriptor decompositionDesc() {
+        try {
+            PropertyDescriptor desc = new PropertyDescriptor("seats", this.getClass(), "getDecomposition", null);
+            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, DECOMPOSITION_ID);
+            desc.setDisplayName(Bundle.fractionalAirlineDecompositionSpecUI_decompositionDesc_name());
+            desc.setShortDescription(Bundle.fractionalAirlineDecompositionSpecUI_decompositionDesc_desc());
+            return edesc;
+        } catch (IntrospectionException ex) {
+            return null;
+        }
     }
 
 }

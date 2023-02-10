@@ -14,7 +14,7 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package demetra.desktop.highfreq.ui;
+package demetra.desktop.mstl.ui;
 
 import demetra.desktop.sa.descriptors.highfreq.AbstractTransformSpecUI;
 import demetra.desktop.sa.descriptors.highfreq.HighFreqSpecUI;
@@ -26,15 +26,15 @@ import demetra.modelling.highfreq.TransformSpec;
  */
 public class TransformSpecUI extends AbstractTransformSpecUI {
 
-    private final ExtendedAirlineSpecRoot root;
+    private final MStlPlusSpecRoot root;
 
-    public TransformSpecUI(ExtendedAirlineSpecRoot root) {
+    public TransformSpecUI(MStlPlusSpecRoot root) {
         this.root = root;
     }
 
     @Override
     protected TransformSpec spec() {
-        return root.getCore().getTransform();
+        return root.getPreprocessing().getTransform();
     }
 
     @Override

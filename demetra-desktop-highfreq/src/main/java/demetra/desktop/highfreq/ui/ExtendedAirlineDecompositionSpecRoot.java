@@ -26,15 +26,15 @@ import demetra.highfreq.ExtendedAirlineDecompositionSpec;
  */
 @lombok.Getter
 @lombok.AllArgsConstructor
-public class FractionalAirlineDecompositionSpecRoot  {
+public class ExtendedAirlineDecompositionSpecRoot  {
     
-    public FractionalAirlineDecompositionSpecRoot(ExtendedAirlineDecompositionSpec spec, boolean ro){
-        preprocessing=new FractionalAirlineSpecRoot(spec.getPreprocessing(), ro);
+    public ExtendedAirlineDecompositionSpecRoot(ExtendedAirlineDecompositionSpec spec, boolean ro){
+        preprocessing=new ExtendedAirlineSpecRoot(spec.getPreprocessing(), ro);
         decomposition=spec.getDecomposition();
      }
     
     @lombok.NonNull
-    final FractionalAirlineSpecRoot preprocessing;
+    final ExtendedAirlineSpecRoot preprocessing;
     @lombok.NonNull
     DecompositionSpec decomposition;
   

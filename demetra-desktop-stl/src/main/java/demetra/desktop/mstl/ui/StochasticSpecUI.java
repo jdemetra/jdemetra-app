@@ -14,14 +14,12 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package demetra.desktop.highfreq.ui;
+package demetra.desktop.mstl.ui;
 
 import demetra.data.Parameter;
 import demetra.desktop.descriptors.EnhancedPropertyDescriptor;
 import demetra.desktop.descriptors.IPropertyDescriptors;
 import demetra.highfreq.ExtendedAirlineSpec;
-import demetra.math.Constants;
-import demetra.timeseries.TsUnit;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
@@ -34,19 +32,18 @@ import org.openide.util.NbBundle;
  */
 public class StochasticSpecUI implements IPropertyDescriptors {
 
-    private final ExtendedAirlineSpecRoot root;
+    private final MStlPlusSpecRoot root;
 
-    public StochasticSpecUI(ExtendedAirlineSpecRoot root) {
+    public StochasticSpecUI(MStlPlusSpecRoot root) {
         this.root = root;
     }
-
-    @Override
+   @Override
     public String toString() {
         return "";
     }
 
     private ExtendedAirlineSpec spec() {
-        return root.getCore().getStochastic();
+        return root.getPreprocessing().getStochastic();
     }
 
     @Override
@@ -79,7 +76,7 @@ public class StochasticSpecUI implements IPropertyDescriptors {
         }
         return descs;
     }
-
+    
     public boolean isMean() {
         return spec().isMean();
     }
@@ -105,40 +102,10 @@ public class StochasticSpecUI implements IPropertyDescriptors {
         }
     }
 
-    private static final double P_DAY = 365.25, P_WEEK = P_DAY / 7;
-
-    private double annualPeriod() {
-        TsUnit period = root.getCore().getPeriod();
-        int ip = period.getAnnualFrequency();
-        if (ip > 0) {
-            return ip;
-        }
-        if (period.equals(TsUnit.WEEK)) {
-            return P_WEEK;
-        } else if (period.equals(TsUnit.DAY)) {
-            return P_DAY;
-        } else {
-            return 0;
-        }
-    }
-
-    private double weeklyPeriod() {
-        TsUnit period = root.getCore().getPeriod();
-        if (period.equals(TsUnit.DAY)) {
-            return 7;
-        } else {
-            return 0;
-        }
-    }
-
-    public boolean isYearly() {
-        double ap = annualPeriod();
-        if (ap <= 0) {
-            return false;
-        }
+     public boolean isYearly() {
         double[] p = spec().getPeriodicities();
         for (int i = 0; i < p.length; ++i) {
-            if (p[i] == ap) {
+            if (p[i] == 365.25) {
                 return true;
             }
         }
@@ -146,13 +113,9 @@ public class StochasticSpecUI implements IPropertyDescriptors {
     }
 
     public boolean isWeekly() {
-        double wp = weeklyPeriod();
-        if (wp <= 0) {
-            return false;
-        }
         double[] p = spec().getPeriodicities();
         for (int i = 0; i < p.length; ++i) {
-            if (p[i] == wp) {
+            if (p[i] == 7) {
                 return true;
             }
         }
@@ -160,17 +123,16 @@ public class StochasticSpecUI implements IPropertyDescriptors {
     }
 
     public void setYearly(boolean y) {
-        double ap = annualPeriod(), wp = weeklyPeriod();
         double[] p;
         if (y) {
             if (isWeekly()) {
-                p = new double[]{wp, ap};
+                p = new double[]{7, 365.25};
             } else {
-                p = new double[]{ap};
+                p = new double[]{365.25};
             }
         } else {
             if (isWeekly()) {
-                p = new double[]{wp};
+                p = new double[]{7};
             } else {
                 p = ExtendedAirlineSpec.NO_PERIOD;
             }
@@ -178,44 +140,11 @@ public class StochasticSpecUI implements IPropertyDescriptors {
         root.update(spec().toBuilder()
                 .periodicities(p)
                 .build());
-    }
-
-    public void setWeekly(boolean w) {
-        double ap = annualPeriod(), wp = weeklyPeriod();
-        double[] p;
-        if (w) {
-            if (isYearly()) {
-                p = new double[]{wp, ap};
-            } else {
-                p = new double[]{wp};
-            }
-        } else {
-            if (isYearly()) {
-                p = new double[]{ap};
-            } else {
-                p = ExtendedAirlineSpec.NO_PERIOD;
-            }
-        }
-        root.update(spec().toBuilder()
-                .periodicities(p)
-                .build());
-    }
-
-    public boolean hasFractionalPeriod() {
-        double[] p = spec().getPeriodicities();
-        for (int i = 0; i < p.length; ++i) {
-            long cur = Math.round(p[i]);
-            if (Math.abs(cur - p[i]) > Constants.getEpsilon()) {
-                return true;
-            }
-        }
-        return false;
     }
 
     private EnhancedPropertyDescriptor yDesc() {
-        if (spec() == null || annualPeriod() <= 0) {
+        if (spec() == null)
             return null;
-        }
         try {
             PropertyDescriptor desc = new PropertyDescriptor("Yearly", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, Y_ID);
@@ -229,10 +158,29 @@ public class StochasticSpecUI implements IPropertyDescriptors {
         }
     }
 
-    private EnhancedPropertyDescriptor wDesc() {
-        if (spec() == null || weeklyPeriod() <= 0) {
-            return null;
+    public void setWeekly(boolean w) {
+        double[] p;
+        if (w) {
+            if (isYearly()) {
+                p = new double[]{7, 365.25};
+            } else {
+                p = new double[]{7};
+            }
+        } else {
+            if (isYearly()) {
+                p = new double[]{365.25};
+            } else {
+                p = ExtendedAirlineSpec.NO_PERIOD;
+            }
         }
+        root.update(spec().toBuilder()
+                .periodicities(p)
+                .build());
+    }
+
+    private EnhancedPropertyDescriptor wDesc() {
+        if (spec() == null)
+            return null;
         try {
             PropertyDescriptor desc = new PropertyDescriptor("Weekly", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, W_ID);
@@ -253,16 +201,15 @@ public class StochasticSpecUI implements IPropertyDescriptors {
     public void setAr(boolean ar) {
         if (ar != spec().hasAr()) {
             root.update(spec().toBuilder()
-                    .phi(ar ? Parameter.undefined() : null)
+                    .phi(ar ? Parameter.undefined() : null )
                     .theta(ar ? null : Parameter.undefined())
                     .build());
         }
     }
 
     private EnhancedPropertyDescriptor arDesc() {
-        if (spec() == null) {
+        if (spec() == null)
             return null;
-        }
         try {
             PropertyDescriptor desc = new PropertyDescriptor("Ar", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, AR_ID);
@@ -289,14 +236,13 @@ public class StochasticSpecUI implements IPropertyDescriptors {
     }
 
     private EnhancedPropertyDescriptor diffDesc() {
-        if (spec() == null) {
+        if (spec() == null)
             return null;
-        }
         try {
             PropertyDescriptor desc = new PropertyDescriptor("Differencing", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, DIFF_ID);
             desc.setDisplayName("differencing");
-            desc.setShortDescription("Differencing order (-1 for default differencing) ");
+            desc.setShortDescription("Differencing order (-1 to default differencing) ");
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
             edesc.setReadOnly(root.isRo());
             return edesc;
@@ -304,7 +250,7 @@ public class StochasticSpecUI implements IPropertyDescriptors {
             return null;
         }
     }
-
+    
     public boolean isToInt() {
         return spec().isAdjustToInt();
     }
@@ -318,9 +264,8 @@ public class StochasticSpecUI implements IPropertyDescriptors {
     }
 
     private EnhancedPropertyDescriptor toIntDesc() {
-        if (spec() == null || !hasFractionalPeriod()) {
+        if (spec() == null)
             return null;
-        }
         try {
             PropertyDescriptor desc = new PropertyDescriptor("ToInt", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, INT_ID);
@@ -336,11 +281,11 @@ public class StochasticSpecUI implements IPropertyDescriptors {
 
     private static final int MEAN_ID = 2,
             Y_ID = 10, W_ID = 11, DIFF_ID = 12, AR_ID = 13, INT_ID = 14;
-
+    
     @Override
     @NbBundle.Messages("stochasticSpecUI.getDisplayName=Outliers")
     public String getDisplayName() {
         return Bundle.stochasticSpecUI_getDisplayName();
     }
-
+    
 }

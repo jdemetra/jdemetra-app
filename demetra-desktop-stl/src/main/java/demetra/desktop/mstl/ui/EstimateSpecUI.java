@@ -14,27 +14,26 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package demetra.desktop.highfreq.ui;
+package demetra.desktop.mstl.ui;
 
-import demetra.desktop.sa.descriptors.highfreq.AbstractTransformSpecUI;
+import demetra.desktop.sa.descriptors.highfreq.AbstractEstimateSpecUI;
 import demetra.desktop.sa.descriptors.highfreq.HighFreqSpecUI;
-import demetra.modelling.highfreq.TransformSpec;
+import demetra.modelling.highfreq.EstimateSpec;
 
 /**
  *
  * @author PALATEJ
  */
-public class TransformSpecUI extends AbstractTransformSpecUI {
+public class EstimateSpecUI extends AbstractEstimateSpecUI {
+    private final MStlPlusSpecRoot root;
 
-    private final ExtendedAirlineSpecRoot root;
-
-    public TransformSpecUI(ExtendedAirlineSpecRoot root) {
+    public EstimateSpecUI(MStlPlusSpecRoot root) {
         this.root = root;
     }
 
     @Override
-    protected TransformSpec spec() {
-        return root.getCore().getTransform();
+    protected EstimateSpec spec() {
+        return root.getPreprocessing().getEstimate();
     }
 
     @Override

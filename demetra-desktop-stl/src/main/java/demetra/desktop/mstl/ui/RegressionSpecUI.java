@@ -14,32 +14,43 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package demetra.desktop.highfreq.ui;
+package demetra.desktop.mstl.ui;
 
-import demetra.desktop.sa.descriptors.highfreq.AbstractTransformSpecUI;
+import demetra.desktop.descriptors.IPropertyDescriptors;
+import demetra.desktop.sa.descriptors.highfreq.AbstractRegressionSpecUI;
 import demetra.desktop.sa.descriptors.highfreq.HighFreqSpecUI;
-import demetra.modelling.highfreq.TransformSpec;
+import demetra.modelling.highfreq.RegressionSpec;
 
 /**
  *
  * @author PALATEJ
  */
-public class TransformSpecUI extends AbstractTransformSpecUI {
+public class RegressionSpecUI extends AbstractRegressionSpecUI {
 
-    private final ExtendedAirlineSpecRoot root;
+    private final MStlPlusSpecRoot root;
 
-    public TransformSpecUI(ExtendedAirlineSpecRoot root) {
+    public RegressionSpecUI(MStlPlusSpecRoot root) {
         this.root = root;
-    }
-
-    @Override
-    protected TransformSpec spec() {
-        return root.getCore().getTransform();
     }
 
     @Override
     protected HighFreqSpecUI root() {
         return root;
+    }
+
+    @Override
+    protected RegressionSpec spec() {
+        return root.getPreprocessing().getRegression();
+    }
+
+    @Override
+    public IPropertyDescriptors getCalendar() {
+        return new CalendarSpecUI(root);
+    }
+
+    @Override
+    public IPropertyDescriptors getEaster() {
+        return new EasterSpecUI(root);
     }
 
 }

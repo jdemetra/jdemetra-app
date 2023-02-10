@@ -17,6 +17,7 @@
 package demetra.desktop.mstl.ui;
 
 import demetra.desktop.descriptors.EnhancedPropertyDescriptor;
+import demetra.desktop.descriptors.IPropertyDescriptors;
 import demetra.stl.MStlSpec;
 import demetra.stl.SeasonalSpec;
 import java.beans.IntrospectionException;
@@ -29,15 +30,17 @@ import org.openide.util.NbBundle;
  *
  * @author PALATEJ
  */
-public class SeasonalsUI extends BaseMStlPlusSpecUI {
-    
+public class SeasonalsUI implements IPropertyDescriptors {
+
+    private MStlPlusSpecRoot root;
+
     @Override
-    public String toString(){
+    public String toString() {
         return "";
     }
 
     public SeasonalsUI(MStlPlusSpecRoot root) {
-        super(root);
+        this.root = root;
     }
 
     @Override
@@ -67,15 +70,15 @@ public class SeasonalsUI extends BaseMStlPlusSpecUI {
     }
 
     public SeasonalSpec[] getSeasonalFilters() {
-        return root.core.getSeasonalSpecs().toArray(n -> new SeasonalSpec[n]);
+        return root.stl().getSeasonalSpecs().toArray(n -> new SeasonalSpec[n]);
     }
 
     public void setSeasonalFilters(SeasonalSpec[] specs) {
-        MStlSpec.Builder builder = root.core.toBuilder().clearSeasonalSpecs();
+        MStlSpec.Builder builder = root.stl().toBuilder().clearSeasonalSpecs();
         for (int i = 0; i < specs.length; ++i) {
             builder.seasonalSpec(specs[i]);
         }
-        root.core = builder.build();
+        root.update(builder.build());
     }
 
     private static final int SEAS_ID = 1;

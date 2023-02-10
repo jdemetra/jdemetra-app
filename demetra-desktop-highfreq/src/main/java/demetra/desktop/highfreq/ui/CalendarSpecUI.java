@@ -26,9 +26,9 @@ import demetra.modelling.highfreq.HolidaysSpec;
  */
 public class CalendarSpecUI  extends AbstractHolidaysSpecUI {
 
-   private final FractionalAirlineSpecRoot root;
+   private final ExtendedAirlineSpecRoot root;
    
-   public CalendarSpecUI(FractionalAirlineSpecRoot root){
+   public CalendarSpecUI(ExtendedAirlineSpecRoot root){
        this.root=root;
    }
 

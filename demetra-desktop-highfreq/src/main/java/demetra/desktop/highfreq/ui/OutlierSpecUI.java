@@ -14,9 +14,9 @@ import demetra.modelling.highfreq.OutlierSpec;
  */
 public class OutlierSpecUI extends AbstractOutlierSpecUI {
 
-    private final FractionalAirlineSpecRoot root;
+    private final ExtendedAirlineSpecRoot root;
 
-    public OutlierSpecUI(FractionalAirlineSpecRoot root) {
+    public OutlierSpecUI(ExtendedAirlineSpecRoot root) {
         this.root = root;
     }
 

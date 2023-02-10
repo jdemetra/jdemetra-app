@@ -14,16 +14,18 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package demetra.desktop.mstl;
+package demetra.desktop.mstl.ui;
 
 import demetra.desktop.descriptors.IObjectDescriptor;
-import demetra.desktop.mstl.ui.MStlPlusSpecUI;
+import demetra.desktop.mstl.ui.MStlSpecUI;
 import demetra.desktop.ui.processing.IProcDocumentView;
 import demetra.desktop.workspace.DocumentUIServices;
 import demetra.desktop.workspace.WorkspaceItem;
+import demetra.stl.MStlPlusSpec;
 import demetra.stl.MStlSpec;
 import java.awt.Color;
 import javax.swing.Icon;
+import jdplus.mstlplus.MStlPlusDocument;
 import org.openide.util.ImageUtilities;
 import org.openide.util.lookup.ServiceProvider;
 
@@ -32,7 +34,7 @@ import org.openide.util.lookup.ServiceProvider;
  * @author PALATEJ
  */
 @ServiceProvider(service = DocumentUIServices.class)
-public class MStlPlusUIFactory implements DocumentUIServices<MStlSpec, MStlPlusDocument> {
+public class MStlPlusUIFactory implements DocumentUIServices<MStlPlusSpec, MStlPlusDocument> {
 
 //    public static StlPlusUIFactory INSTANCE=new StlPlusUIFactory();
     @Override
@@ -41,7 +43,7 @@ public class MStlPlusUIFactory implements DocumentUIServices<MStlSpec, MStlPlusD
     }
 
     @Override
-    public IObjectDescriptor<MStlSpec> getSpecificationDescriptor(MStlSpec spec) {
+    public IObjectDescriptor<MStlPlusSpec> getSpecificationDescriptor(MStlPlusSpec spec) {
         return new MStlPlusSpecUI(spec, false);
     }
 
@@ -51,8 +53,8 @@ public class MStlPlusUIFactory implements DocumentUIServices<MStlSpec, MStlPlusD
     }
 
     @Override
-    public Class<MStlSpec> getSpecType() {
-        return MStlSpec.class;
+    public Class<MStlPlusSpec> getSpecType() {
+        return MStlPlusSpec.class;
     }
 
     @Override

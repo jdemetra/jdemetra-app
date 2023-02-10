@@ -14,13 +14,16 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package demetra.desktop.mstl;
+package demetra.desktop.stl.ui;
 
+import demetra.desktop.mstl.*;
+import demetra.desktop.stl.StlPlusDocumentManager;
 import demetra.desktop.ui.processing.TsProcessingViewer;
 import demetra.desktop.workspace.DocumentUIServices;
 import demetra.desktop.workspace.WorkspaceFactory;
 import demetra.desktop.workspace.WorkspaceItem;
 import demetra.desktop.workspace.ui.WorkspaceTsTopComponent;
+import jdplus.stlplus.StlPlusDocument;
 import org.openide.windows.TopComponent;
 import org.netbeans.api.settings.ConvertAsProperties;
 import org.openide.awt.ActionID;
@@ -32,36 +35,36 @@ import org.openide.util.NbBundle;
 /**
  * Top component which displays something.
  */
-@ConvertAsProperties(dtd = "-//demetra.desktop.stl//MStlPlus//EN",
+@ConvertAsProperties(dtd = "-//demetra.desktop.stl//StlPlus//EN",
         autostore = false)
 @TopComponent.Description(preferredID = "StlPlusTopComponent",
         //iconBase="SET/PATH/TO/ICON/HERE", 
         persistenceType = TopComponent.PERSISTENCE_NEVER)
 @TopComponent.Registration(mode = "editor", openAtStartup = false)
-@ActionID(category = "Seasonal Adjustment", id = "demetra.desktop.stlplus.MStlPlusTopComponent")
-@ActionReference(path = "Menu/Statistical methods/Seasonal Adjustment/Single Analysis", position = 12000)
-@TopComponent.OpenActionRegistration(displayName = "#CTL_MStlPlusAction")
+@ActionID(category = "Seasonal Adjustment", id = "demetra.desktop.stlplus.StlPlusTopComponent")
+@ActionReference(path = "Menu/Statistical methods/Seasonal Adjustment/Single Analysis", position = 3000)
+@TopComponent.OpenActionRegistration(displayName = "#CTL_StlPlusAction")
 @NbBundle.Messages({
-    "CTL_MStlPlusAction=MSTL+",
-    "CTL_MStlPlusTopComponent=MSTL+ Window",
-    "HINT_MStlPlusTopComponent=This is a MSTL+ window"
+    "CTL_StlPlusAction=STL+",
+    "CTL_StlPlusTopComponent=STL+ Window",
+    "HINT_StlPlusTopComponent=This is a STL+ window"
 })
-public final class MStlPlusTopComponent extends WorkspaceTsTopComponent<MStlPlusDocument> {
+public final class StlPlusTopComponent extends WorkspaceTsTopComponent<StlPlusDocument> {
 
     private final ExplorerManager mgr = new ExplorerManager();
 
-    private static MStlPlusDocumentManager manager() {
-        return WorkspaceFactory.getInstance().getManager(MStlPlusDocumentManager.class);
+    private static StlPlusDocumentManager manager() {
+        return WorkspaceFactory.getInstance().getManager(StlPlusDocumentManager.class);
     }
 
-    public MStlPlusTopComponent() {
+    public StlPlusTopComponent() {
         this(null);
     }
 
-    public MStlPlusTopComponent(WorkspaceItem<MStlPlusDocument> doc) {
+    public StlPlusTopComponent(WorkspaceItem<StlPlusDocument> doc) {
         super(doc);
         initComponents();
-        setToolTipText(NbBundle.getMessage(MStlPlusTopComponent.class, "HINT_MStlPlusTopComponent"));
+        setToolTipText(NbBundle.getMessage(StlPlusTopComponent.class, "HINT_StlPlusTopComponent"));
         associateLookup(ExplorerUtils.createLookup(mgr, getActionMap()));
     }
 
@@ -72,12 +75,12 @@ public final class MStlPlusTopComponent extends WorkspaceTsTopComponent<MStlPlus
 
     @Override
     protected TsProcessingViewer initViewer() {
-        return TsProcessingViewer.create(getElement(), DocumentUIServices.forDocument(MStlPlusDocument.class));
+        return TsProcessingViewer.create(getElement(), DocumentUIServices.forDocument(StlPlusDocument.class));
     }
 
 
     @Override
-    public WorkspaceItem<MStlPlusDocument> newDocument() {
+    public WorkspaceItem<StlPlusDocument> newDocument() {
         return manager().create(WorkspaceFactory.getInstance().getActiveWorkspace());
     }
 
@@ -106,6 +109,6 @@ public final class MStlPlusTopComponent extends WorkspaceTsTopComponent<MStlPlus
 
     @Override
     protected String getContextPath() {
-        return MStlPlusDocumentManager.CONTEXTPATH;
+        return StlPlusDocumentManager.CONTEXTPATH;
     }
 }

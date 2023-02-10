@@ -4,6 +4,7 @@
  */
 package demetra.desktop.highfreq;
 
+import jdplus.highfreq.extendedairline.decomposiiton.ExtendedAirlineDecompositionDocument;
 import demetra.desktop.workspace.AbstractWorkspaceTsItemManager;
 import demetra.desktop.workspace.WorkspaceItemManager;
 import demetra.highfreq.ExtendedAirlineDecompositionSpec;
@@ -17,17 +18,17 @@ import org.openide.util.lookup.ServiceProvider;
  */
 @ServiceProvider(service = WorkspaceItemManager.class,
         position = 2000)
-public class FractionalAirlineDecompositionDocumentManager extends AbstractWorkspaceTsItemManager<ExtendedAirlineDecompositionSpec, FractionalAirlineDecompositionDocument> {
+public class ExtendedAirlineDecompositionDocumentManager extends AbstractWorkspaceTsItemManager<ExtendedAirlineDecompositionSpec, ExtendedAirlineDecompositionDocument> {
 
 
     public static final LinearId ID = new LinearId(ExtendedAirlineDecompositionSpec.FAMILY, "documents", ExtendedAirlineDecompositionSpec.METHOD);
-    public static final String PATH = "fractionalairlinedecomposition.doc";
-    public static final String ITEMPATH = "fractionalairlinedecomposition.doc.item";
-    public static final String CONTEXTPATH = "fractionalairlinedecomposition.doc.context";
+    public static final String PATH = "extendedairlinedecomposition.doc";
+    public static final String ITEMPATH = "extendedairlinedecomposition.doc.item";
+    public static final String CONTEXTPATH = "extendedairlinedecomposition.doc.context";
 
     @Override
     protected String getItemPrefix() {
-        return "FractionalAirlineDecompositionDoc";
+        return "ExtendedAirlineDecompositionDoc";
     }
 
     @Override
@@ -36,8 +37,8 @@ public class FractionalAirlineDecompositionDocumentManager extends AbstractWorks
     }
 
     @Override
-    public FractionalAirlineDecompositionDocument createNewObject() {
-        return new FractionalAirlineDecompositionDocument();
+    public ExtendedAirlineDecompositionDocument createNewObject() {
+        return new ExtendedAirlineDecompositionDocument();
     }
 
     @Override
@@ -56,8 +57,8 @@ public class FractionalAirlineDecompositionDocumentManager extends AbstractWorks
     }
 
     @Override
-    public Class<FractionalAirlineDecompositionDocument> getItemClass() {
-        return FractionalAirlineDecompositionDocument.class;
+    public Class<ExtendedAirlineDecompositionDocument> getItemClass() {
+        return ExtendedAirlineDecompositionDocument.class;
     }
 
 }

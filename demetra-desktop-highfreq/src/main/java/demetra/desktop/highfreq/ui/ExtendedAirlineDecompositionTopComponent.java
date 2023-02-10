@@ -2,8 +2,10 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package demetra.desktop.highfreq;
+package demetra.desktop.highfreq.ui;
 
+import jdplus.highfreq.extendedairline.decomposiiton.ExtendedAirlineDecompositionDocument;
+import demetra.desktop.highfreq.ExtendedAirlineDecompositionDocumentManager;
 import demetra.desktop.workspace.DocumentUIServices;
 import demetra.desktop.ui.processing.TsProcessingViewer;
 import demetra.desktop.workspace.WorkspaceFactory;
@@ -20,36 +22,36 @@ import org.openide.util.NbBundle;
 /**
  * Top component which displays something.
  */
-@ConvertAsProperties(dtd = "-//demetra.desktop.highfreq//FractionalAirlineDecomposition//EN",
+@ConvertAsProperties(dtd = "-//demetra.desktop.highfreq//ExtendedAirlineDecomposition//EN",
         autostore = false)
-@TopComponent.Description(preferredID = "FractionalAirlineDecompositionTopComponent",
+@TopComponent.Description(preferredID = "ExtendedAirlineDecompositionTopComponent",
         //iconBase="SET/PATH/TO/ICON/HERE", 
         persistenceType = TopComponent.PERSISTENCE_NEVER)
 @TopComponent.Registration(mode = "editor", openAtStartup = false)
-@ActionID(category = "Seasonal Adjustment", id = "demetra.desktop.highfreq.FractionalAirlineDecompositionTopComponent")
-@ActionReference(path = "Menu/Statistical methods/Seasonal Adjustment/Single Analysis", position = 2000)
-@TopComponent.OpenActionRegistration(displayName = "#CTL_FractionalAirlineDecompositionAction")
+@ActionID(category = "Seasonal Adjustment", id = "demetra.desktop.highfreq.ExtendedAirlineDecompositionTopComponent")
+@ActionReference(path = "Menu/Statistical methods/Seasonal Adjustment/Single Analysis", position = 20000, separatorBefore=19000)
+@TopComponent.OpenActionRegistration(displayName = "#CTL_ExtendedAirlineDecompositionAction")
 @NbBundle.Messages({
-    "CTL_FractionalAirlineDecompositionAction=Fractional airline decomposition",
-    "CTL_FractionalAirlineDecompositionTopComponent=Fractional Airline Decomposition Window",
-    "HINT_FractionalAirlineDecompositionTopComponent=This is a Fractional Airline Decomposition window"
+    "CTL_ExtendedAirlineDecompositionAction=Extended airline decomposition",
+    "CTL_ExtendedAirlineDecompositionTopComponent=Extended Airline Decomposition Window",
+    "HINT_ExtendedAirlineDecompositionTopComponent=This is a Extended Airline Decomposition window"
 })
-public final class FractionalAirlineDecompositionTopComponent extends WorkspaceTsTopComponent<FractionalAirlineDecompositionDocument> {
+public final class ExtendedAirlineDecompositionTopComponent extends WorkspaceTsTopComponent<ExtendedAirlineDecompositionDocument> {
 
     private final ExplorerManager mgr = new ExplorerManager();
 
-    private static FractionalAirlineDecompositionDocumentManager manager() {
-        return WorkspaceFactory.getInstance().getManager(FractionalAirlineDecompositionDocumentManager.class);
+    private static ExtendedAirlineDecompositionDocumentManager manager() {
+        return WorkspaceFactory.getInstance().getManager(ExtendedAirlineDecompositionDocumentManager.class);
     }
 
-    public FractionalAirlineDecompositionTopComponent() {
+    public ExtendedAirlineDecompositionTopComponent() {
         this(null);
     }
 
-    public FractionalAirlineDecompositionTopComponent(WorkspaceItem<FractionalAirlineDecompositionDocument> doc) {
+    public ExtendedAirlineDecompositionTopComponent(WorkspaceItem<ExtendedAirlineDecompositionDocument> doc) {
         super(doc);
         initComponents();
-        setToolTipText(NbBundle.getMessage(FractionalAirlineDecompositionTopComponent.class, "HINT_FractionalAirlineDecompositionTopComponent"));
+        setToolTipText(NbBundle.getMessage(ExtendedAirlineDecompositionTopComponent.class, "HINT_ExtendedAirlineDecompositionTopComponent"));
         associateLookup(ExplorerUtils.createLookup(mgr, getActionMap()));
     }
 
@@ -60,11 +62,11 @@ public final class FractionalAirlineDecompositionTopComponent extends WorkspaceT
 
     @Override
     protected TsProcessingViewer initViewer() {
-        return TsProcessingViewer.create(getElement(), DocumentUIServices.forDocument(FractionalAirlineDecompositionDocument.class));
+        return TsProcessingViewer.create(getElement(), DocumentUIServices.forDocument(ExtendedAirlineDecompositionDocument.class));
    }
 
     @Override
-    public WorkspaceItem<FractionalAirlineDecompositionDocument> newDocument() {
+    public WorkspaceItem<ExtendedAirlineDecompositionDocument> newDocument() {
         return manager().create(WorkspaceFactory.getInstance().getActiveWorkspace());
     }
 
@@ -93,6 +95,6 @@ public final class FractionalAirlineDecompositionTopComponent extends WorkspaceT
 
     @Override
     protected String getContextPath() {
-        return FractionalAirlineDecompositionDocumentManager.CONTEXTPATH;
+        return ExtendedAirlineDecompositionDocumentManager.CONTEXTPATH;
     }
 }

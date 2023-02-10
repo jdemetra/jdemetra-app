@@ -114,6 +114,7 @@ public final class Installer extends ModuleInstall {
             CustomPropertyRendererFactory.INSTANCE.getRegistry().registerRenderer(SaInterventionVariableDescriptor[].class, new ArrayRenderer());
             CustomPropertyEditorRegistry.INSTANCE.register(SaTsVariableDescriptor[].class, new SaTsVariableDescriptorsEditor());
             CustomPropertyRendererFactory.INSTANCE.getRegistry().registerRenderer(SaTsVariableDescriptor[].class, new ArrayRenderer());
+            CustomPropertyEditorRegistry.INSTANCE.register(SaInterventionVariableDescriptor[].class, new SaInterventionVariablesEditor());
         }
 
         @Override

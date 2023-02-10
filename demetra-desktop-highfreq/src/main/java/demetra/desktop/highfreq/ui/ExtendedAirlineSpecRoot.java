@@ -33,7 +33,7 @@ import demetra.modelling.highfreq.TransformSpec;
  */
 @lombok.Getter
 @lombok.AllArgsConstructor
-public class FractionalAirlineSpecRoot implements HighFreqSpecUI {
+public class ExtendedAirlineSpecRoot implements HighFreqSpecUI {
 
     ExtendedAirlineModellingSpec core;
     boolean ro;

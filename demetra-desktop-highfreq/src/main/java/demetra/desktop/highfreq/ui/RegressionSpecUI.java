@@ -27,9 +27,9 @@ import demetra.modelling.highfreq.RegressionSpec;
  */
 public class RegressionSpecUI extends AbstractRegressionSpecUI {
 
-    private final FractionalAirlineSpecRoot root;
+    private final ExtendedAirlineSpecRoot root;
 
-    public RegressionSpecUI(FractionalAirlineSpecRoot root) {
+    public RegressionSpecUI(ExtendedAirlineSpecRoot root) {
         this.root = root;
     }
 

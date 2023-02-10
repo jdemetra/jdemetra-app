@@ -14,27 +14,33 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package demetra.desktop.mstl;
+package demetra.desktop.mstl.ui;
 
-import demetra.timeseries.AbstractTsDocument;
-import demetra.timeseries.TsData;
-import jdplus.stl.StlResults;
-import demetra.stl.MStlSpec;
-import jdplus.stl.StlToolkit;
+import demetra.desktop.sa.descriptors.highfreq.AbstractEasterSpecUI;
+import demetra.desktop.sa.descriptors.highfreq.HighFreqSpecUI;
+import demetra.modelling.highfreq.EasterSpec;
 
 /**
  *
  * @author PALATEJ
  */
-public class MStlPlusDocument extends AbstractTsDocument<MStlSpec, StlResults> {
+public class EasterSpecUI extends AbstractEasterSpecUI {
 
-    public MStlPlusDocument() {
-        super(MStlSpec.DEF_W);
+   private final MStlPlusSpecRoot root;
+   
+   public EasterSpecUI(MStlPlusSpecRoot root){
+       this.root=root;
+   }
+
+    @Override
+    protected EasterSpec spec() {
+        return root.getPreprocessing().getRegression().getEaster();
     }
 
     @Override
-    protected StlResults internalProcess(MStlSpec spec, TsData data) {
-        return StlToolkit.process(data, spec);
+    protected HighFreqSpecUI root() {
+        return root;
     }
+
 
 }

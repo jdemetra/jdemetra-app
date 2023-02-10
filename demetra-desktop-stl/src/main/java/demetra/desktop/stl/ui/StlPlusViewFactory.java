@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package demetra.desktop.stl;
+package demetra.desktop.stl.ui;
 
 import demetra.desktop.TsDynamicProvider;
 import demetra.desktop.processing.ui.modelling.ForecastsFactory;
@@ -30,6 +30,7 @@ import demetra.html.HtmlElement;
 import demetra.html.HtmlElements;
 import demetra.html.HtmlHeader;
 import demetra.html.core.HtmlDiagnosticsSummary;
+import demetra.information.InformationSet;
 import demetra.modelling.ModellingDictionary;
 import demetra.processing.ProcDiagnostic;
 import demetra.sa.SaDictionaries;
@@ -51,6 +52,7 @@ import jdplus.regsarima.regular.RegSarimaModel;
 import jdplus.sa.SaBenchmarkingResults;
 import jdplus.sa.tests.SeasonalityTests;
 import jdplus.stl.StlResults;
+import jdplus.stl.io.information.StlPlusSpecMapping;
 import jdplus.stlplus.StlPlusDiagnostics;
 import jdplus.stlplus.StlPlusDocument;
 import jdplus.stlplus.StlPlusResults;
@@ -141,24 +143,24 @@ public class StlPlusViewFactory extends ProcDocumentViewFactory<StlPlusDocument>
     }
 
 //<editor-fold defaultstate="collapsed" desc="REGISTER SPEC">
-//    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 100010)
-//    public static class SpecFactory extends ProcDocumentItemFactory<FractionalAirlineDocument, HtmlElement> {
-//
-//        public SpecFactory() {
-//            super(StlPlusDocument.class, RegSarimaViews.INPUT_SPEC,
-//                    (StlPlusDocument doc) -> {
-//                        InformationSet info = FractionalAirlineSpecMapping.write(doc.getSpecification(), true);
-//                        return new demetra.html.core.HtmlInformationSet(info);
-//                    },
-//                    new HtmlItemUI()
-//            );
-//        }
-//
-//        @Override
-//        public int getPosition() {
-//            return 100010;
-//        }
-//    }
+    @ServiceProvider(service = IProcDocumentItemFactory.class, position = 1010)
+    public static class SpecFactory extends ProcDocumentItemFactory<StlPlusDocument, HtmlElement> {
+
+        public SpecFactory() {
+            super(StlPlusDocument.class, RegSarimaViews.INPUT_SPEC,
+                    (StlPlusDocument doc) -> {
+                        InformationSet info = StlPlusSpecMapping.write(doc.getSpecification(), doc.getInput().getData().getDomain(), true);
+                        return new demetra.html.core.HtmlInformationSet(info);
+                    },
+                    new HtmlItemUI()
+            );
+        }
+
+        @Override
+        public int getPosition() {
+            return 1010;
+        }
+    }
     @ServiceProvider(service = IProcDocumentItemFactory.class, position = 1000)
     public static class Input extends InputFactory<StlPlusDocument> {
 

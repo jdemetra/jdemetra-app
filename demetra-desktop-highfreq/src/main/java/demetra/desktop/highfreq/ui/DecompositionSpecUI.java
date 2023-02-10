@@ -20,6 +20,8 @@ import demetra.desktop.descriptors.EnhancedPropertyDescriptor;
 import demetra.desktop.descriptors.IPropertyDescriptors;
 import demetra.highfreq.DecompositionSpec;
 import demetra.highfreq.ExtendedAirlineSpec;
+import demetra.math.Constants;
+import demetra.timeseries.TsUnit;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
@@ -36,15 +38,15 @@ public class DecompositionSpecUI implements IPropertyDescriptors {
     public String toString() {
         return "";
     }
-    
-    private final FractionalAirlineDecompositionSpecRoot root;
+
+    private final ExtendedAirlineDecompositionSpecRoot root;
 
     private DecompositionSpec spec() {
         return this.root.getDecomposition();
     }
 
-    public DecompositionSpecUI(FractionalAirlineDecompositionSpecRoot root) {
-        this.root=root;
+    public DecompositionSpecUI(ExtendedAirlineDecompositionSpecRoot root) {
+        this.root = root;
     }
 
     @Override
@@ -85,7 +87,7 @@ public class DecompositionSpecUI implements IPropertyDescriptors {
         }
         return descs;
     }
-    
+
     public boolean isBias() {
         return spec().isBiasCorrection();
     }
@@ -99,6 +101,9 @@ public class DecompositionSpecUI implements IPropertyDescriptors {
     }
 
     private EnhancedPropertyDescriptor biasDesc() {
+        if (spec() == null) {
+            return null;
+        }
         try {
             PropertyDescriptor desc = new PropertyDescriptor("Bias", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, BIAS_ID);
@@ -124,6 +129,9 @@ public class DecompositionSpecUI implements IPropertyDescriptors {
     }
 
     private EnhancedPropertyDescriptor iterativeDesc() {
+        if (spec() == null) {
+            return null;
+        }
         try {
             PropertyDescriptor desc = new PropertyDescriptor("Iterative", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, ITERATIVE_ID);
@@ -136,10 +144,40 @@ public class DecompositionSpecUI implements IPropertyDescriptors {
         }
     }
 
-     public boolean isYearly() {
+    private static final double P_DAY = 365.25, P_WEEK = P_DAY / 7;
+
+    private double annualPeriod() {
+        TsUnit period = root.getCore().getPreprocessing().getPeriod();
+        int ip = period.getAnnualFrequency();
+        if (ip > 0) {
+            return ip;
+        }
+        if (period.equals(TsUnit.WEEK)) {
+            return P_WEEK;
+        } else if (period.equals(TsUnit.DAY)) {
+            return P_DAY;
+        } else {
+            return 0;
+        }
+    }
+
+    private double weeklyPeriod() {
+        TsUnit period = root.getCore().getPreprocessing().getPeriod();
+        if (period.equals(TsUnit.DAY)) {
+            return 7;
+        } else {
+            return 0;
+        }
+    }
+
+    public boolean isYearly() {
+        double ap = annualPeriod();
+        if (ap <= 0) {
+            return false;
+        }
         double[] p = spec().getPeriodicities();
         for (int i = 0; i < p.length; ++i) {
-            if (p[i] == 365.25) {
+            if (p[i] == ap) {
                 return true;
             }
         }
@@ -147,9 +185,13 @@ public class DecompositionSpecUI implements IPropertyDescriptors {
     }
 
     public boolean isWeekly() {
+        double wp = weeklyPeriod();
+        if (wp <= 0) {
+            return false;
+        }
         double[] p = spec().getPeriodicities();
         for (int i = 0; i < p.length; ++i) {
-            if (p[i] == 7) {
+            if (p[i] == wp) {
                 return true;
             }
         }
@@ -157,16 +199,17 @@ public class DecompositionSpecUI implements IPropertyDescriptors {
     }
 
     public void setYearly(boolean y) {
+        double ap = annualPeriod(), wp = weeklyPeriod();
         double[] p;
         if (y) {
             if (isWeekly()) {
-                p = new double[]{7, 365.25};
+                p = new double[]{wp, ap};
             } else {
-                p = new double[]{365.25};
+                p = new double[]{ap};
             }
         } else {
             if (isWeekly()) {
-                p = new double[]{7};
+                p = new double[]{wp};
             } else {
                 p = ExtendedAirlineSpec.NO_PERIOD;
             }
@@ -176,7 +219,42 @@ public class DecompositionSpecUI implements IPropertyDescriptors {
                 .build());
     }
 
+    public void setWeekly(boolean w) {
+        double ap = annualPeriod(), wp = weeklyPeriod();
+        double[] p;
+        if (w) {
+            if (isYearly()) {
+                p = new double[]{wp, ap};
+            } else {
+                p = new double[]{wp};
+            }
+        } else {
+            if (isYearly()) {
+                p = new double[]{ap};
+            } else {
+                p = ExtendedAirlineSpec.NO_PERIOD;
+            }
+        }
+        root.update(spec().toBuilder()
+                .periodicities(p)
+                .build());
+    }
+
+    public boolean hasFractionalPeriod() {
+        double[] p = spec().getPeriodicities();
+        for (int i = 0; i < p.length; ++i) {
+            long cur = Math.round(p[i]);
+            if (Math.abs(cur - p[i]) > Constants.getEpsilon()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private EnhancedPropertyDescriptor yDesc() {
+        if (spec() == null || annualPeriod() <= 0) {
+            return null;
+        }
         try {
             PropertyDescriptor desc = new PropertyDescriptor("Yearly", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, Y_ID);
@@ -190,27 +268,10 @@ public class DecompositionSpecUI implements IPropertyDescriptors {
         }
     }
 
-    public void setWeekly(boolean w) {
-        double[] p;
-        if (w) {
-            if (isYearly()) {
-                p = new double[]{7, 365.25};
-            } else {
-                p = new double[]{7};
-            }
-        } else {
-            if (isYearly()) {
-                p = new double[]{365.25};
-            } else {
-                p = ExtendedAirlineSpec.NO_PERIOD;
-            }
-        }
-        root.update(spec().toBuilder()
-                .periodicities(p)
-                .build());
-    }
-
     private EnhancedPropertyDescriptor wDesc() {
+        if (spec() == null || weeklyPeriod() <= 0) {
+            return null;
+        }
         try {
             PropertyDescriptor desc = new PropertyDescriptor("Weekly", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, W_ID);
@@ -237,6 +298,9 @@ public class DecompositionSpecUI implements IPropertyDescriptors {
     }
 
     private EnhancedPropertyDescriptor stdevDesc() {
+        if (spec() == null) {
+            return null;
+        }
         try {
             PropertyDescriptor desc = new PropertyDescriptor("Stdev", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, STDEV_ID);
@@ -266,7 +330,6 @@ public class DecompositionSpecUI implements IPropertyDescriptors {
         root.update(spec().toBuilder().backcastsCount(value).build());
     }
 
-   
     public boolean isToInt() {
         return spec().isAdjustToInt();
     }
@@ -280,6 +343,9 @@ public class DecompositionSpecUI implements IPropertyDescriptors {
     }
 
     private EnhancedPropertyDescriptor toIntDesc() {
+        if (spec() == null || !hasFractionalPeriod()) {
+            return null;
+        }
         try {
             PropertyDescriptor desc = new PropertyDescriptor("ToInt", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, INT_ID);
@@ -298,6 +364,9 @@ public class DecompositionSpecUI implements IPropertyDescriptors {
         "decompositionSpecUI.nbcastsDesc.desc=[npred] Number of backcasts used in the decomposition."
     })
     private EnhancedPropertyDescriptor nbcastsDesc() {
+        if (spec() == null) {
+            return null;
+        }
         try {
             PropertyDescriptor desc = new PropertyDescriptor("BackcastsLength", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, NB_ID);
@@ -316,6 +385,9 @@ public class DecompositionSpecUI implements IPropertyDescriptors {
         "decompositionSpecUI.nfcastsDesc.desc=[npred] Number of forecasts used in the decomposition."
     })
     private EnhancedPropertyDescriptor nfcastsDesc() {
+        if (spec() == null) {
+            return null;
+        }
         try {
             PropertyDescriptor desc = new PropertyDescriptor("ForecastsLength", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, NF_ID);
@@ -329,13 +401,13 @@ public class DecompositionSpecUI implements IPropertyDescriptors {
         }
     }
 
-    private static final int BIAS_ID = 2, ITERATIVE_ID=3, NF_ID=5, NB_ID=6,
+    private static final int BIAS_ID = 2, ITERATIVE_ID = 3, NF_ID = 5, NB_ID = 6,
             Y_ID = 10, W_ID = 11, STDEV_ID = 13, INT_ID = 14;
-    
+
     @Override
     @NbBundle.Messages("decompositionSpecUI.getDisplayName=Outliers")
     public String getDisplayName() {
         return Bundle.decompositionSpecUI_getDisplayName();
     }
-    
+
 }

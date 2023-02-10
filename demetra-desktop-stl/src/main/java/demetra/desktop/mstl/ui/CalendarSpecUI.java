@@ -14,32 +14,31 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package demetra.desktop.highfreq.ui;
+package demetra.desktop.mstl.ui;
 
-import demetra.desktop.sa.descriptors.highfreq.AbstractTransformSpecUI;
+import demetra.desktop.sa.descriptors.highfreq.AbstractHolidaysSpecUI;
 import demetra.desktop.sa.descriptors.highfreq.HighFreqSpecUI;
-import demetra.modelling.highfreq.TransformSpec;
+import demetra.modelling.highfreq.HolidaysSpec;
 
 /**
  *
  * @author PALATEJ
  */
-public class TransformSpecUI extends AbstractTransformSpecUI {
+public class CalendarSpecUI  extends AbstractHolidaysSpecUI {
 
-    private final ExtendedAirlineSpecRoot root;
-
-    public TransformSpecUI(ExtendedAirlineSpecRoot root) {
-        this.root = root;
-    }
+   private final MStlPlusSpecRoot root;
+   
+   public CalendarSpecUI(MStlPlusSpecRoot root){
+       this.root=root;
+   }
 
     @Override
-    protected TransformSpec spec() {
-        return root.getCore().getTransform();
+    protected HolidaysSpec spec() {
+        return root.getPreprocessing().getRegression().getHolidays();
     }
 
     @Override
     protected HighFreqSpecUI root() {
         return root;
     }
-
 }

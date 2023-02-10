@@ -26,9 +26,9 @@ import demetra.modelling.highfreq.SeriesSpec;
  */
 public class SeriesSpecUI extends AbstractSeriesSpecUI {
 
-    private final FractionalAirlineSpecRoot root;
+    private final ExtendedAirlineSpecRoot root;
 
-    public SeriesSpecUI(FractionalAirlineSpecRoot root) {
+    public SeriesSpecUI(ExtendedAirlineSpecRoot root) {
         this.root = root;
     }
 

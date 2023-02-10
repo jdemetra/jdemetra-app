@@ -2,8 +2,10 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package demetra.desktop.highfreq;
+package demetra.desktop.highfreq.ui;
 
+import jdplus.highfreq.extendedairline.ExtendedAirlineDocument;
+import demetra.desktop.highfreq.ExtendedAirlineDocumentManager;
 import demetra.desktop.workspace.DocumentUIServices;
 import demetra.desktop.ui.processing.TsProcessingViewer;
 import demetra.desktop.workspace.WorkspaceFactory;
@@ -20,36 +22,36 @@ import org.openide.util.NbBundle;
 /**
  * Top component which displays something.
  */
-@ConvertAsProperties(dtd = "-//demetra.desktop.highfreq//FractionalAirline//EN",
+@ConvertAsProperties(dtd = "-//demetra.desktop.highfreq//ExtendedAirline//EN",
         autostore = false)
-@TopComponent.Description(preferredID = "FractionalAirlineTopComponent",
+@TopComponent.Description(preferredID = "ExtendedAirlineTopComponent",
         //iconBase="SET/PATH/TO/ICON/HERE", 
         persistenceType = TopComponent.PERSISTENCE_NEVER)
 @TopComponent.Registration(mode = "editor", openAtStartup = false)
-@ActionID(category = "Modelling", id = "demetra.desktop.highfreq.FractionalAirlineTopComponent")
+@ActionID(category = "Modelling", id = "demetra.desktop.highfreq.ExtendedAirlineTopComponent")
 @ActionReference(path = "Menu/Statistical methods/Modelling/Single Analysis", position = 2000)
-@TopComponent.OpenActionRegistration(displayName = "#CTL_FractionalAirlineAction")
+@TopComponent.OpenActionRegistration(displayName = "#CTL_ExtendedAirlineAction")
 @NbBundle.Messages({
-    "CTL_FractionalAirlineAction=Fractional airline",
-    "CTL_FractionalAirlineTopComponent=Fractional Airline Window",
-    "HINT_FractionalAirlineTopComponent=This is a Fractional Airline window"
+    "CTL_ExtendedAirlineAction=Extended airline",
+    "CTL_ExtendedAirlineTopComponent=Extended Airline Window",
+    "HINT_ExtendedAirlineTopComponent=This is a Extended Airline window"
 })
-public final class FractionalAirlineTopComponent extends WorkspaceTsTopComponent<FractionalAirlineDocument> {
+public final class ExtendedAirlineTopComponent extends WorkspaceTsTopComponent<ExtendedAirlineDocument> {
 
     private final ExplorerManager mgr = new ExplorerManager();
 
-    private static FractionalAirlineDocumentManager manager() {
-        return WorkspaceFactory.getInstance().getManager(FractionalAirlineDocumentManager.class);
+    private static ExtendedAirlineDocumentManager manager() {
+        return WorkspaceFactory.getInstance().getManager(ExtendedAirlineDocumentManager.class);
     }
 
-    public FractionalAirlineTopComponent() {
+    public ExtendedAirlineTopComponent() {
         this(null);
     }
 
-    public FractionalAirlineTopComponent(WorkspaceItem<FractionalAirlineDocument> doc) {
+    public ExtendedAirlineTopComponent(WorkspaceItem<ExtendedAirlineDocument> doc) {
         super(doc);
         initComponents();
-        setToolTipText(NbBundle.getMessage(FractionalAirlineTopComponent.class, "HINT_FractionalAirlineTopComponent"));
+        setToolTipText(NbBundle.getMessage(ExtendedAirlineTopComponent.class, "HINT_ExtendedAirlineTopComponent"));
         associateLookup(ExplorerUtils.createLookup(mgr, getActionMap()));
     }
 
@@ -60,11 +62,11 @@ public final class FractionalAirlineTopComponent extends WorkspaceTsTopComponent
 
     @Override
     protected TsProcessingViewer initViewer() {
-        return TsProcessingViewer.create(getElement(), DocumentUIServices.forDocument(FractionalAirlineDocument.class));
+        return TsProcessingViewer.create(getElement(), DocumentUIServices.forDocument(ExtendedAirlineDocument.class));
     }
 
     @Override
-    public WorkspaceItem<FractionalAirlineDocument> newDocument() {
+    public WorkspaceItem<ExtendedAirlineDocument> newDocument() {
         return manager().create(WorkspaceFactory.getInstance().getActiveWorkspace());
     }
 
@@ -93,6 +95,6 @@ public final class FractionalAirlineTopComponent extends WorkspaceTsTopComponent
 
     @Override
     protected String getContextPath() {
-        return FractionalAirlineDocumentManager.CONTEXTPATH;
+        return ExtendedAirlineDocumentManager.CONTEXTPATH;
     }
 }

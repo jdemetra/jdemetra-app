@@ -4,6 +4,7 @@
  */
 package demetra.desktop.highfreq;
 
+import jdplus.highfreq.extendedairline.ExtendedAirlineDocument;
 import demetra.desktop.workspace.AbstractWorkspaceTsItemManager;
 import demetra.desktop.workspace.WorkspaceItemManager;
 import demetra.highfreq.ExtendedAirlineModellingSpec;
@@ -17,17 +18,17 @@ import org.openide.util.lookup.ServiceProvider;
  */
 @ServiceProvider(service = WorkspaceItemManager.class,
         position = 2000)
-public class FractionalAirlineDocumentManager extends AbstractWorkspaceTsItemManager<ExtendedAirlineModellingSpec, FractionalAirlineDocument> {
+public class ExtendedAirlineDocumentManager extends AbstractWorkspaceTsItemManager<ExtendedAirlineModellingSpec, ExtendedAirlineDocument> {
 
 
     public static final LinearId ID = new LinearId(ExtendedAirlineModellingSpec.FAMILY, "documents", ExtendedAirlineModellingSpec.METHOD);
-    public static final String PATH = "fractionalairline.doc";
-    public static final String ITEMPATH = "fractionalairline.doc.item";
-    public static final String CONTEXTPATH = "fractionalairline.doc.context";
+    public static final String PATH = "extendedairline.doc";
+    public static final String ITEMPATH = "extendedairline.doc.item";
+    public static final String CONTEXTPATH = "extendedairline.doc.context";
 
     @Override
     protected String getItemPrefix() {
-        return "FractionalAirlineDoc";
+        return "ExtendedAirlineDoc";
     }
 
     @Override
@@ -36,8 +37,8 @@ public class FractionalAirlineDocumentManager extends AbstractWorkspaceTsItemMan
     }
 
     @Override
-    public FractionalAirlineDocument createNewObject() {
-        return new FractionalAirlineDocument();
+    public ExtendedAirlineDocument createNewObject() {
+        return new ExtendedAirlineDocument();
     }
 
     @Override
@@ -56,8 +57,8 @@ public class FractionalAirlineDocumentManager extends AbstractWorkspaceTsItemMan
     }
 
     @Override
-    public Class<FractionalAirlineDocument> getItemClass() {
-        return FractionalAirlineDocument.class;
+    public Class<ExtendedAirlineDocument> getItemClass() {
+        return ExtendedAirlineDocument.class;
     }
 
 }

@@ -2,10 +2,11 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package demetra.desktop.highfreq;
+package demetra.desktop.highfreq.ui;
 
 import demetra.desktop.descriptors.IObjectDescriptor;
-import demetra.desktop.highfreq.ui.FractionalAirlineSpecUI;
+import jdplus.highfreq.extendedairline.ExtendedAirlineDocument;
+import demetra.desktop.highfreq.ui.ExtendedAirlineSpecUI;
 import demetra.desktop.workspace.DocumentUIServices;
 import demetra.desktop.ui.processing.IProcDocumentView;
 import demetra.desktop.workspace.WorkspaceItem;
@@ -20,23 +21,23 @@ import org.openide.util.lookup.ServiceProvider;
  * @author PALATEJ
  */
 @ServiceProvider(service = DocumentUIServices.class)
-public class FractionalAirlineUIFactory implements DocumentUIServices<ExtendedAirlineModellingSpec, FractionalAirlineDocument> {
+public class ExtendedAirlineUIFactory implements DocumentUIServices<ExtendedAirlineModellingSpec, ExtendedAirlineDocument> {
     
 //    public static FractionalAirlineUIFactory INSTANCE=new FractionalAirlineUIFactory();
 
     @Override
-    public IProcDocumentView<FractionalAirlineDocument> getDocumentView(FractionalAirlineDocument document) {
-        return FractionalAirlineViewFactory.getDefault().create(document);
+    public IProcDocumentView<ExtendedAirlineDocument> getDocumentView(ExtendedAirlineDocument document) {
+        return ExtendedAirlineViewFactory.getDefault().create(document);
     }
 
     @Override
     public IObjectDescriptor<ExtendedAirlineModellingSpec> getSpecificationDescriptor(ExtendedAirlineModellingSpec spec) {
-        return new FractionalAirlineSpecUI(spec, false);
+        return new ExtendedAirlineSpecUI(spec, false);
     }
 
     @Override
-    public Class<FractionalAirlineDocument> getDocumentType() {
-        return FractionalAirlineDocument.class; 
+    public Class<ExtendedAirlineDocument> getDocumentType() {
+        return ExtendedAirlineDocument.class; 
     }
 
     @Override
@@ -55,11 +56,11 @@ public class FractionalAirlineUIFactory implements DocumentUIServices<ExtendedAi
     }
 
     @Override
-    public void showDocument(WorkspaceItem<FractionalAirlineDocument> item) {
+    public void showDocument(WorkspaceItem<ExtendedAirlineDocument> item) {
         if (item.isOpen()) {
             item.getView().requestActive();
         } else {
-            FractionalAirlineTopComponent view = new FractionalAirlineTopComponent(item);
+            ExtendedAirlineTopComponent view = new ExtendedAirlineTopComponent(item);
             view.open();
             view.requestActive();
         }

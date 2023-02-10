@@ -18,9 +18,11 @@ package demetra.desktop.mstl;
 
 import demetra.desktop.workspace.AbstractWorkspaceTsItemManager;
 import demetra.desktop.workspace.WorkspaceItemManager;
+import demetra.stl.MStlPlusSpec;
 import demetra.util.Id;
 import demetra.util.LinearId;
 import demetra.stl.MStlSpec;
+import jdplus.mstlplus.MStlPlusDocument;
 import org.openide.util.lookup.ServiceProvider;
 
 /**
@@ -29,7 +31,7 @@ import org.openide.util.lookup.ServiceProvider;
  */
 @ServiceProvider(service = WorkspaceItemManager.class,
         position = 3000)
-public class MStlPlusDocumentManager extends AbstractWorkspaceTsItemManager<MStlSpec, MStlPlusDocument> {
+public class MStlPlusDocumentManager extends AbstractWorkspaceTsItemManager<MStlPlusSpec, MStlPlusDocument> {
 
 
     public static final LinearId ID = new LinearId(MStlSpec.FAMILY, "documents", MStlSpec.METHOD);

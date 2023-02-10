@@ -135,8 +135,7 @@
                 <configuration>
                     <publicPackages>
                         <publicPackage>demetra.highfreq.*</publicPackage>
-                        <publicPackage>jdplus.fractionalairline.*</publicPackage>
-                        <publicPackage>jdplus.x11plus.*</publicPackage>
+                        <publicPackage>jdplus.highfreq.*</publicPackage>
                         <publicPackage>demetra.desktop.highfreq.*</publicPackage>
                     </publicPackages>
                 </configuration>

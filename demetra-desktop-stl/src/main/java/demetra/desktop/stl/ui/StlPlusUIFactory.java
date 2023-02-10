@@ -14,7 +14,7 @@
  * See the Licence for the specific language governing permissions and 
  * limitations under the Licence.
  */
-package demetra.desktop.stl;
+package demetra.desktop.stl.ui;
 
 import demetra.desktop.descriptors.IObjectDescriptor;
 import demetra.desktop.stl.ui.StlPlusSpecUI;
