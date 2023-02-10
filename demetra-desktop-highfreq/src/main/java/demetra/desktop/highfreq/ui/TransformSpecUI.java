@@ -26,9 +26,9 @@ import demetra.modelling.highfreq.TransformSpec;
  */
 public class TransformSpecUI extends AbstractTransformSpecUI {
 
-    private final FractionalAirlineSpecRoot root;
+    private final ExtendedAirlineSpecRoot root;
 
-    public TransformSpecUI(FractionalAirlineSpecRoot root) {
+    public TransformSpecUI(ExtendedAirlineSpecRoot root) {
         this.root = root;
     }
 

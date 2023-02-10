@@ -21,6 +21,7 @@ public enum CustomPropertyRendererFactory {
         registry_.registerRenderer(InterventionVariableDescriptor[].class, new ArrayRenderer());
         registry_.registerRenderer(Sequence[].class, new ArrayRenderer());
         registry_.registerRenderer(OutlierDescriptor[].class, new ArrayRenderer());
+        registry_.registerRenderer(HighFreqOutlierDescriptor[].class, new ArrayRenderer());
         registry_.registerRenderer(Coefficients.class, new ArrayRenderer());
     }
 
@@ -28,4 +29,3 @@ public enum CustomPropertyRendererFactory {
         return registry_;
     }
 }
-

@@ -64,8 +64,8 @@ public final class TemporalDisaggregationDocumentTopComponent extends WorkspaceT
         super(doc);
         initComponents();
         setToolTipText(Bundle.HINT_TemporalDisaggregationDocumentTopComponent());
-      associateLookup(ExplorerUtils.createLookup(mgr, getActionMap()));
-      }
+        associateLookup(ExplorerUtils.createLookup(mgr, getActionMap()));
+    }
 
     @Override
     public ExplorerManager getExplorerManager() {

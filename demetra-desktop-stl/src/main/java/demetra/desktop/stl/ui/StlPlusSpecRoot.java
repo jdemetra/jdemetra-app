@@ -17,20 +17,10 @@
 package demetra.desktop.stl.ui;
 
 import demetra.desktop.sa.descriptors.regular.RegularSpecUI;
-import demetra.modelling.TransformationType;
-import demetra.modelling.regular.CalendarSpec;
-import demetra.modelling.regular.EasterSpec;
-import demetra.modelling.regular.EstimateSpec;
 import demetra.modelling.regular.ModellingSpec;
-import demetra.modelling.regular.OutlierSpec;
-import demetra.modelling.regular.RegressionSpec;
-import demetra.modelling.regular.SeriesSpec;
-import demetra.modelling.regular.TradingDaysSpec;
-import demetra.modelling.regular.TransformSpec;
 import demetra.sa.benchmarking.SaBenchmarkingSpec;
 import demetra.stl.StlPlusSpec;
 import demetra.stl.StlSpec;
-import demetra.timeseries.calendars.LengthOfPeriodType;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
@@ -63,8 +53,8 @@ public class StlPlusSpecRoot implements RegularSpecUI {
     }
 
     @Override
-    public boolean hasFixedCoefficients() {
-        return preprocessing.getRegression().hasFixedCoefficients();
+    public void update(ModellingSpec spec) {
+        preprocessing=spec;
     }
 
     public void update(StlSpec spec) {
@@ -72,71 +62,8 @@ public class StlPlusSpecRoot implements RegularSpecUI {
     }
 
     @Override
-    public boolean isAdjust() {
-        return preprocessing.getTransform().getAdjust() != LengthOfPeriodType.None;
+    public ModellingSpec preprocessing() {
+        return preprocessing;
     }
 
-    @Override
-    public TradingDaysSpec td() {
-        return preprocessing.getRegression().getCalendar().getTradingDays();
-    }
-
-    @Override
-    public demetra.modelling.regular.TransformSpec transform() {
-        return preprocessing.getTransform();
-    }
-
-    @Override
-    public demetra.modelling.regular.OutlierSpec outlier() {
-        return preprocessing.getOutliers();
-    }
-
-    @Override
-    public void update(EstimateSpec spec) {
-        preprocessing = preprocessing.toBuilder().estimate(spec).build();
-    }
-
-    @Override
-    public void update(OutlierSpec spec) {
-        preprocessing = preprocessing.toBuilder().outliers(spec).build();
-    }
-
-    @Override
-    public void update(RegressionSpec spec) {
-        preprocessing = preprocessing.toBuilder().regression(spec).build();
-    }
-
-    @Override
-    public void update(TransformSpec spec) {
-        preprocessing = preprocessing.toBuilder().transform(spec).build();
-    }
-
-    @Override
-    public void update(SeriesSpec spec) {
-        preprocessing = preprocessing.toBuilder().series(spec).build();
-    }
-
-    @Override
-    public void update(EasterSpec spec) {
-        CalendarSpec calendar = preprocessing.getRegression().getCalendar();
-        calendar = calendar.toBuilder().easter(spec).build();
-
-        preprocessing = preprocessing.toBuilder()
-                .regression(preprocessing.getRegression().toBuilder()
-                        .calendar(calendar)
-                        .build()
-                ).build();
-    }
-
-    @Override
-    public void update(TradingDaysSpec spec) {
-        CalendarSpec calendar = preprocessing.getRegression().getCalendar();
-        calendar = calendar.toBuilder().tradingDays(spec).build();
-
-        preprocessing = preprocessing.toBuilder()
-                .regression(preprocessing.getRegression().toBuilder()
-                        .calendar(calendar)
-                        .build()
-                ).build();
-    }
 }

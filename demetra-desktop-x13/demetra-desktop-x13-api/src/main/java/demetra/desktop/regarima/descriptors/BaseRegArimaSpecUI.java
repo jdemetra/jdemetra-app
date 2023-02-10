@@ -14,6 +14,7 @@ import demetra.regarima.BasicSpec;
 import demetra.regarima.RegressionSpec;
 import demetra.regarima.TransformSpec;
 import demetra.regarima.EasterSpec;
+import demetra.regarima.MeanSpec;
 import demetra.regarima.TradingDaysSpec;
 import demetra.regarima.RegArimaSpec;
 
@@ -43,6 +44,13 @@ abstract class BaseRegArimaSpecUI implements IPropertyDescriptors {
     
     void update(BasicSpec spec) {
         root.core = root.core.toBuilder().basic(spec).build();
+    }
+
+    void update(MeanSpec spec) {
+        update(root.core.getRegression()
+                .toBuilder()
+                .mean(spec)
+                .build());
     }
 
     void update(EstimateSpec spec) {

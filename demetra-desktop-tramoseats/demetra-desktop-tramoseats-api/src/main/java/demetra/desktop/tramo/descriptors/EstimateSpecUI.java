@@ -4,6 +4,7 @@
  */
 package demetra.desktop.tramo.descriptors;
 
+import demetra.desktop.DemetraUI;
 import demetra.desktop.descriptors.EnhancedPropertyDescriptor;
 import demetra.desktop.descriptors.DateSelectorUI;
 import demetra.timeseries.TimeSelector;
@@ -41,14 +42,14 @@ public class EstimateSpecUI extends BaseTramoSpecUI {
         update(inner().toBuilder().span(span).build());
     }
 
-    public boolean isEml() {
-        return inner().isMaximumLikelihood();
-    }
-
-    public void setEml(boolean value) {
-        update(inner().toBuilder().maximumLikelihood(value).build());
-    }
-
+//    public boolean isEml() {
+//        return inner().isMaximumLikelihood();
+//    }
+//
+//    public void setEml(boolean value) {
+//        update(inner().toBuilder().maximumLikelihood(value).build());
+//    }
+//
     public double getTol() {
         return inner().getTol();
     }
@@ -94,10 +95,10 @@ public class EstimateSpecUI extends BaseTramoSpecUI {
         if (desc != null) {
             descs.add(desc);
         }
-        desc = emlDesc();
-        if (desc != null) {
-            descs.add(desc);
-        }
+//        desc = emlDesc();
+//        if (desc != null) {
+//            descs.add(desc);
+//        }
         desc = urlimitDesc();
         if (desc != null) {
             descs.add(desc);
@@ -142,23 +143,23 @@ public class EstimateSpecUI extends BaseTramoSpecUI {
         }
     }
 
-    @Messages({
-        "estimateSpecUI.emlDesc.name=Exact ML",
-        "estimateSpecUI.emlDesc.desc=Use exact maximum likelihood in optimization procedure"
-    })
-    private EnhancedPropertyDescriptor emlDesc() {
-        try {
-            PropertyDescriptor desc = new PropertyDescriptor("Eml", this.getClass());
-            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, EML_ID);
-            edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            desc.setDisplayName(Bundle.estimateSpecUI_emlDesc_name());
-            desc.setShortDescription(Bundle.estimateSpecUI_emlDesc_desc());
-            edesc.setReadOnly(isRo());
-            return edesc;
-        } catch (IntrospectionException ex) {
-            return null;
-        }
-    }
+//    @Messages({
+//        "estimateSpecUI.emlDesc.name=Exact ML",
+//        "estimateSpecUI.emlDesc.desc=Use exact maximum likelihood in optimization procedure"
+//    })
+//    private EnhancedPropertyDescriptor emlDesc() {
+//        try {
+//            PropertyDescriptor desc = new PropertyDescriptor("Eml", this.getClass());
+//            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, EML_ID);
+//            edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
+//            desc.setDisplayName(Bundle.estimateSpecUI_emlDesc_name());
+//            desc.setShortDescription(Bundle.estimateSpecUI_emlDesc_desc());
+//            edesc.setReadOnly(isRo());
+//            return edesc;
+//        } catch (IntrospectionException ex) {
+//            return null;
+//        }
+//    }
 
     @Override
     @Messages("estimateSpecUI.getDisplayName=Estimate")

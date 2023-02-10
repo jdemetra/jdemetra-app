@@ -16,13 +16,18 @@
  */
 package demetra.desktop.mstl.ui;
 
-import demetra.desktop.ui.properties.l2fprod.ArrayRenderer;
-import demetra.desktop.ui.properties.l2fprod.CustomPropertyEditorRegistry;
-import demetra.desktop.ui.properties.l2fprod.CustomPropertyRendererFactory;
-import demetra.stl.SeasonalSpec;
+import demetra.desktop.sa.descriptors.highfreq.HighFreqSpecUI;
+import demetra.highfreq.ExtendedAirlineModellingSpec;
+import demetra.highfreq.ExtendedAirlineSpec;
+import demetra.modelling.highfreq.EasterSpec;
+import demetra.modelling.highfreq.EstimateSpec;
+import demetra.modelling.highfreq.HolidaysSpec;
+import demetra.modelling.highfreq.OutlierSpec;
+import demetra.modelling.highfreq.RegressionSpec;
+import demetra.modelling.highfreq.SeriesSpec;
+import demetra.modelling.highfreq.TransformSpec;
+import demetra.stl.MStlPlusSpec;
 import demetra.stl.MStlSpec;
-
-
 
 /**
  *
@@ -30,13 +35,93 @@ import demetra.stl.MStlSpec;
  */
 @lombok.Getter
 @lombok.AllArgsConstructor
-public class MStlPlusSpecRoot  {
-    
-    static{
-        CustomPropertyEditorRegistry.INSTANCE.register(SeasonalSpec[].class, new SeasonalSpecsEditor());
-        CustomPropertyRendererFactory.INSTANCE.getRegistry().registerRenderer(SeasonalSpec[].class, new ArrayRenderer());
+public class MStlPlusSpecRoot implements HighFreqSpecUI {
+
+    MStlPlusSpec core;
+    boolean ro;
+
+    public boolean isPreprocessingEnabled() {
+        return core.getPreprocessing().isEnabled();
+    }
+
+    public void setPreprocessingEnabled(boolean enabled) {
+        update(getPreprocessing().toBuilder().enabled(enabled).build());
+    }
+
+    public ExtendedAirlineModellingSpec getPreprocessing() {
+        return core.getPreprocessing();
     }
     
-    MStlSpec core;
-    boolean ro;
+    public MStlSpec stl(){
+        return core.getStl();
+    }
+    
+    public void update(MStlSpec stl){
+        core=core.toBuilder().stl(stl).build();
+    }
+
+    public void update(ExtendedAirlineModellingSpec spec) {
+        core = core.toBuilder().preprocessing(spec).build();
+    }
+
+    @Override
+    public boolean hasFixedCoefficients() {
+        return core.getPreprocessing().getRegression().hasFixedCoefficients();
+    }
+
+    public void update(ExtendedAirlineSpec spec) {
+        update(getPreprocessing().toBuilder().stochastic(spec).build());
+    }
+
+    @Override
+    public void update(EstimateSpec spec) {
+        update(getPreprocessing().toBuilder().estimate(spec).build());
+    }
+
+    @Override
+    public void update(OutlierSpec spec) {
+        update(getPreprocessing().toBuilder().outlier(spec).build());
+    }
+
+    @Override
+    public void update(RegressionSpec spec) {
+        update(getPreprocessing().toBuilder().regression(spec).build());
+    }
+
+    @Override
+    public void update(TransformSpec spec) {
+        update(getPreprocessing().toBuilder().transform(spec).build());
+    }
+
+    @Override
+    public void update(SeriesSpec spec) {
+        update(getPreprocessing().toBuilder().series(spec).build());
+    }
+
+    @Override
+    public void update(EasterSpec spec) {
+        update(getPreprocessing().getRegression()
+                .toBuilder()
+                .easter(spec)
+                .build());
+    }
+
+    @Override
+    public void update(HolidaysSpec spec) {
+        update(getPreprocessing().getRegression()
+                .toBuilder()
+                .holidays(spec)
+                .build());
+    }
+
+    @Override
+    public TransformSpec transform() {
+        return getPreprocessing().getTransform();
+    }
+
+    @Override
+    public OutlierSpec outlier() {
+        return getPreprocessing().getOutlier();
+    }
+
 }

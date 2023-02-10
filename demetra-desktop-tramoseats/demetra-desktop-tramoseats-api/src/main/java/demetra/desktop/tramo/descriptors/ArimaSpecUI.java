@@ -7,6 +7,7 @@ package demetra.desktop.tramo.descriptors;
 import demetra.data.Parameter;
 import demetra.desktop.descriptors.EnhancedPropertyDescriptor;
 import demetra.arima.SarimaSpec;
+import demetra.desktop.DemetraUI;
 import demetra.tramo.AutoModelSpec;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
@@ -249,6 +250,9 @@ public class ArimaSpecUI extends BaseTramoSpecUI {
         "arimaSpecUI.amiDesc.desc=[amicompare] Controls whether the final model is compared to the default model."
     })
     private EnhancedPropertyDescriptor amiDesc() {
+        if (!DemetraUI.get().isLowLevelOptions()) {
+            return null;
+        }
         if (!core().isUsingAutoModel()) {
             return null;
         }
@@ -270,6 +274,9 @@ public class ArimaSpecUI extends BaseTramoSpecUI {
         "arimaSpecUI.ub1Desc.desc=[ub1] Unit root limit in the first step of the automatic differencing procedure [(2 0)(1 0) ARMA models]."
     })
     private EnhancedPropertyDescriptor ub1Desc() {
+        if (!DemetraUI.get().isLowLevelOptions()) {
+            return null;
+        }
         if (!core().isUsingAutoModel()) {
             return null;
         }
@@ -291,6 +298,9 @@ public class ArimaSpecUI extends BaseTramoSpecUI {
         "arimaSpecUI.ub2Desc.desc=[ub2] Unit root limit in the first step of the automatic differencing procedure [(1 1)(1 1) ARMA models]."
     })
     private EnhancedPropertyDescriptor ub2Desc() {
+        if (!DemetraUI.get().isLowLevelOptions()) {
+            return null;
+        }
         if (!core().isUsingAutoModel()) {
             return null;
         }
@@ -312,6 +322,9 @@ public class ArimaSpecUI extends BaseTramoSpecUI {
         "arimaSpecUI.cancelDesc.desc=[cancel] Cancelation limit for AR and MA roots."
     })
     private EnhancedPropertyDescriptor cancelDesc() {
+        if (!DemetraUI.get().isLowLevelOptions()) {
+            return null;
+        }
         if (!core().isUsingAutoModel()) {
             return null;
         }
@@ -333,6 +346,9 @@ public class ArimaSpecUI extends BaseTramoSpecUI {
         "arimaSpecUI.pcDesc.desc=[pc] The percentage by which the outlier critical value will be reduced when an identified model is found to have a Ljung-Box Q statistic with an unacceptable confidence coefficient."
     })
     private EnhancedPropertyDescriptor pcDesc() {
+        if (!DemetraUI.get().isLowLevelOptions()) {
+            return null;
+        }
         if (!core().isUsingAutoModel()) {
             return null;
         }
@@ -354,6 +370,9 @@ public class ArimaSpecUI extends BaseTramoSpecUI {
         "arimaSpecUI.tsigDesc.desc=[tsig] Threshold value for t-statistics of ARMA coefficients and mean correction used for test of model parsimony."
     })
     private EnhancedPropertyDescriptor tsigDesc() {
+        if (!DemetraUI.get().isLowLevelOptions()) {
+            return null;
+        }
         if (!core().isUsingAutoModel()) {
             return null;
         }
@@ -375,6 +394,9 @@ public class ArimaSpecUI extends BaseTramoSpecUI {
         "arimaSpecUI.pcrDesc.desc=[pcr] Ljung-Box Q statistic limit for the acceptance of a model."
     })
     private EnhancedPropertyDescriptor pcrDesc() {
+        if (!DemetraUI.get().isLowLevelOptions()) {
+            return null;
+        }
         if (!core().isUsingAutoModel()) {
             return null;
         }

@@ -67,6 +67,10 @@
             <artifactId>org-netbeans-modules-settings</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.netbeans.api</groupId>
+            <artifactId>org-openide-modules</artifactId>
+        </dependency>
+        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>demetra-desktop-design</artifactId>
             <version>${project.version}</version>
@@ -97,6 +101,11 @@
             <artifactId>demetra-desktop-sa-ui</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>demetra-desktop-highfreq</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <!-- compile & runtime -->
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -120,6 +129,10 @@
                 <exclusion>
                     <groupId>${project.groupId}</groupId>
                     <artifactId>demetra-sa-core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>demetra-highfreq-core</artifactId>
                 </exclusion>
             </exclusions>
             <version>${jd3-stl.version}</version>

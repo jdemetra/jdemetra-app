@@ -11,6 +11,7 @@ import demetra.tramo.AutoModelSpec;
 import demetra.tramo.CalendarSpec;
 import demetra.tramo.EasterSpec;
 import demetra.tramo.EstimateSpec;
+import demetra.tramo.MeanSpec;
 import demetra.tramo.OutlierSpec;
 import demetra.tramo.RegressionSpec;
 import demetra.tramo.TradingDaysSpec;
@@ -37,6 +38,13 @@ abstract class BaseTramoSpecUI implements IPropertyDescriptors{
         return root.getCore().getTransform().getFunction() != TransformationType.Auto;
     }
     
+    void update(MeanSpec spec) {
+        update(root.core.getRegression()
+                .toBuilder()
+                .mean(spec)
+                .build());
+    }
+
     void update(EstimateSpec spec) {
         root.core = root.core.toBuilder().estimate(spec).build();
     }

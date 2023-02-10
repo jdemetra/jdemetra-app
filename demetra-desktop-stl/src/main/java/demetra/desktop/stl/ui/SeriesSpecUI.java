@@ -16,21 +16,26 @@
  */
 package demetra.desktop.stl.ui;
 
+import demetra.desktop.descriptors.EnhancedPropertyDescriptor;
 import demetra.desktop.sa.descriptors.regular.AbstractSeriesSpecUI;
 import demetra.desktop.sa.descriptors.regular.RegularSpecUI;
 import demetra.modelling.regular.SeriesSpec;
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
+import org.openide.util.NbBundle;
 
 /**
  *
  * @author palatej
  */
-public class SeriesSpecUI extends AbstractSeriesSpecUI{
+public class SeriesSpecUI extends AbstractSeriesSpecUI {
 
     private final StlPlusSpecRoot root;
- 
-  public SeriesSpecUI(StlPlusSpecRoot root){
-       this.root=root;
-   }
+
+    public SeriesSpecUI(StlPlusSpecRoot root) {
+        this.root = root;
+    }
+
     @Override
     protected SeriesSpec spec() {
         return root.getPreprocessing().getSeries();
@@ -40,5 +45,6 @@ public class SeriesSpecUI extends AbstractSeriesSpecUI{
     protected RegularSpecUI root() {
         return root;
     }
-    
+
+
 }

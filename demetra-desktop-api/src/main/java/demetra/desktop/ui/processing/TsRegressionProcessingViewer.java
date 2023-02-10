@@ -100,7 +100,7 @@ public class TsRegressionProcessingViewer<S extends ProcSpecification, D extends
     public void refreshSpec() {
         MultiTsDocument doc = getDocument();
         ProcSpecification spec = doc.getSpecification();
-        specLabel.setText("Spec: " + (spec != null ? spec.toString() : ""));
+        specLabel.setText("Spec: " + (spec != null ? spec.display(): ""));
     }
 
     private void updateList() {

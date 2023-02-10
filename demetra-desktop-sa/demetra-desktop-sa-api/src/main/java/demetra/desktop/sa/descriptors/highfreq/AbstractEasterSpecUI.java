@@ -16,14 +16,16 @@
  */
 package demetra.desktop.sa.descriptors.highfreq;
 
+import demetra.data.Parameter;
 import demetra.desktop.descriptors.EnhancedPropertyDescriptor;
 import demetra.desktop.descriptors.IPropertyDescriptors;
+import demetra.modelling.TransformationType;
 import demetra.modelling.highfreq.EasterSpec;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
 import java.util.List;
-import org.openide.util.NbBundle;
+import org.openide.util.NbBundle.Messages;
 
 /**
  *
@@ -31,25 +33,34 @@ import org.openide.util.NbBundle;
  */
 public abstract class AbstractEasterSpecUI implements IPropertyDescriptors  {
 
-    @Override
-    public String toString() {
-        return getOption() == EasterSpec.Type.Unused ? "" : "in use";
-    }
-
     protected abstract HighFreqSpecUI root();
     
     protected abstract EasterSpec spec();
  
-    public boolean isro(){
-        return root().isRo() || spec().hasFixedCoefficient();
+     @Override
+    public String toString() {
+        return isEnabled() ? "in use" : "";
     }
 
-    public EasterSpec.Type getOption() {
+    private boolean isEnabled() {
+        return spec().getType() != EasterSpec.Type.UNUSED;
+    }
+
+    public EasterSpec.Type getType() {
         return spec().getType();
     }
 
-    public void setOption(EasterSpec.Type value) {
+    // should be changed in the future, with new moving holidays !!!
+    public void setType(EasterSpec.Type value) {
         root().update(spec().toBuilder().type(value).build());
+    }
+
+    public boolean isTest() {
+        return spec().isTest();
+    }
+
+    public void setTest(boolean value) {
+        root().update(spec().toBuilder().test(value).build());
     }
 
     public int getDuration() {
@@ -60,45 +71,44 @@ public abstract class AbstractEasterSpecUI implements IPropertyDescriptors  {
         root().update(spec().toBuilder().duration(value).build());
     }
 
-    public boolean isTest() {
-        EasterSpec spec = spec();
-        if (!spec.isUsed()) {
-            return false;
-        } else {
-            return spec.isTest();
+    public double getCoefficient() {
+        Parameter coefficient = spec().getCoefficient();
+        return coefficient != null && coefficient.isDefined() ? coefficient.getValue() : 0;
+    }
+
+    public void setCoefficient(double p) {
+        Parameter coefficient = p == 0 ? Parameter.undefined() : Parameter.fixed(p);
+        root().update(spec().toBuilder().coefficient(coefficient).build());
+    }
+
+    public boolean isFixedCoefficient() {
+        Parameter coefficient = spec().getCoefficient();
+        return coefficient != null && coefficient.isFixed();
+    }
+
+    public void setFixedCoefficient(boolean f) {
+        Parameter coefficient = spec().getCoefficient();
+        if (coefficient == null) {
+            coefficient = Parameter.undefined();
         }
-    }
-
-    public void setTest(boolean value) {
-        root().update(spec().toBuilder().test(value).build());
-    }
-
-    public boolean isJulian() {
-        EasterSpec spec = spec();
-        if (!spec.isUsed()) {
-            return false;
-        } else {
-            return spec.isJulian();
+        if (f && !coefficient.isFixed()) {
+            coefficient = Parameter.fixed(coefficient.getValue());
+            root().update(spec().toBuilder().coefficient(coefficient).build());
+        } else if (coefficient.isFixed()) {
+            if (coefficient.getValue() == 0) {
+                coefficient = Parameter.undefined();
+            } else {
+                coefficient = Parameter.initial(coefficient.getValue());
+            }
+            root().update(spec().toBuilder().coefficient(coefficient).build());
         }
-    }
-
-    public void setJulian(boolean value) {
-        root().update(spec().toBuilder().julian(value).build());
     }
 
     @Override
     public List<EnhancedPropertyDescriptor> getProperties() {
         // regression
         ArrayList<EnhancedPropertyDescriptor> descs = new ArrayList<>();
-        EnhancedPropertyDescriptor desc = optionDesc();
-        if (desc != null) {
-            descs.add(desc);
-        }
-        desc = julianDesc();
-        if (desc != null) {
-            descs.add(desc);
-        }
-        desc = durationDesc();
+        EnhancedPropertyDescriptor desc = typeDesc();
         if (desc != null) {
             descs.add(desc);
         }
@@ -106,61 +116,96 @@ public abstract class AbstractEasterSpecUI implements IPropertyDescriptors  {
         if (desc != null) {
             descs.add(desc);
         }
+        desc = durationDesc();
+        if (desc != null) {
+            descs.add(desc);
+        }
+        desc = fixedCoeffDesc();
+        if (desc != null) {
+            descs.add(desc);
+        }
+        desc = coeffDesc();
+        if (desc != null) {
+            descs.add(desc);
+        }
         return descs;
     }
     ///////////////////////////////////////////////////////////////////////////
-    private static final int OPTION_ID = 1, DUR_ID = 2, TEST_ID = 3, JULIAN_ID=4;
+    private static final int TYPE_ID = 1, AUTO_ID = 2, TEST_ID = 3, DUR_ID = 4, COEFF_ID = 5, FIXED_COEFF_ID = 6;
 
-    @NbBundle.Messages({
-        "easterSpecUI.optionDesc.name=Option",
-        "easterSpecUI.optionDesc.desc=Option"
+    @Messages({
+        "highfreq.easterSpecUI.typeDesc.name=Type",
+        "highfreq.easterSpecUI.typeDesc.desc="
     })
-    private EnhancedPropertyDescriptor optionDesc() {
-        if (isJulian())
-            return null;
+    private EnhancedPropertyDescriptor typeDesc() {
         try {
-            PropertyDescriptor desc = new PropertyDescriptor("option", this.getClass());
-            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, OPTION_ID);
-            desc.setDisplayName(Bundle.easterSpecUI_optionDesc_name());
-            desc.setShortDescription(Bundle.easterSpecUI_optionDesc_desc());
+            PropertyDescriptor desc = new PropertyDescriptor("Type", this.getClass());
+            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, TYPE_ID);
+            desc.setDisplayName(Bundle.highfreq_easterSpecUI_typeDesc_name());
+            desc.setShortDescription(Bundle.highfreq_easterSpecUI_typeDesc_desc());
+            edesc.setReadOnly(root().isRo() || isFixedCoefficient());
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            edesc.setReadOnly(root().isRo());
             return edesc;
         } catch (IntrospectionException ex) {
             return null;
         }
     }
 
-    @NbBundle.Messages({
-        "easterSpecUI.durationDesc.name=Duration",
-        "easterSpecUI.durationDesc.desc=Duration"
+    @Messages({
+        "highfreq.easterSpecUI.durationDesc.name=Easter duration",
+        "highfreq.easterSpecUI.durationDesc.desc=[w] Length of the easter regression effect"
     })
     private EnhancedPropertyDescriptor durationDesc() {
+        if (!isEnabled()) {
+            return null;
+        }
         try {
             PropertyDescriptor desc = new PropertyDescriptor("duration", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, DUR_ID);
-            desc.setDisplayName(Bundle.easterSpecUI_durationDesc_name());
-            desc.setShortDescription(Bundle.easterSpecUI_durationDesc_desc());
-            if (root().isRo() || getOption() == EasterSpec.Type.Unused) {
-                edesc.setReadOnly(true);
-            }
+            desc.setDisplayName(Bundle.highfreq_easterSpecUI_durationDesc_name());
+            desc.setShortDescription(Bundle.highfreq_easterSpecUI_durationDesc_desc());
+            edesc.setReadOnly(root().isRo() || spec().isTest() || isFixedCoefficient());
             return edesc;
         } catch (IntrospectionException ex) {
             return null;
         }
     }
 
-    @NbBundle.Messages({
-        "easterSpecUI.testDesc.name=Test",
-        "easterSpecUI.testDesc.desc=Test",
+    @Messages({
+        "highfreq.easterSpecUI.testDesc.name=Pre-test",
+        "highfreq.easterSpecUI.testDesc.desc="
     })
     private EnhancedPropertyDescriptor testDesc() {
+        if (!isEnabled()) {
+            return null;
+        }
         try {
             PropertyDescriptor desc = new PropertyDescriptor("test", this.getClass());
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, TEST_ID);
-            desc.setDisplayName(Bundle.easterSpecUI_testDesc_name());
-            desc.setShortDescription(Bundle.easterSpecUI_testDesc_desc());
-            if (root().isRo() || getOption() == EasterSpec.Type.Unused) {
+            desc.setDisplayName(Bundle.highfreq_easterSpecUI_testDesc_name());
+            desc.setShortDescription(Bundle.highfreq_easterSpecUI_testDesc_desc());
+            edesc.setReadOnly(root().isRo() || isFixedCoefficient());
+            return edesc;
+        } catch (IntrospectionException ex) {
+            return null;
+        }
+    }
+
+    @Messages({
+        "highfreq.easterSpecUI.coeffDesc.name=Coefficient",
+        "highfreq.easterSpecUI.coeffDesc.desc=Coefficient"
+    })
+
+    private EnhancedPropertyDescriptor coeffDesc() {
+        if (!isFixedCoefficient()) {
+            return null;
+        }
+        try {
+            PropertyDescriptor desc = new PropertyDescriptor("coefficient", this.getClass());
+            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, COEFF_ID);
+            desc.setDisplayName(Bundle.highfreq_easterSpecUI_coeffDesc_name());
+            desc.setShortDescription(Bundle.highfreq_easterSpecUI_coeffDesc_desc());
+            if (root().isRo()) {
                 edesc.setReadOnly(true);
             }
             return edesc;
@@ -169,17 +214,20 @@ public abstract class AbstractEasterSpecUI implements IPropertyDescriptors  {
         }
     }
 
-    @NbBundle.Messages({
-        "easterSpecUI.julianDesc.desc=Use Julian Easter (expressed in Gregorian calendar)",
-        "easterSpecUI.julianDesc.name=Julian",
+    @Messages({
+        "highfreq.easterSpecUI.fixedCoeffDesc.name=Fixed coeff.",
+        "highfreq.easterSpecUI.fixedCoeffDesc.desc=Fixed coeff."
     })
-    private EnhancedPropertyDescriptor julianDesc() {
+    private EnhancedPropertyDescriptor fixedCoeffDesc() {
+        if (!isEnabled()) {
+            return null;
+        }
         try {
-            PropertyDescriptor desc = new PropertyDescriptor("julian", this.getClass());
-            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, JULIAN_ID);
-            desc.setDisplayName(Bundle.easterSpecUI_julianDesc_name());
-            desc.setShortDescription(Bundle.easterSpecUI_julianDesc_desc());
-            if (root().isRo() || getOption() == EasterSpec.Type.Unused) {
+            PropertyDescriptor desc = new PropertyDescriptor("fixedCoefficient", this.getClass());
+            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, FIXED_COEFF_ID);
+            desc.setDisplayName(Bundle.highfreq_easterSpecUI_fixedCoeffDesc_name());
+            desc.setShortDescription(Bundle.highfreq_easterSpecUI_fixedCoeffDesc_desc());
+            if (root().isRo() || !isEnabled() || spec().isTest() || root().transform().getFunction() == TransformationType.Auto) {
                 edesc.setReadOnly(true);
             }
             return edesc;
@@ -189,8 +237,8 @@ public abstract class AbstractEasterSpecUI implements IPropertyDescriptors  {
     }
 
     @Override
-    @NbBundle.Messages("easterSpecUI.getDisplayName=Easter")
+    @Messages("highfreq.easterSpecUI.getDisplayName=Easter")
     public String getDisplayName() {
-        return Bundle.easterSpecUI_getDisplayName();
+        return Bundle.highfreq_easterSpecUI_getDisplayName();
     }
 }

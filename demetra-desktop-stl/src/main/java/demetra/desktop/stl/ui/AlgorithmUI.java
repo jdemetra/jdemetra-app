@@ -221,5 +221,10 @@ public class AlgorithmUI implements IPropertyDescriptors {
     public String getDisplayName() {
         return Bundle.algorithmUI_getDisplayName();
     }
+    
+    @Override
+    public String toString(){
+        return "";
+    }
 
 }

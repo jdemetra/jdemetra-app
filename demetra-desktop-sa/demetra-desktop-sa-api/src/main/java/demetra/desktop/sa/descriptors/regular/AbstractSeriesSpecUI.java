@@ -46,6 +46,14 @@ public abstract class AbstractSeriesSpecUI implements IPropertyDescriptors {
                 .build());
     }
 
+   public boolean isPreprocessing(){
+       return root().isPreprocessing();
+   }
+   
+   public void setPreprocessing(boolean enabled){
+       root().update(root().preprocessing().toBuilder().enabled(enabled).build());
+   }
+
     @Override
     public List<EnhancedPropertyDescriptor> getProperties() {
         ArrayList<EnhancedPropertyDescriptor> descs = new ArrayList<>();
@@ -57,7 +65,7 @@ public abstract class AbstractSeriesSpecUI implements IPropertyDescriptors {
         if (desc != null) {
             descs.add(desc);
         }
-        desc = automdlDesc();
+        desc = preprocessingDesc();
         if (desc != null) {
             descs.add(desc);
         }
@@ -70,7 +78,7 @@ public abstract class AbstractSeriesSpecUI implements IPropertyDescriptors {
         return Bundle.regular_seriesSpecUI_getDislayName();
     }
     ///////////////////////////////////////////////////////////////////////////
-    private static final int SPAN_ID = 1, AUTOMDL_ID = 2, PRELIMINARYCHECK_ID = 3;
+    private static final int SPAN_ID = 1, PREPROCESSING_ID = 2, PRELIMINARYCHECK_ID = 3;
 
     @Messages({
         "regular.seriesSpecUI.spanDesc.name=Series span",
@@ -83,24 +91,6 @@ public abstract class AbstractSeriesSpecUI implements IPropertyDescriptors {
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
             desc.setShortDescription(Bundle.regular_seriesSpecUI_spanDesc_desc());
             desc.setDisplayName(Bundle.regular_seriesSpecUI_spanDesc_name());
-            edesc.setReadOnly(root().isRo());
-            return edesc;
-        } catch (IntrospectionException ex) {
-            return null;
-        }
-    }
-
-    @Messages({
-        "regular.seriesSpecUI.automdlDesc.name=auto modelling",
-        "regular.seriesSpecUI.automdlDesc.desc=Allows automatic model identification"
-    })
-    private EnhancedPropertyDescriptor automdlDesc() {
-        try {
-            PropertyDescriptor desc = new PropertyDescriptor("autoMdl", this.getClass());
-            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, AUTOMDL_ID);
-            desc.setDisplayName(Bundle.regular_seriesSpecUI_automdlDesc_name());
-            desc.setShortDescription(Bundle.regular_seriesSpecUI_automdlDesc_desc());
-            edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
             edesc.setReadOnly(root().isRo());
             return edesc;
         } catch (IntrospectionException ex) {
@@ -125,4 +115,23 @@ public abstract class AbstractSeriesSpecUI implements IPropertyDescriptors {
             return null;
         }
     }
+    
+    @Messages({"seriesSpecUI.preprocessingDesc.name=PREPROCESSING",
+        "seriesSpecUI.preprocessingDesc.desc=Reg-Arima (airline) preprocessing"
+    })
+    private EnhancedPropertyDescriptor preprocessingDesc() {
+        try {
+            PropertyDescriptor desc = new PropertyDescriptor("preprocessing", this.getClass());
+            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, PREPROCESSING_ID);
+            desc.setDisplayName(Bundle.seriesSpecUI_preprocessingDesc_name());
+            desc.setShortDescription(Bundle.seriesSpecUI_preprocessingDesc_desc());
+            edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
+            //edesc.setReadOnly(true);
+            return edesc;
+        } catch (IntrospectionException ex) {
+            return null;
+        }
+    }
+  
+
 }

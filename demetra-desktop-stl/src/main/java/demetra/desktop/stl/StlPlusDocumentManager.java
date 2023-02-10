@@ -16,7 +16,6 @@
  */
 package demetra.desktop.stl;
 
-import demetra.desktop.mstl.MStlPlusDocument;
 import demetra.desktop.workspace.AbstractWorkspaceTsItemManager;
 import demetra.desktop.workspace.WorkspaceItemManager;
 import demetra.stl.MStlSpec;

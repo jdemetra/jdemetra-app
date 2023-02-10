@@ -25,9 +25,9 @@ import demetra.modelling.highfreq.EstimateSpec;
  * @author PALATEJ
  */
 public class EstimateSpecUI extends AbstractEstimateSpecUI {
-    private final FractionalAirlineSpecRoot root;
+    private final ExtendedAirlineSpecRoot root;
 
-    public EstimateSpecUI(FractionalAirlineSpecRoot root) {
+    public EstimateSpecUI(ExtendedAirlineSpecRoot root) {
         this.root = root;
     }
 

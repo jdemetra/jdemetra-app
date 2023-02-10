@@ -7,6 +7,7 @@ package demetra.desktop.regarima.descriptors;
 import demetra.data.Parameter;
 import demetra.desktop.descriptors.EnhancedPropertyDescriptor;
 import demetra.arima.SarimaSpec;
+import demetra.desktop.DemetraUI;
 import demetra.regarima.AutoModelSpec;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
@@ -178,7 +179,7 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
     }
 
     public int getBp() {
-         return arima().getBp();
+        return arima().getBp();
     }
 
     public void setBp(int value) {
@@ -249,16 +250,14 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
             desc.setShortDescription(Bundle.arimaSpecUI_pDesc_desc());
             edesc.setReadOnly(isRo());
             return edesc;
-        }
-        catch (IntrospectionException ex) {
+        } catch (IntrospectionException ex) {
             return null;
         }
     }
 
     @Messages({
         "arimaSpecUI.dDesc.name=D",
-        "arimaSpecUI.dDesc.desc=[d] Regular differencing order",
-    })
+        "arimaSpecUI.dDesc.desc=[d] Regular differencing order",})
     private EnhancedPropertyDescriptor dDesc() {
         if (core().isUsingAutoModel()) {
             return null;
@@ -271,8 +270,7 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
             desc.setShortDescription(Bundle.arimaSpecUI_dDesc_desc());
             edesc.setReadOnly(isRo());
             return edesc;
-        }
-        catch (IntrospectionException ex) {
+        } catch (IntrospectionException ex) {
             return null;
         }
     }
@@ -293,8 +291,7 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
             desc.setShortDescription(Bundle.arimaSpecUI_qDesc_desc());
             edesc.setReadOnly(isRo());
             return edesc;
-        }
-        catch (IntrospectionException ex) {
+        } catch (IntrospectionException ex) {
             return null;
         }
     }
@@ -315,8 +312,7 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
             desc.setShortDescription(Bundle.arimaSpecUI_bpDesc_desc());
             edesc.setReadOnly(isRo());
             return edesc;
-        }
-        catch (IntrospectionException ex) {
+        } catch (IntrospectionException ex) {
             return null;
         }
     }
@@ -337,8 +333,7 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
             desc.setShortDescription(Bundle.arimaSpecUI_bdDesc_desc());
             edesc.setReadOnly(isRo());
             return edesc;
-        }
-        catch (IntrospectionException ex) {
+        } catch (IntrospectionException ex) {
             return null;
         }
     }
@@ -359,8 +354,7 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
             desc.setShortDescription(Bundle.arimaSpecUI_bqDesc_desc());
             edesc.setReadOnly(isRo());
             return edesc;
-        }
-        catch (IntrospectionException ex) {
+        } catch (IntrospectionException ex) {
             return null;
         }
     }
@@ -381,8 +375,7 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
             desc.setShortDescription(Bundle.arimaSpecUI_phiDesc_desc());
             edesc.setReadOnly(isRo());
             return edesc;
-        }
-        catch (IntrospectionException ex) {
+        } catch (IntrospectionException ex) {
             return null;
         }
     }
@@ -403,8 +396,7 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
             desc.setShortDescription(Bundle.arimaSpecUI_thetaDesc_desc());
             edesc.setReadOnly(isRo());
             return edesc;
-        }
-        catch (IntrospectionException ex) {
+        } catch (IntrospectionException ex) {
             return null;
         }
     }
@@ -425,8 +417,7 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
             desc.setShortDescription(Bundle.arimaSpecUI_bphiDesc_desc());
             edesc.setReadOnly(isRo());
             return edesc;
-        }
-        catch (IntrospectionException ex) {
+        } catch (IntrospectionException ex) {
             return null;
         }
     }
@@ -447,34 +438,11 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
             desc.setShortDescription(Bundle.arimaSpecUI_bthetaDesc_desc());
             edesc.setReadOnly(isRo());
             return edesc;
-        }
-        catch (IntrospectionException ex) {
+        } catch (IntrospectionException ex) {
             return null;
         }
     }
 
-//    @Messages({
-//        "arimaSpecUI.meanDesc.name=Mean",
-//        "arimaSpecUI.meanDesc.desc=[imean] Mean correction"
-//    })
-//    private EnhancedPropertyDescriptor meanDesc() {
-//        if (core().isUsingAutoModel()) {
-//            return null;
-//        }
-//        try {
-//            PropertyDescriptor desc = new PropertyDescriptor("Mean", this.getClass());
-//            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, MEAN_ID);
-//            edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-//            desc.setDisplayName(Bundle.arimaSpecUI_meanDesc_name());
-//            desc.setShortDescription(Bundle.arimaSpecUI_meanDesc_desc());
-//            edesc.setReadOnly(isRo());
-//            return edesc;
-//        }
-//        catch (IntrospectionException ex) {
-//            return null;
-//        }
-//    }
-//
     public boolean isEnabled() {
         return ami().isEnabled();
     }
@@ -507,14 +475,6 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
         update(ami().toBuilder().mixed(value).build());
     }
 
-    public boolean isCheckMu() {
-        return ami().isCheckMu();
-    }
-
-    public void setCheckMu(boolean value) {
-        update(ami().toBuilder().checkMu(value).build());
-    }
-
     public boolean isHannanRissannen() {
         return ami().isHannanRissannen();
     }
@@ -544,8 +504,8 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
     }
 
     public void setUb2(double value) {
-         update(ami().toBuilder().ub2(value).build());
-   }
+        update(ami().toBuilder().ub2(value).build());
+    }
 
     public double getCancel() {
         return ami().getCancel();
@@ -600,8 +560,7 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
             desc.setShortDescription(Bundle.arimaSpecUI_enabledDesc_desc());
             edesc.setReadOnly(isRo());
             return edesc;
-        }
-        catch (IntrospectionException ex) {
+        } catch (IntrospectionException ex) {
             return null;
         }
     }
@@ -622,8 +581,7 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
             desc.setShortDescription(Bundle.arimaSpecUI_accdefDesc_desc());
             edesc.setReadOnly(isRo());
             return edesc;
-        }
-        catch (IntrospectionException ex) {
+        } catch (IntrospectionException ex) {
             return null;
         }
     }
@@ -633,6 +591,9 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
         "arimaSpecUI.balancedDesc.desc=[balanced] Controls whether the automatic model procedure will have a preference for balanced models."
     })
     private EnhancedPropertyDescriptor balancedDesc() {
+        if (!DemetraUI.get().isLowLevelOptions()) {
+            return null;
+        }
         if (!core().isUsingAutoModel()) {
             return null;
         }
@@ -644,8 +605,7 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
             desc.setShortDescription(Bundle.arimaSpecUI_balancedDesc_desc());
             edesc.setReadOnly(isRo());
             return edesc;
-        }
-        catch (IntrospectionException ex) {
+        } catch (IntrospectionException ex) {
             return null;
         }
     }
@@ -666,8 +626,7 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
             desc.setShortDescription(Bundle.arimaSpecUI_mixedDesc_desc());
             edesc.setReadOnly(isRo());
             return edesc;
-        }
-        catch (IntrospectionException ex) {
+        } catch (IntrospectionException ex) {
             return null;
         }
     }
@@ -677,6 +636,9 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
         "arimaSpecUI.checkmuDesc.desc=[checkmu] Controls whether the automatic model selection procedure will check for the significance of a constant term."
     })
     private EnhancedPropertyDescriptor checkmuDesc() {
+        if (!DemetraUI.get().isLowLevelOptions()) {
+            return null;
+        }
         if (!core().isUsingAutoModel()) {
             return null;
         }
@@ -688,8 +650,7 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
             desc.setShortDescription(Bundle.arimaSpecUI_checkmuDesc_desc());
             edesc.setReadOnly(isRo());
             return edesc;
-        }
-        catch (IntrospectionException ex) {
+        } catch (IntrospectionException ex) {
             return null;
         }
     }
@@ -699,6 +660,9 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
         "arimaSpecUI.hrinitialDesc.desc=[hrinitial] Controls whether Hannan-Rissanen estimation is done before exact maximum likelihood estimation to provide initial values."
     })
     private EnhancedPropertyDescriptor hrinitialDesc() {
+        if (!DemetraUI.get().isLowLevelOptions()) {
+            return null;
+        }
         if (!core().isUsingAutoModel()) {
             return null;
         }
@@ -710,8 +674,7 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
             desc.setShortDescription(Bundle.arimaSpecUI_hrinitialDesc_desc());
             edesc.setReadOnly(isRo());
             return edesc;
-        }
-        catch (IntrospectionException ex) {
+        } catch (IntrospectionException ex) {
             return null;
         }
     }
@@ -732,8 +695,7 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
             desc.setShortDescription(Bundle.arimaSpecUI_urlimitDesc_desc());
             edesc.setReadOnly(isRo());
             return edesc;
-        }
-        catch (IntrospectionException ex) {
+        } catch (IntrospectionException ex) {
             return null;
         }
     }
@@ -743,6 +705,9 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
         "arimaSpecUI.iurlimitDesc.desc=Initial unit root limit in the automatic differencing procedure."
     })
     private EnhancedPropertyDescriptor iurlimitDesc() {
+        if (!DemetraUI.get().isLowLevelOptions()) {
+            return null;
+        }
         if (!core().isUsingAutoModel()) {
             return null;
         }
@@ -754,8 +719,7 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
             desc.setShortDescription(Bundle.arimaSpecUI_iurlimitDesc_desc());
             edesc.setReadOnly(isRo());
             return edesc;
-        }
-        catch (IntrospectionException ex) {
+        } catch (IntrospectionException ex) {
             return null;
         }
     }
@@ -765,6 +729,9 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
         "arimaSpecUI.furlimitDesc.desc=Final unit root limit in the automatic differencing procedure."
     })
     private EnhancedPropertyDescriptor furlimitDesc() {
+        if (!DemetraUI.get().isLowLevelOptions()) {
+            return null;
+        }
         if (!core().isUsingAutoModel()) {
             return null;
         }
@@ -776,8 +743,7 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
             desc.setShortDescription(Bundle.arimaSpecUI_furlimitDesc_desc());
             edesc.setReadOnly(isRo());
             return edesc;
-        }
-        catch (IntrospectionException ex) {
+        } catch (IntrospectionException ex) {
             return null;
         }
     }
@@ -787,6 +753,9 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
         "arimaSpecUI.cancelDesc.desc=Cancelation limit for AR and MA roots."
     })
     private EnhancedPropertyDescriptor cancelDesc() {
+        if (!DemetraUI.get().isLowLevelOptions()) {
+            return null;
+        }
         if (!core().isUsingAutoModel()) {
             return null;
         }
@@ -798,8 +767,7 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
             desc.setShortDescription(Bundle.arimaSpecUI_cancelDesc_desc());
             edesc.setReadOnly(isRo());
             return edesc;
-        }
-        catch (IntrospectionException ex) {
+        } catch (IntrospectionException ex) {
             return null;
         }
     }
@@ -809,6 +777,9 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
         "arimaSpecUI.ljungboxDesc.desc=[ljungboxlimit] Ljung-Box Q statistic limit for the acceptance of a model."
     })
     private EnhancedPropertyDescriptor ljungboxDesc() {
+        if (!DemetraUI.get().isLowLevelOptions()) {
+            return null;
+        }
         if (!core().isUsingAutoModel()) {
             return null;
         }
@@ -820,8 +791,7 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
             desc.setShortDescription(Bundle.arimaSpecUI_ljungboxDesc_desc());
             edesc.setReadOnly(isRo());
             return edesc;
-        }
-        catch (IntrospectionException ex) {
+        } catch (IntrospectionException ex) {
             return null;
         }
     }
@@ -831,6 +801,9 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
         "arimaSpecUI.armaDesc.desc=[armalimit] Threshold value for t-statistics of ARMA coefficients used for final test of model parsimony."
     })
     private EnhancedPropertyDescriptor armaDesc() {
+        if (!DemetraUI.get().isLowLevelOptions()) {
+            return null;
+        }
         if (!core().isUsingAutoModel()) {
             return null;
         }
@@ -842,8 +815,7 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
             desc.setShortDescription(Bundle.arimaSpecUI_armaDesc_desc());
             edesc.setReadOnly(isRo());
             return edesc;
-        }
-        catch (IntrospectionException ex) {
+        } catch (IntrospectionException ex) {
             return null;
         }
     }
@@ -853,6 +825,9 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
         "arimaSpecUI.reducecvDesc.desc=[reducecv] The percentage by which the outlier critical value will be reduced when an identified model is found to have a Ljung-Box Q statistic with an unacceptable confidence coefficient."
     })
     private EnhancedPropertyDescriptor reducecvDesc() {
+        if (!DemetraUI.get().isLowLevelOptions()) {
+            return null;
+        }
         if (!core().isUsingAutoModel()) {
             return null;
         }
@@ -864,8 +839,7 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
             desc.setShortDescription(Bundle.arimaSpecUI_reducecvDesc_desc());
             edesc.setReadOnly(isRo());
             return edesc;
-        }
-        catch (IntrospectionException ex) {
+        } catch (IntrospectionException ex) {
             return null;
         }
     }
@@ -875,6 +849,9 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
         "arimaSpecUI.reduceseDesc.desc=Percent reduction of SE."
     })
     private EnhancedPropertyDescriptor reduceseDesc() {
+        if (!DemetraUI.get().isLowLevelOptions()) {
+            return null;
+        }
         if (!core().isUsingAutoModel()) {
             return null;
         }
@@ -886,8 +863,7 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
             desc.setShortDescription(Bundle.arimaSpecUI_reduceseDesc_desc());
             edesc.setReadOnly(isRo());
             return edesc;
-        }
-        catch (IntrospectionException ex) {
+        } catch (IntrospectionException ex) {
             return null;
         }
     }

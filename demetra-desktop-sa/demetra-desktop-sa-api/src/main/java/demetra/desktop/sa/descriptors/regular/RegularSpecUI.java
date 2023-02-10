@@ -16,44 +16,92 @@
  */
 package demetra.desktop.sa.descriptors.regular;
 
+import demetra.modelling.regular.CalendarSpec;
 import demetra.modelling.regular.EasterSpec;
 import demetra.modelling.regular.EstimateSpec;
+import demetra.modelling.regular.ModellingSpec;
 import demetra.modelling.regular.OutlierSpec;
+import demetra.modelling.regular.RegressionSpec;
 import demetra.modelling.regular.SeriesSpec;
 import demetra.modelling.regular.TradingDaysSpec;
 import demetra.modelling.regular.TransformSpec;
-import demetra.modelling.regular.RegressionSpec;
-
 
 /**
  *
  * @author palatej
  */
 public interface RegularSpecUI {
-    
+
     boolean isRo();
-    
-    boolean hasFixedCoefficients();
-    
-    boolean isAdjust();
-    
-    TradingDaysSpec td();
-    
-    TransformSpec transform();
-    
-    OutlierSpec outlier();
 
-    void update(EstimateSpec spec);
+    default boolean hasFixedCoefficients() {
+        return preprocessing().getRegression().hasFixedCoefficients();
+    }
 
-    void update(OutlierSpec spec);
+    default boolean isAdjust() {
+        return preprocessing().getRegression().hasFixedCoefficients();
+    }
 
-    void update(RegressionSpec spec);
+    default boolean isPreprocessing() {
+        return preprocessing().isEnabled();
+    }
 
-    void update(TransformSpec spec);
+    ModellingSpec preprocessing();
 
-    void update(SeriesSpec spec);
+    default TradingDaysSpec td() {
+        return preprocessing().getRegression().getCalendar().getTradingDays();
+    }
 
-    void update(EasterSpec spec);
+    default TransformSpec transform() {
+        return preprocessing().getTransform();
+    }
 
-    void update(TradingDaysSpec spec);
+    default OutlierSpec outlier() {
+        return preprocessing().getOutliers();
+    }
+
+    void update(ModellingSpec spec);
+
+    default void update(EstimateSpec spec) {
+        update(preprocessing().toBuilder().estimate(spec).build());
+    }
+
+    default void update(OutlierSpec spec) {
+        update(preprocessing().toBuilder().outliers(spec).build());
+    }
+
+    default void update(RegressionSpec spec) {
+        update(preprocessing().toBuilder().regression(spec).build());
+
+    }
+
+    default void update(TransformSpec spec) {
+        update(preprocessing().toBuilder().transform(spec).build());
+    }
+
+    default void update(SeriesSpec spec) {
+        update(preprocessing().toBuilder().series(spec).build());
+    }
+
+    default void update(EasterSpec spec) {
+        ModellingSpec preprocessing = preprocessing();
+        CalendarSpec calendar = preprocessing.getRegression().getCalendar();
+        calendar = calendar.toBuilder().easter(spec).build();
+        update(preprocessing.toBuilder()
+                .regression(preprocessing.getRegression().toBuilder()
+                        .calendar(calendar)
+                        .build()
+                ).build());
+    }
+
+    default void update(TradingDaysSpec spec) {
+        ModellingSpec preprocessing = preprocessing();
+        CalendarSpec calendar = preprocessing.getRegression().getCalendar();
+        calendar = calendar.toBuilder().tradingDays(spec).build();
+        update(preprocessing.toBuilder()
+                .regression(preprocessing.getRegression().toBuilder()
+                        .calendar(calendar)
+                        .build()
+                ).build());
+    }
 }

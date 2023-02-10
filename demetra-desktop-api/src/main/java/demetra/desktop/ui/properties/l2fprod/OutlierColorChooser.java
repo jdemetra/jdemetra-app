@@ -43,6 +43,8 @@ public class OutlierColorChooser {
                 return CUSTOMBLUE;
             case "SO":
                 return CUSTOMPINK;
+            case "WO":
+                return CUSTOMPINK;
             default:
                 return Color.white;
         }
@@ -51,6 +53,7 @@ public class OutlierColorChooser {
     public static Color getForeColor(String type) {
         switch (type) {
             case "AO":
+            case "WO":
                 return DARK;
             case "LS":
             case "TC":
