@@ -20,6 +20,7 @@ import demetra.data.Parameter;
 import demetra.desktop.descriptors.EnhancedPropertyDescriptor;
 import demetra.desktop.descriptors.IPropertyDescriptors;
 import demetra.highfreq.ExtendedAirlineSpec;
+import demetra.math.Constants;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
@@ -263,8 +264,19 @@ public class StochasticSpecUI implements IPropertyDescriptors {
         }
     }
 
+    public boolean hasFractionalPeriod() {
+        double[] p = spec().getPeriodicities();
+        for (int i = 0; i < p.length; ++i) {
+            long cur = Math.round(p[i]);
+            if (Math.abs(cur - p[i]) > Constants.getEpsilon()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private EnhancedPropertyDescriptor toIntDesc() {
-        if (spec() == null)
+        if (spec() == null || ! hasFractionalPeriod())
             return null;
         try {
             PropertyDescriptor desc = new PropertyDescriptor("ToInt", this.getClass());

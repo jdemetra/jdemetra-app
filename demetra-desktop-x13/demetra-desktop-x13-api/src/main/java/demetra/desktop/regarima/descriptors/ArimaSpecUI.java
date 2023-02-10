@@ -443,28 +443,6 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
         }
     }
 
-//    @Messages({
-//        "arimaSpecUI.meanDesc.name=Mean",
-//        "arimaSpecUI.meanDesc.desc=[imean] Mean correction"
-//    })
-//    private EnhancedPropertyDescriptor meanDesc() {
-//        if (core().isUsingAutoModel()) {
-//            return null;
-//        }
-//        try {
-//            PropertyDescriptor desc = new PropertyDescriptor("Mean", this.getClass());
-//            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, MEAN_ID);
-//            edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-//            desc.setDisplayName(Bundle.arimaSpecUI_meanDesc_name());
-//            desc.setShortDescription(Bundle.arimaSpecUI_meanDesc_desc());
-//            edesc.setReadOnly(isRo());
-//            return edesc;
-//        }
-//        catch (IntrospectionException ex) {
-//            return null;
-//        }
-//    }
-//
     public boolean isEnabled() {
         return ami().isEnabled();
     }
@@ -495,14 +473,6 @@ public class ArimaSpecUI extends BaseRegArimaSpecUI {
 
     public void setMixed(boolean value) {
         update(ami().toBuilder().mixed(value).build());
-    }
-
-    public boolean isCheckMu() {
-        return ami().isCheckMu();
-    }
-
-    public void setCheckMu(boolean value) {
-        update(ami().toBuilder().checkMu(value).build());
     }
 
     public boolean isHannanRissannen() {

@@ -69,10 +69,6 @@ public class RegressionSpecUI extends BaseTramoSpecUI {
         if (desc != null) {
             descs.add(desc);
         }
-        desc = muDesc();
-        if (desc != null) {
-            descs.add(desc);
-        }
         desc = calendarDesc();
         if (desc != null) {
             descs.add(desc);
@@ -195,27 +191,11 @@ public class RegressionSpecUI extends BaseTramoSpecUI {
         update(inner().toBuilder().clearUserDefinedVariables().userDefinedVariables(list).build());
     }
 
-    public boolean isMean() {
-        return inner().getMean() != null;
+    public MeanSpecUI getMean() {
+        return new MeanSpecUI(root);
     }
 
-    public void setMean(boolean m) {
-        if (m) {
-            update(inner().toBuilder().mean(Parameter.undefined()).build());
-        } else {
-            update(inner().toBuilder().mean(null).build());
-        }
-    }
-    
-    public Parameter getMu(){
-        return inner().getMean();
-    }
-
-    public void setMu(Parameter mu){
-        update(inner().toBuilder().mean(mu).build());
-    }
-
-    private static final int MEAN_ID = 1, CALENDAR_ID = 2, PRESPEC_ID = 3, INTERV_ID = 4, RAMPS_ID = 5, USERDEF_ID = 6, FCOEFF_ID = 7, MU_ID = 8;
+    private static final int MEAN_ID = 1, CALENDAR_ID = 2, PRESPEC_ID = 3, INTERV_ID = 4, RAMPS_ID = 5, USERDEF_ID = 6;
 
     @Messages({
         "regressionSpecUI.meanDesc.desc=[imean] Mean correction"
@@ -225,30 +205,11 @@ public class RegressionSpecUI extends BaseTramoSpecUI {
             return null;
         }
         try {
-            PropertyDescriptor desc = new PropertyDescriptor("Mean", this.getClass());
+            PropertyDescriptor desc = new PropertyDescriptor("Mean", this.getClass(), "getMean", null);
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, MEAN_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
             desc.setShortDescription(Bundle.regressionSpecUI_meanDesc_desc());
             edesc.setReadOnly(isRo());
-            return edesc;
-        } catch (IntrospectionException ex) {
-            return null;
-        }
-    }
-
-    @Messages({
-        "regressionSpecUI.muDesc.desc=Mean coefficient"
-    })
-    private EnhancedPropertyDescriptor muDesc() {
-        if (core().isUsingAutoModel() || ! isMean()) {
-            return null;
-        }
-        try {
-            PropertyDescriptor desc = new PropertyDescriptor("mu", this.getClass());
-            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, MU_ID);
-            edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            desc.setShortDescription(Bundle.regressionSpecUI_muDesc_desc());
-            edesc.setReadOnly(isRo() || ! isTransformationDefined());
             return edesc;
         } catch (IntrospectionException ex) {
             return null;
@@ -327,25 +288,6 @@ public class RegressionSpecUI extends BaseTramoSpecUI {
         }
     }
 
-//    @Messages({
-//        "regressionSpecUI.fixedCoefficientsDesc.name=Fixed regression coefficients",
-//        "regressionSpecUI.fixedCoefficientsDesc.desc="
-//    })
-//    private EnhancedPropertyDescriptor fixedCoefficientsDesc() {
-//        try {
-//            PropertyDescriptor desc = new PropertyDescriptor("FixedCoefficients", this.getClass());
-//            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, FCOEFF_ID);
-//            edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-//            desc.setDisplayName(Bundle.regressionSpecUI_fixedCoefficientsDesc_name());
-//            desc.setShortDescription(Bundle.regressionSpecUI_fixedCoefficientsDesc_desc());
-//            // Disabled when the transformation is on "auto"
-//            edesc.setReadOnly(isRo() || core().getTransform().getFunction() == TransformationType.Auto);
-//            return edesc;
-//        } catch (IntrospectionException ex) {
-//            return null;
-//        }
-//    }
-//
     @Messages({
         "regressionSpecUI.calendarDesc.name=Calendar",
         "regressionSpecUI.calendarDesc.desc=Calendar effects"

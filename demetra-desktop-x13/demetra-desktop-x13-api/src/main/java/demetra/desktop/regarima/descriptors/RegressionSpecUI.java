@@ -11,7 +11,6 @@ import demetra.desktop.sa.properties.l2fprod.SaTsVariableDescriptor;
 import demetra.desktop.ui.properties.l2fprod.OutlierDescriptor;
 import demetra.desktop.ui.properties.l2fprod.RampDescriptor;
 import demetra.desktop.ui.properties.l2fprod.UserInterfaceContext;
-import demetra.modelling.TransformationType;
 import demetra.regarima.RegressionSpec;
 import demetra.sa.ComponentType;
 import demetra.sa.SaVariable;
@@ -67,10 +66,6 @@ public class RegressionSpecUI extends BaseRegArimaSpecUI {
         // regression
         ArrayList<EnhancedPropertyDescriptor> descs = new ArrayList<>();
         EnhancedPropertyDescriptor desc = meanDesc();
-        if (desc != null) {
-            descs.add(desc);
-        }
-        desc = muDesc();
         if (desc != null) {
             descs.add(desc);
         }
@@ -194,27 +189,11 @@ public class RegressionSpecUI extends BaseRegArimaSpecUI {
         update(inner().toBuilder().clearUserDefinedVariables().userDefinedVariables(list).build());
     }
 
-    public boolean isMean() {
-        return inner().getMean() != null;
+    public MeanSpecUI getMean() {
+        return new MeanSpecUI(root);
     }
 
-    public void setMean(boolean m) {
-        if (m) {
-            update(inner().toBuilder().mean(Parameter.undefined()).build());
-        } else {
-            update(inner().toBuilder().mean(null).build());
-        }
-    }
-
-    public Parameter getMu() {
-        return inner().getMean();
-    }
-
-    public void setMu(Parameter mu) {
-        update(inner().toBuilder().mean(mu).build());
-    }
-
-    private static final int MEAN_ID = 0, MU_ID = 1, CALENDAR_ID = 2, PRESPEC_ID = 3, INTERV_ID = 4, RAMPS_ID = 5, USERDEF_ID = 6, FCOEFF_ID = 7;
+    private static final int MEAN_ID = 0, CALENDAR_ID = 2, PRESPEC_ID = 3, INTERV_ID = 4, RAMPS_ID = 5, USERDEF_ID = 6, FCOEFF_ID = 7;
 
     @Messages({
         "regressionSpecUI.meanDesc.desc=[imean] Mean correction"
@@ -224,7 +203,7 @@ public class RegressionSpecUI extends BaseRegArimaSpecUI {
             return null;
         }
         try {
-            PropertyDescriptor desc = new PropertyDescriptor("Mean", this.getClass());
+            PropertyDescriptor desc = new PropertyDescriptor("Mean", this.getClass(), "getMean", null);
             EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, MEAN_ID);
             edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
             desc.setShortDescription(Bundle.regressionSpecUI_meanDesc_desc());
@@ -235,24 +214,6 @@ public class RegressionSpecUI extends BaseRegArimaSpecUI {
         }
     }
 
-    @Messages({
-        "regressionSpecUI.muDesc.desc=Mean coefficient"
-    })
-    private EnhancedPropertyDescriptor muDesc() {
-        if (core().isUsingAutoModel() || !isMean()) {
-            return null;
-        }
-        try {
-            PropertyDescriptor desc = new PropertyDescriptor("mu", this.getClass());
-            EnhancedPropertyDescriptor edesc = new EnhancedPropertyDescriptor(desc, MU_ID);
-            edesc.setRefreshMode(EnhancedPropertyDescriptor.Refresh.All);
-            desc.setShortDescription(Bundle.regressionSpecUI_muDesc_desc());
-            edesc.setReadOnly(isRo() || !isTransformationDefined());
-            return edesc;
-        } catch (IntrospectionException ex) {
-            return null;
-        }
-    }
 
     @Messages({
         "regressionSpecUI.prespecDesc.name=Pre-specified outliers",
