@@ -142,7 +142,7 @@ public abstract class SdmxAutoCompletion {
                     .builder(this::load)
                     .behavior(SYNC)
                     .postProcessor(this::filterAndSort)
-                    .valueToString(SdmxWebSource::getName)
+                    .valueToString(SdmxWebSource::getId)
                     .build();
         }
 
@@ -151,7 +151,7 @@ public abstract class SdmxAutoCompletion {
             return new CustomListCellRenderer<SdmxWebSource>() {
                 @Override
                 protected String getValueAsString(SdmxWebSource value) {
-                    return value.getName() + ": " + manager.getLanguages().select(value.getDescriptions());
+                    return value.getId() + ": " + manager.getLanguages().select(value.getNames());
                 }
 
                 @Override
@@ -177,8 +177,8 @@ public abstract class SdmxAutoCompletion {
         private Predicate<SdmxWebSource> getFilter(String term) {
             Predicate<String> filter = ExtAutoCompletionSource.basicFilter(term);
             LanguagePriorityList langs = manager.getLanguages();
-            return value -> filter.test(langs.select(value.getDescriptions()))
-                    || filter.test(value.getName())
+            return value -> filter.test(langs.select(value.getNames()))
+                    || filter.test(value.getId())
                     || value.getAliases().stream().anyMatch(filter);
         }
     }
@@ -262,7 +262,7 @@ public abstract class SdmxAutoCompletion {
 
         @Override
         public ListCellRenderer getRenderer() {
-            return CustomListCellRenderer.of(Dimension::getId, Dimension::getLabel);
+            return CustomListCellRenderer.of(Dimension::getId, Dimension::getName);
         }
 
         private List<Dimension> load(String term) throws Exception {
@@ -278,7 +278,7 @@ public abstract class SdmxAutoCompletion {
         private List<Dimension> filterAndSort(List<Dimension> values, String term) {
             Predicate<String> filter = ExtAutoCompletionSource.basicFilter(term);
             return values.stream()
-                    .filter(o -> filter.test(o.getId()) || filter.test(o.getLabel()) || filter.test(String.valueOf(o.getPosition())))
+                    .filter(o -> filter.test(o.getId()) || filter.test(o.getName()) || filter.test(String.valueOf(o.getPosition())))
                     .sorted(Comparator.comparing(Dimension::getId))
                     .collect(toList());
         }
@@ -316,7 +316,7 @@ public abstract class SdmxAutoCompletion {
 
         @Override
         public ListCellRenderer getRenderer() {
-            return CustomListCellRenderer.of(Attribute::getId, Attribute::getLabel);
+            return CustomListCellRenderer.of(Attribute::getId, Attribute::getName);
         }
 
         private List<Attribute> load(String term) throws Exception {
@@ -332,7 +332,7 @@ public abstract class SdmxAutoCompletion {
         private List<Attribute> filterAndSort(List<Attribute> values, String term) {
             Predicate<String> filter = ExtAutoCompletionSource.basicFilter(term);
             return values.stream()
-                    .filter(o -> filter.test(o.getId()) || filter.test(o.getLabel()))
+                    .filter(o -> filter.test(o.getId()) || filter.test(o.getName()))
                     .sorted(Comparator.comparing(Attribute::getId))
                     .collect(toList());
         }

@@ -203,7 +203,7 @@ public final class JSdmxWebSourcePanel extends JComponent {
             public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
                 JLabel result = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
                 if (value instanceof SdmxWebSource source) {
-                    result.setText(source.getName());
+                    result.setText(source.getId());
                     result.setIcon(SdmxAutoCompletion.getFavicon(source.getWebsite(), table::repaint));
                 }
                 return result;
@@ -253,7 +253,7 @@ public final class JSdmxWebSourcePanel extends JComponent {
 
         @OnEDT
         public MonitorReport get(SdmxWebSource url, Runnable onUpdate) {
-            return url != null ? cache.computeIfAbsent(url.getName(), host -> request(url, onUpdate)) : fallback;
+            return url != null ? cache.computeIfAbsent(url.getId(), host -> request(url, onUpdate)) : fallback;
         }
 
         @OnEDT
@@ -272,7 +272,7 @@ public final class JSdmxWebSourcePanel extends JComponent {
             MonitorReport favicon = load(url);
             if (favicon != null) {
                 SwingUtilities.invokeLater(() -> {
-                    cache.put(url.getName(), favicon);
+                    cache.put(url.getId(), favicon);
                     onUpdate.run();
                 });
             }
@@ -280,11 +280,11 @@ public final class JSdmxWebSourcePanel extends JComponent {
 
         @OnAnyThread
         private MonitorReport load(SdmxWebSource url) {
-            report("Loading favicon for " + url.getName());
+            report("Loading favicon for " + url.getId());
             try {
                 return sdmxManager.getMonitorReport(url);
             } catch (IOException ex) {
-                report("Cannot retrieve favicon for " + url.getName());
+                report("Cannot retrieve favicon for " + url.getId());
             }
             return null;
         }
@@ -322,7 +322,7 @@ public final class JSdmxWebSourcePanel extends JComponent {
                 case 0:
                     return row;
                 case 1:
-                    return languages.select(row.getDescriptions());
+                    return languages.select(row.getNames());
                 case 2:
                     return row.getWebsite();
                 case 3:
@@ -343,7 +343,7 @@ public final class JSdmxWebSourcePanel extends JComponent {
             SdmxWebSource source = ((WebSourceModel) c.table.getModel()).getValues().get(idx);
             TsManager.get().getProvider(SdmxWebProvider.class).ifPresent(provider -> {
                 SdmxWebBean bean = provider.newBean();
-                bean.setSource(source.getName());
+                bean.setSource(source.getId());
                 if (DataSourceManager.get().getBeanEditor(provider.getSource(), "Open data source").editBean(bean, Exceptions::printStackTrace)) {
                     provider.open(provider.encodeBean(bean));
                 }
