@@ -128,20 +128,25 @@
     </build>
 
     <profiles>
+        <!-- Release binaries on GitHub -->
+        <!-- Note that all plugins are run on 'install' phase -->
         <profile>
             <id>full-release</id>
             <properties>
                 <project.x.src>${project.build.directory}/${project.build.finalName}</project.x.src>
                 <project.x.dst>jdemetra-${project.version}</project.x.dst>
+                <java.bundled.version>jdk-17.0.7+7</java.bundled.version>
+                <jdkname>${java.bundled.version}-jre</jdkname>
             </properties>
             <build>
                 <plugins>
-                    <!-- Generates setups -->
+                    <!-- Generate setups -->
                     <plugin>
                         <groupId>org.apache.netbeans.utilities</groupId>
                         <artifactId>nbm-maven-plugin</artifactId>
                         <executions>
                             <execution>
+                                <id>generate-setup</id>
                                 <phase>install</phase>
                                 <goals>
                                     <goal>build-installers</goal>
@@ -157,11 +162,106 @@
                         <executions>
                             <execution>
                                 <id>extract-changelog</id>
+                                <phase>install</phase>
                                 <goals>
                                     <goal>extract</goal>
                                 </goals>
                                 <configuration>
                                     <inputFile>${project.parent.basedir}/CHANGELOG.md</inputFile>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <!-- Gather binaries and JRE -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>unpack-binaries</id>
+                                <phase>install</phase>
+                                <goals>
+                                    <goal>unpack</goal>
+                                </goals>
+                                <configuration>
+                                    <artifactItems>
+                                        <artifactItem>
+                                            <groupId>eu.europa.ec.joinup.sat</groupId>
+                                            <artifactId>nbdemetra-app</artifactId>
+                                            <type>zip</type>
+                                        </artifactItem>
+                                    </artifactItems>
+                                    <outputDirectory>${project.build.directory}/windows</outputDirectory>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.jreleaser</groupId>
+                        <artifactId>jdks-maven-plugin</artifactId>
+                        <version>1.6.0</version>
+                        <executions>
+                            <execution>
+                                <id>download-windows-jre</id>
+                                <phase>install</phase>
+                                <goals>
+                                    <goal>setup-disco</goal>
+                                </goals>
+                                <configuration>
+                                    <pkgs>
+                                        <pkg>
+                                            <name>temurin17</name>
+                                            <distribution>temurin</distribution>
+                                            <platform>windows-x86_64</platform>
+                                            <version>${java.bundled.version}</version>
+                                            <packageType>jre</packageType>
+                                        </pkg>
+                                    </pkgs>
+                                    <unpack>true</unpack>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <!-- Create binaries bundled with JRE -->
+                    <plugin>
+                        <groupId>io.github.floverfelt</groupId>
+                        <artifactId>find-and-replace-maven-plugin</artifactId>
+                        <version>1.1.0</version>
+                        <executions>
+                            <execution>
+                                <id>configure-desktop-bin</id>
+                                <phase>install</phase>
+                                <goals>
+                                    <goal>find-and-replace</goal>
+                                </goals>
+                                <configuration>
+                                    <replacementType>file-contents</replacementType>
+                                    <baseDir>target/windows/nbdemetra/etc/</baseDir>
+                                    <fileMask>nbdemetra.conf</fileMask>
+                                    <encoding>UTF-8</encoding>
+                                    <findRegex>#jdkhome="\/path\/to\/jdk"</findRegex>
+                                    <replaceValue>jdkhome=${jdkname}</replaceValue>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>pack-desktop-bin</id>
+                                <phase>install</phase>
+                                <goals>
+                                    <goal>single</goal>
+                                </goals>
+                                <configuration>
+                                    <descriptors>
+                                        <descriptor>src/assembly/desktop-windows-assembly.xml</descriptor>
+                                    </descriptors>
+                                    <attach>false</attach>
                                 </configuration>
                             </execution>
                         </executions>
@@ -174,67 +274,74 @@
                         <version>1.5.1</version>
                         <executions>
                             <execution>
+                                <id>release-assets</id>
                                 <phase>install</phase>
                                 <goals>
                                     <goal>full-release</goal>
                                 </goals>
+                                <configuration>
+                                    <jreleaser>
+                                        <release>
+                                            <github>
+                                                <skipTag>true</skipTag>
+                                                <changelog>
+                                                    <external>${project.build.directory}/CHANGELOG.md</external>
+                                                </changelog>
+                                                <!-- Fix default value -->
+                                                <branch>master</branch>
+                                            </github>
+                                        </release>
+                                        <signing>
+                                            <active>ALWAYS</active>
+                                            <!-- Fix default value -->
+                                            <armored>true</armored>
+                                        </signing>
+                                        <distributions>
+                                            <!-- Name is here ! -->
+                                            <jdemetra>
+                                                <type>JAVA_BINARY</type>
+                                                <artifacts>
+                                                    <artifact>
+                                                        <path>${project.x.src}.zip</path>
+                                                        <transform>${project.x.dst}-bin.zip</transform>
+                                                    </artifact>
+                                                    <artifact>
+                                                        <path>${project.x.src}-bin-windows.zip</path>
+                                                        <transform>${project.x.dst}-bin-windows.zip</transform>
+                                                        <platform>windows</platform>
+                                                    </artifact>
+                                                </artifacts>
+                                            </jdemetra>
+                                            <jdemetra-setup>
+                                                <type>JAVA_BINARY</type>
+                                                <artifacts>
+                                                    <artifact>
+                                                        <path>${project.x.src}-linux.sh</path>
+                                                        <transform>${project.x.dst}-setup-linux.sh</transform>
+                                                        <platform>linux</platform>
+                                                    </artifact>
+                                                    <artifact>
+                                                        <path>${project.x.src}-macosx.tgz</path>
+                                                        <transform>${project.x.dst}-setup-macosx.tgz</transform>
+                                                        <platform>osx</platform>
+                                                    </artifact>
+                                                    <artifact>
+                                                        <path>${project.x.src}-solaris.sh</path>
+                                                        <transform>${project.x.dst}-setup-solaris.sh</transform>
+                                                        <platform>sunos</platform>
+                                                    </artifact>
+                                                    <artifact>
+                                                        <path>${project.x.src}-windows.exe</path>
+                                                        <transform>${project.x.dst}-setup-windows.exe</transform>
+                                                        <platform>windows</platform>
+                                                    </artifact>
+                                                </artifacts>
+                                            </jdemetra-setup>
+                                        </distributions>
+                                    </jreleaser>
+                                </configuration>
                             </execution>
                         </executions>
-                        <configuration>
-                            <jreleaser>
-                                <release>
-                                    <github>
-                                        <skipTag>true</skipTag>
-                                        <draft>true</draft>
-                                        <!-- Fix default value -->
-                                        <branch>master</branch>
-                                        <changelog>
-                                            <external>${project.build.directory}/CHANGELOG.md</external>
-                                        </changelog>
-                                    </github>
-                                </release>
-                                <checksum>
-                                    <individual>true</individual>
-                                </checksum>
-                                <signing>
-                                    <active>ALWAYS</active>
-                                    <!-- Fix default value -->
-                                    <armored>true</armored>
-                                </signing>
-                                <distributions>
-                                    <!-- Name is here ! -->
-                                    <jdemetra>
-                                        <type>JAVA_BINARY</type>
-                                        <artifacts>
-                                            <artifact>
-                                                <path>${project.x.src}.zip</path>
-                                                <transform>${project.x.dst}-bin.zip</transform>
-                                            </artifact>
-                                            <artifact>
-                                                <path>${project.x.src}-linux.sh</path>
-                                                <transform>${project.x.dst}-setup-linux.sh</transform>
-                                                <platform>linux</platform>
-                                            </artifact>
-                                            <artifact>
-                                                <path>${project.x.src}-macosx.tgz</path>
-                                                <transform>${project.x.dst}-setup-macosx.tgz</transform>
-                                                <platform>osx</platform>
-                                            </artifact>
-                                            <artifact>
-                                                <path>${project.x.src}-solaris.sh</path>
-                                                <transform>${project.x.dst}-setup-solaris.sh</transform>
-                                                <platform>sunos</platform>
-                                            </artifact>
-                                            <artifact>
-                                                <path>${project.x.src}-windows.exe</path>
-                                                <transform>${project.x.dst}-setup-windows.exe</transform>
-                                                <platform>windows</platform>
-                                            </artifact>
-                                        </artifacts>
-                                    </jdemetra>
-                                </distributions>
-                            </jreleaser>
-                        </configuration>
                     </plugin>
                 </plugins>
             </build>
