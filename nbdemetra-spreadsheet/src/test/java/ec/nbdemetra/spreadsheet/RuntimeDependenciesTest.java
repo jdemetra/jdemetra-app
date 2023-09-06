@@ -24,7 +24,7 @@ public class RuntimeDependenciesTest {
                 .satisfies(RuntimeDependenciesTest::checkSlf4j)
                 .satisfies(RuntimeDependenciesTest::checkLog4j)
                 .satisfies(RuntimeDependenciesTest::checkGuava)
-                .hasSize(24);
+                .hasSize(18);
     }
 
     private static void checkGuava(List<? extends NbmMavenClassPath.GAV> coordinates) {
@@ -48,12 +48,8 @@ public class RuntimeDependenciesTest {
                 .extracting(NbmMavenClassPath.GAV::getArtifactId)
                 .containsExactlyInAnyOrder(
                         "spreadsheet-api",
-                        "spreadsheet-html",
-                        "spreadsheet-od",
-                        "spreadsheet-poi",
-                        "spreadsheet-util",
-                        "spreadsheet-xl",
-                        "spreadsheet-xmlss");
+                        "spreadsheet-standalone",
+                        "spreadsheet-poi");
     }
 
     private static void checkJavaIoUtil(List<? extends NbmMavenClassPath.GAV> coordinates) {
