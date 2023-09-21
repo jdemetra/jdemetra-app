@@ -28,6 +28,9 @@ jobs:
           java-version: ${{ matrix.java }}
           cache: 'maven'
 
+      - name: Pre-download dependencies with Maven
+        run: mvn -U -B -ntp dependency:go-offline
+
       - name: Build and (headless) test with Maven
         uses: smithki/xvfb-action@v1.1.2
         with:
