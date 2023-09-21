@@ -24,7 +24,7 @@ public class RuntimeDependenciesTest {
                 .satisfies(RuntimeDependenciesTest::checkJavaIoUtil)
                 .satisfies(RuntimeDependenciesTest::checkNoSlf4j)
                 .satisfies(RuntimeDependenciesTest::checkNoGuava)
-                .hasSize(13);
+                .hasSize(14);
     }
 
     private static void checkNoGuava(List<? extends NbmMavenClassPath.GAV> coordinates) {
