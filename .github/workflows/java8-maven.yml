@@ -29,7 +29,7 @@ jobs:
           cache: 'maven'
 
       - name: Pre-download dependencies with Maven
-        run: mvn -U -B -ntp dependency:go-offline
+        run: mvn -U -B -ntp dependency:go-offline || true
 
       - name: Build and (headless) test with Maven
         uses: smithki/xvfb-action@v1.1.2
