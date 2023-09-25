@@ -71,7 +71,7 @@
             <dependency>
                 <groupId>com.github.nbbrd.java-io-util</groupId>
                 <artifactId>java-io-bom</artifactId>
-                <version>0.0.25</version>
+                <version>0.0.26</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
