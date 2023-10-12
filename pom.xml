@@ -486,11 +486,8 @@
                                             <version>3.6.0</version>
                                         </requireMavenVersion>
                                         <requireNoRepositories>
+                                            <allowedRepositories>central</allowedRepositories>
                                             <allowSnapshotRepositories>true</allowSnapshotRepositories>
-                                            <allowedRepositories>
-                                                <!-- required by JD+ SNAPSHOTS -->
-                                                <allowedRepository>ossrh-snapshots</allowedRepository>
-                                            </allowedRepositories>
                                         </requireNoRepositories>
                                         <requirePluginVersions/>
                                         <requireReleaseDeps>
@@ -714,10 +711,22 @@
         </profile>
     </profiles>
 
+    <!-- Custom repositories: order matters! -->
+    <!-- Maven Central is enforced at top to prevent dependabot to use snapshots as releases -->
     <repositories>
         <repository>
-            <id>ossrh-snapshots</id>
+            <id>central</id>
+            <url>https://repo.maven.apache.org/maven2</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>jdemetra-snapshots</id>
             <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
             <snapshots>
                 <enabled>true</enabled>
             </snapshots>
