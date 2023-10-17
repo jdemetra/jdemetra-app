@@ -11,7 +11,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        java: [ 20 ]
+        java: [ 21 ]
         os: [ ubuntu-latest ]
 
     name: JDK${{ matrix.java }} on ${{ matrix.os }}
