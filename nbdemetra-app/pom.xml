@@ -19,7 +19,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <netbeans.run.params.ide/>
         <netbeans.run.params>${netbeans.run.params.ide}</netbeans.run.params>
-        <java.bundled.version>jdk-17.0.8.1+1</java.bundled.version>
+        <java.bundled.version>jdk-17.0.9+9</java.bundled.version>
     </properties>
 
     <dependencies>
