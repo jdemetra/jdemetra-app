@@ -6,7 +6,7 @@
 
 **JDemetra+ is a new tool for seasonal adjustment (SA)** developed by the National Bank of Belgium (NBB) in cooperation with the Deutsche Bundesbank and Eurostat in accordance with the Guidelines of the European Statistical System (ESS).
 
-JDemetra+ implements the concepts and algorithms used in the two leading SA methods: [TRAMO/SEATS+](http://www.bde.es/bde/en/secciones/servicios/Profesionales/Programas_estadi/Programas_estad_d9fa7f3710fd821.html) and [X-12ARIMA/X-13ARIMA-SEATS](https://www.census.gov/srd/www/x13as/). Those methods have been re-engineered using an object-oriented approach that enables easier handling, extensions and modifications.
+JDemetra+ implements the concepts and algorithms used in the two leading SA methods: [TRAMO/SEATS+](http://www.bde.es/bde/en/secciones/servicios/Profesionales/Programas_estadi/Programas_estad_d9fa7f3710fd821.html) and [X-12ARIMA/X-13ARIMA-SEATS](https://www.census.gov/data/software/x13as.html). Those methods have been re-engineered using an object-oriented approach that enables easier handling, extensions and modifications.
 
 The program TRAMO-SEATS+ was developed by Gianluca Caporello and Agustin Maravall -with programming support from Domingo Perez and Roberto Lopez- at the Bank of Spain. It is based on the program TRAMO-SEATS, previously developed by Victor Gomez and Agustin Maravall.
 The program X-13ARIMA-SEATS is a produced, distributed, and maintained by the US-Census Bureau
