@@ -140,13 +140,13 @@ This the release of JDemetra+ v2.2.2.
 
 
 [Unreleased]: https://github.com/jdemetra/jdemetra-app/compare/v2.2.4...HEAD
-[2.2.4]: https://github.com/jdemetra/jdemetra-app/compare/v2.2.3...2.2.4
-[2.2.3]: https://github.com/jdemetra/jdemetra-app/compare/v2.2.2...2.2.3
-[2.2.2]: https://github.com/jdemetra/jdemetra-app/compare/v2.2.1...2.2.2
-[2.2.1]: https://github.com/jdemetra/jdemetra-app/compare/v2.2.0...2.2.1
-[2.2.0]: https://github.com/jdemetra/jdemetra-app/compare/v2.1.0...2.2.0
-[2.1.0]: https://github.com/jdemetra/jdemetra-app/compare/v2.0.0...2.1.0
-[2.0.0]: https://github.com/jdemetra/jdemetra-app/compare/v1.5.4...2.0.0
+[2.2.4]: https://github.com/jdemetra/jdemetra-app/compare/v2.2.3...v2.2.4
+[2.2.3]: https://github.com/jdemetra/jdemetra-app/compare/v2.2.2...v2.2.3
+[2.2.2]: https://github.com/jdemetra/jdemetra-app/compare/v2.2.1...v2.2.2
+[2.2.1]: https://github.com/jdemetra/jdemetra-app/compare/v2.2.0...v2.2.1
+[2.2.0]: https://github.com/jdemetra/jdemetra-app/compare/v2.1.0...v2.2.0
+[2.1.0]: https://github.com/jdemetra/jdemetra-app/compare/v2.0.0...v2.1.0
+[2.0.0]: https://github.com/jdemetra/jdemetra-app/compare/v1.5.4...v2.0.0
 [1.5.4]: https://github.com/jdemetra/jdemetra-app/releases/tag/v1.5.4
 
 [STAT]: https://img.shields.io/badge/-STAT-068C09
