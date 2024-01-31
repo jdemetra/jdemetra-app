@@ -43,7 +43,7 @@ jobs:
 
       - name: Create Pull Request
         id: cpr
-        uses: peter-evans/create-pull-request@v5
+        uses: peter-evans/create-pull-request@v6
         with:
           commit-message: Bump ${{ env.DEP_PROP }} to ${{ steps.lr.outputs.release }}
           title: Bump ${{ env.DEP_PROP }} to ${{ steps.lr.outputs.release }}
