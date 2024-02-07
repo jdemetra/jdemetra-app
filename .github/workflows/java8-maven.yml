@@ -8,7 +8,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        java: [ 8, 17 ]
+        java: [ 8, 21 ]
         os: [ ubuntu-latest, macOS-latest, windows-latest ]
 
     name: JDK${{ matrix.java }} on ${{ matrix.os }}
@@ -58,7 +58,7 @@ jobs:
     if: startsWith(github.repository, 'jdemetra/') && startsWith(github.ref, 'refs/heads/develop')
     strategy:
       matrix:
-        java: [ 17 ]
+        java: [ 21 ]
         os: [ ubuntu-latest ]
 
     name: Snapshot on develop
@@ -108,7 +108,7 @@ jobs:
     if: startsWith(github.repository, 'jdemetra/') && startsWith(github.ref, 'refs/tags/v')
     strategy:
       matrix:
-        java: [ 17 ]
+        java: [ 21 ]
         os: [ ubuntu-latest ]
 
     name: Release on tag
