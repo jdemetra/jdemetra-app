@@ -350,11 +350,6 @@
                                                         <platform>osx</platform>
                                                     </artifact>
                                                     <artifact>
-                                                        <path>${project.x.src}-solaris.sh</path>
-                                                        <transform>${project.x.dst}-setup-solaris.sh</transform>
-                                                        <platform>sunos</platform>
-                                                    </artifact>
-                                                    <artifact>
                                                         <path>${project.x.src}-windows.exe</path>
                                                         <transform>${project.x.dst}-setup-windows.exe</transform>
                                                         <platform>windows</platform>

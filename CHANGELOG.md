@@ -11,6 +11,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - ![OTHER] Add Windows binaries to release
 
+### Changed
+
+- ![OTHER] Remove Solaris setup
+
 ## [2.2.4] - 2023-01-31
 
 This the release of JDemetra+ v2.2.4.  
