@@ -12,7 +12,7 @@ jobs:
 
     env:
       DEP_PROP: java.bundled.version
-      DEP_REPO: adoptium/temurin17-binaries
+      DEP_REPO: adoptium/temurin21-binaries
 
     steps:
       - name: Checkout source code
@@ -25,7 +25,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: 17
+          java-version: 21
           cache: 'maven'
 
       - name: Get latest release version

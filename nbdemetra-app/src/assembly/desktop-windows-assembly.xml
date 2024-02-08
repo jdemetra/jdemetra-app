@@ -12,7 +12,7 @@
             <outputDirectory>nbdemetra</outputDirectory>
         </fileSet>
         <fileSet>
-            <directory>target/jdks/temurin17/${jdkname}</directory>
+            <directory>target/jdks/temurin/${jdkname}</directory>
             <outputDirectory>nbdemetra/${jdkname}</outputDirectory>
         </fileSet>
     </fileSets>

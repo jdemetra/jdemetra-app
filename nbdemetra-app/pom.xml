@@ -19,7 +19,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <netbeans.run.params.ide/>
         <netbeans.run.params>${netbeans.run.params.ide}</netbeans.run.params>
-        <java.bundled.version>jdk-17.0.9+9</java.bundled.version>
+        <java.bundled.version>jdk-21.0.2+13</java.bundled.version>
     </properties>
 
     <dependencies>
@@ -211,7 +211,7 @@
                                 <configuration>
                                     <pkgs>
                                         <pkg>
-                                            <name>temurin17</name>
+                                            <name>temurin</name>
                                             <distribution>temurin</distribution>
                                             <platform>windows-x86_64</platform>
                                             <version>${java.bundled.version}</version>
@@ -239,7 +239,7 @@
                                         <requireFilesExist>
                                             <files>
                                                 <file>${project.build.directory}/windows/nbdemetra</file>
-                                                <file>${project.build.directory}/jdks/temurin17/${jdkname}</file>
+                                                <file>${project.build.directory}/jdks/temurin/${jdkname}</file>
                                             </files>
                                         </requireFilesExist>
                                     </rules>
