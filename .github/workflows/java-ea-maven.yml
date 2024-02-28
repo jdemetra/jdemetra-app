@@ -34,4 +34,4 @@ jobs:
       - name: Build and (headless) test with Maven
         uses: smithki/xvfb-action@v1.1.2
         with:
-          run: mvn -U -B -ntp package
+          run: mvn -U -B -ntp verify
