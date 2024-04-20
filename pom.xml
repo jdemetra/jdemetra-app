@@ -369,7 +369,7 @@
                 <plugin>
                     <groupId>com.github.nbbrd.heylogs</groupId>
                     <artifactId>heylogs-maven-plugin</artifactId>
-                    <version>0.8.0</version>
+                    <version>0.8.1</version>
                 </plugin>
                 <plugin>
                     <groupId>com.amashchenko.maven.plugin</groupId>
