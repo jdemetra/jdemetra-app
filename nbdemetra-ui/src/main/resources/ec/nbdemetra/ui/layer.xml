@@ -37,9 +37,7 @@
             <file name="LibrariesCustomizerAction.shadow_hidden"/>
         </folder>
         <folder name="View">
-            <file name="Separator1.instance_hidden"/>
             <file name="org-netbeans-core-multiview-EditorsAction.instance_hidden"/>
-            <file name="org-netbeans-core-actions-LogAction.shadow_hidden"/>
         </folder>
         <folder name="Window">
             <file name="org-netbeans-core-ide-ServicesTabAction.shadow_hidden"/>

@@ -9,7 +9,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 
-- ![OTHER] Add Windows binaries to release
+- ![OTHER] Add Windows binaries to release [#885](https://github.com/jdemetra/jdemetra-app/issues/885)
+
+### Fixed
+
+- ![IO] Fix parsing of .ods files [#881](https://github.com/jdemetra/jdemetra-app/issues/881)
+- ![UI] Fix missing log menu item [#889](https://github.com/jdemetra/jdemetra-app/issues/889)
 
 ### Changed
 
