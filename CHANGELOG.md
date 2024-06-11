@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 
+- ![UI] Add link to online help documentation [#891](https://github.com/jdemetra/jdemetra-app/issues/891)
 - ![OTHER] Add Windows binaries to release [#885](https://github.com/jdemetra/jdemetra-app/issues/885)
 
 ### Fixed
