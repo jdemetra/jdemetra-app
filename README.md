@@ -1,6 +1,7 @@
 # Econometric software for seasonal adjustment and other time series methods (JDemetra+)
 
 [![Download](https://img.shields.io/github/release/jdemetra/jdemetra-app.svg)](https://github.com/jdemetra/jdemetra-app/releases/latest)
+[![Changes](https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2Fjdemetra%2Fjdemetra-app%2Fbadges%2Funreleased-changes.json)](https://github.com/jdemetra/jdemetra-app/blob/develop/CHANGELOG.md)
 ![GitHub All Releases](https://img.shields.io/github/downloads/jdemetra/jdemetra-app/total)
 ![GitHub Releases](https://img.shields.io/github/downloads/jdemetra/jdemetra-app/latest/total)
 
