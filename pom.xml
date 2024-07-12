@@ -469,7 +469,8 @@
                             <goal>manifest</goal>
                         </goals>
                         <configuration>
-                            <targetManifestFile>${project.build.testOutputDirectory}/runtime-dependencies.mf</targetManifestFile>
+                            <targetManifestFile>${project.build.testOutputDirectory}/runtime-dependencies.mf
+                            </targetManifestFile>
                             <verifyRuntime>skip</verifyRuntime>
                         </configuration>
                     </execution>
@@ -568,7 +569,7 @@
                                         </checkMavenCentral>
                                         <!-- extra-enforcer-rules -->
                                         <banCircularDependencies/>
-<!--                                        <banDuplicateClasses/>-->
+                                        <!--                                        <banDuplicateClasses/>-->
                                         <enforceBytecodeVersion>
                                             <maxJdkVersion>8</maxJdkVersion>
                                             <ignoredScopes>
@@ -737,6 +738,7 @@
                             <serverId>ossrh</serverId>
                             <nexusUrl>https://oss.sonatype.org/</nexusUrl>
                             <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                            <stagingProgressTimeoutMinutes>10</stagingProgressTimeoutMinutes>
                         </configuration>
                     </plugin>
                 </plugins>
@@ -762,6 +764,7 @@
                             <serverId>ossrh</serverId>
                             <nexusUrl>https://oss.sonatype.org/</nexusUrl>
                             <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                            <stagingProgressTimeoutMinutes>10</stagingProgressTimeoutMinutes>
                         </configuration>
                     </plugin>
                 </plugins>
