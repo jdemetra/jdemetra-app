@@ -4,22 +4,11 @@ updates:
     target-branch: "develop"
     directory: "/"
     schedule:
-      interval: daily
-      time: "04:00"
+      interval: "weekly"
+      day: "saturday"
     open-pull-requests-limit: 10
   - package-ecosystem: "github-actions"
     target-branch: "develop"
-    directory: "/"
-    schedule:
-      interval: "daily"
-  - package-ecosystem: maven
-    target-branch: "v3.0.0"
-    directory: "/"
-    schedule:
-      interval: daily
-    open-pull-requests-limit: 10
-  - package-ecosystem: "github-actions"
-    target-branch: "v3.0.0"
     directory: "/"
     schedule:
       interval: "daily"

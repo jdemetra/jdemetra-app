@@ -11,27 +11,27 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        java: [ '-ea' ]
-        os: [ ubuntu-latest ]
+        java: [ 21 ]
+        os: [ ubuntu-latest, macos-latest ]
 
     name: JDK${{ matrix.java }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
 
     steps:
       - name: Checkout source code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: true
           fetch-depth: 0
 
       - name: Setup Java
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: ${{ matrix.java }}
           cache: 'maven'
 
       - name: Build and (headless) test with Maven
-        uses: GabrielBB/xvfb-action@v1
+        uses: smithki/xvfb-action@v1.1.2
         with:
-          run: mvn -U -B -ntp package
+          run: mvn -U -B -ntp verify

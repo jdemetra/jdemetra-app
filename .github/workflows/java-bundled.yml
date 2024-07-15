@@ -1,0 +1,59 @@
+name: Update java.bundled
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * SAT'
+
+jobs:
+  update-mvn-property:
+    runs-on: ubuntu-latest
+    name: Update Maven property using the latest release version (tag) of a GitHub repository
+
+    env:
+      DEP_PROP: java.bundled.version
+      DEP_REPO: adoptium/temurin21-binaries
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+          fetch-depth: 0
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: 21
+          cache: 'maven'
+
+      - name: Get latest release version
+        id: lr
+        uses: pozetroninc/github-action-get-latest-release@master
+        with:
+          repository: ${{ env.DEP_REPO }}
+
+      - name: Apply latest release version on Maven property
+        run: >
+          mvn -B -ntp versions:set-property 
+          -Dproperty=${{ env.DEP_PROP }}
+          -DnewVersion=${{ steps.lr.outputs.release }} 
+          -DgenerateBackupPoms=false
+
+      - name: Create Pull Request
+        id: cpr
+        uses: peter-evans/create-pull-request@v6
+        with:
+          commit-message: Bump ${{ env.DEP_PROP }} to ${{ steps.lr.outputs.release }}
+          title: Bump ${{ env.DEP_PROP }} to ${{ steps.lr.outputs.release }}
+          body: ${{ steps.lr.outputs.description }}
+          delete-branch: true
+          branch: PR/maven/${{ github.ref_name }}/${{ env.DEP_PROP }}-${{ steps.lr.outputs.release }}
+          labels: dependencies,java
+
+      - name: Create summary
+        if: ${{ steps.cpr.outputs.pull-request-number }}
+        run: |
+          echo "Pull Request Number - ${{ steps.cpr.outputs.pull-request-number }}" >> $GITHUB_STEP_SUMMARY
+          echo "Pull Request URL - ${{ steps.cpr.outputs.pull-request-url }}" >> $GITHUB_STEP_SUMMARY

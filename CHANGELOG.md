@@ -7,6 +7,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+## [2.2.5] - 2024-07-15
+
+### Added
+
+- ![UI] Add link to online help documentation [#891](https://github.com/jdemetra/jdemetra-app/issues/891)
+- ![OTHER] Add Windows binaries to release [#885](https://github.com/jdemetra/jdemetra-app/issues/885)
+
+### Fixed
+
+- ![IO] Fix parsing of .ods files [#881](https://github.com/jdemetra/jdemetra-app/issues/881)
+- ![UI] Fix missing log menu item [#889](https://github.com/jdemetra/jdemetra-app/issues/889)
+
+### Changed
+
+- ![OTHER] Remove Solaris setup
+
 ## [2.2.4] - 2023-01-31
 
 This the release of JDemetra+ v2.2.4.  
@@ -135,14 +151,15 @@ This the release of JDemetra+ v2.2.2.
 ## [1.5.4] - 2014-12-18
 
 
-[Unreleased]: https://github.com/jdemetra/jdemetra-app/compare/v2.2.4...HEAD
-[2.2.4]: https://github.com/jdemetra/jdemetra-app/compare/v2.2.3...2.2.4
-[2.2.3]: https://github.com/jdemetra/jdemetra-app/compare/v2.2.2...2.2.3
-[2.2.2]: https://github.com/jdemetra/jdemetra-app/compare/v2.2.1...2.2.2
-[2.2.1]: https://github.com/jdemetra/jdemetra-app/compare/v2.2.0...2.2.1
-[2.2.0]: https://github.com/jdemetra/jdemetra-app/compare/v2.1.0...2.2.0
-[2.1.0]: https://github.com/jdemetra/jdemetra-app/compare/v2.0.0...2.1.0
-[2.0.0]: https://github.com/jdemetra/jdemetra-app/compare/v1.5.4...2.0.0
+[Unreleased]: https://github.com/jdemetra/jdemetra-app/compare/v2.2.5...HEAD
+[2.2.5]: https://github.com/jdemetra/jdemetra-app/compare/v2.2.4...v2.2.5
+[2.2.4]: https://github.com/jdemetra/jdemetra-app/compare/v2.2.3...v2.2.4
+[2.2.3]: https://github.com/jdemetra/jdemetra-app/compare/v2.2.2...v2.2.3
+[2.2.2]: https://github.com/jdemetra/jdemetra-app/compare/v2.2.1...v2.2.2
+[2.2.1]: https://github.com/jdemetra/jdemetra-app/compare/v2.2.0...v2.2.1
+[2.2.0]: https://github.com/jdemetra/jdemetra-app/compare/v2.1.0...v2.2.0
+[2.1.0]: https://github.com/jdemetra/jdemetra-app/compare/v2.0.0...v2.1.0
+[2.0.0]: https://github.com/jdemetra/jdemetra-app/compare/v1.5.4...v2.0.0
 [1.5.4]: https://github.com/jdemetra/jdemetra-app/releases/tag/v1.5.4
 
 [STAT]: https://img.shields.io/badge/-STAT-068C09
