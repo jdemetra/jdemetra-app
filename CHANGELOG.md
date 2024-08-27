@@ -9,6 +9,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [2.2.5] - 2024-07-15
 
+This the release of JDemetra+ v2.2.5.  
+[Java SE 17 or later](https://whichjdk.com/) version is required to run it.
+
 ### Added
 
 - ![UI] Add link to online help documentation [#891](https://github.com/jdemetra/jdemetra-app/issues/891)
