@@ -7,10 +7,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Fixed
+
+- ![UI] Fix unreadable Excel files on Java 21 [#791](https://github.com/jdemetra/jdemetra-app/issues/791)
+
 ## [2.2.5] - 2024-07-15
 
 This the release of JDemetra+ v2.2.5.  
-[Java SE 17 or later](https://whichjdk.com/) version is required to run it.
+[Java SE 17](https://whichjdk.com/) version is required to run it.
 
 ### Added
 
