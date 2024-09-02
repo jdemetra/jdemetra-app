@@ -29,7 +29,11 @@ jobs:
           cache: 'maven'
 
       - name: Pre-download dependencies with Maven
-        run: mvn -U -B -ntp dependency:go-offline
+        uses: nick-fields/retry@v3
+        with:
+          command: mvn -U -B -ntp dependency:go-offline
+          max_attempts: 3
+          timeout_minutes: 5
 
       - name: Build and (headless) test with Maven
         uses: smithki/xvfb-action@v1.1.2
@@ -48,16 +52,11 @@ jobs:
 
     steps:
       - name: Merge PR
-        run: |
-          for i in {1..3}; do
-            if gh pr merge --auto --rebase "$PR_URL"; then
-              break
-            fi
-            if [[ $i -eq 3 ]]; then
-              exit 1
-            fi
-            sleep 5
-          done
+        uses: nick-fields/retry@v3
+        with:
+          command: gh pr merge --auto --rebase "$PR_URL"
+          max_attempts: 3
+          timeout_minutes: 5
         env:
           PR_URL: ${{github.event.pull_request.html_url}}
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
