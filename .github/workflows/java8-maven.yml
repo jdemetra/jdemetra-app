@@ -48,7 +48,16 @@ jobs:
 
     steps:
       - name: Merge PR
-        run: gh pr merge --auto --rebase "$PR_URL"
+        run: |
+          for i in {1..3}; do
+            if gh pr merge --auto --rebase "$PR_URL"; then
+              break
+            fi
+            if [[ $i -eq 3 ]]; then
+              exit 1
+            fi
+            sleep 5
+          done
         env:
           PR_URL: ${{github.event.pull_request.html_url}}
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
