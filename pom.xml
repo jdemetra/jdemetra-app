@@ -47,7 +47,7 @@
         <x.github.repo>jdemetra-app</x.github.repo>
 
         <brandingToken>nbdemetra</brandingToken>
-        <netbeans.version>RELEASE220</netbeans.version>
+        <netbeans.version>RELEASE230</netbeans.version>
         <jdemetra.version>${project.version}</jdemetra.version>
     </properties>
 
