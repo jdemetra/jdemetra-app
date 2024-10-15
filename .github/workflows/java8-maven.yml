@@ -35,10 +35,13 @@ jobs:
           max_attempts: 3
           timeout_minutes: 5
 
-      - name: Build and (headless) test with Maven
-        uses: smithki/xvfb-action@v1.1.2
-        with:
-          run: mvn -U -B -ntp verify
+      - name: Build and (headless) test with Maven (Linux)
+        if: ${{ runner.os == 'Linux' }}
+        run: xvfb-run mvn -U -B -ntp verify
+
+      - name: Build and (headless) test with Maven (Windows and macOS)
+        if: ${{ runner.os != 'Linux' }}
+        run: mvn -U -B -ntp verify
 
   auto-merge-job:
     needs: build-and-test-job
