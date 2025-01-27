@@ -19,20 +19,21 @@ package ec.nbdemetra.anomalydetection.report;
 import ec.nbdemetra.ui.NbComponents;
 import ec.tss.tsproviders.utils.MultiLineNameUtil;
 import ec.tstoolkit.utilities.Paths;
-import java.awt.Dimension;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.util.List;
-import java.util.Map;
-import javax.swing.JTextPane;
 import org.openide.DialogDescriptor;
 import org.openide.DialogDisplayer;
 import org.openide.NotifyDescriptor;
 import org.openide.filesystems.FileChooserBuilder;
 import org.openide.util.Exceptions;
 import org.openide.util.lookup.ServiceProvider;
+
+import javax.swing.*;
+import java.awt.*;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.nio.file.Files;
+import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -74,7 +75,7 @@ public class DefaultCheckLastReport implements ICheckLastReportFactory {
                     try {
                         String sfile = file.getAbsolutePath();
                         sfile = Paths.changeExtension(sfile, "txt");
-                        try (FileWriter writer = new FileWriter(sfile)) {
+                        try (Writer writer = Files.newBufferedWriter(java.nio.file.Paths.get(sfile))) {
                             writer.append(report);
                         }
                     } catch (Exception ex) {

@@ -36,6 +36,7 @@ import ec.tss.tsproviders.utils.IParam;
 import ec.tss.tsproviders.utils.Params;
 import java.beans.IntrospectionException;
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.openide.nodes.Sheet;
@@ -115,7 +116,7 @@ public class CsvMatrixOutputBuddy implements INbOutputFactory, IConfigurable, IR
 
     private static final class CsvMatrixOutputConverter extends Converter<CsvMatrixOutputConfiguration, Config> {
 
-        private final IParam<Config, File> folderParam = Params.onFile(new File(""), "folder");
+        private final IParam<Config, File> folderParam = Params.onFile(Paths.get("").toFile(), "folder");
         private final IParam<Config, String> fileNameParam = Params.onString("series", "fileName");
         private final IParam<Config, String> seriesParam = Params.onString("y,t,sa,s,i,ycal", "items");
         private final IParam<Config, Boolean> fullNameParam = Params.onBoolean(true, "fullName");

@@ -41,6 +41,7 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import static java.beans.BeanInfo.ICON_MONO_16x16;
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -113,7 +114,7 @@ public final class SpreadSheetBasicFileHandler implements BasicFileViewer.BasicF
 
     private static final class Model {
 
-        static final Model EMPTY = new Model("", new File(""), ArrayBook.builder().build(), 0);
+        static final Model EMPTY = new Model("", Paths.get("").toFile(), ArrayBook.builder().build(), 0);
         //
         final String factoryName;
         final File file;

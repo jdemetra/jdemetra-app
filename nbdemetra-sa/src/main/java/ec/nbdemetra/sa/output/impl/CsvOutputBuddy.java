@@ -21,26 +21,24 @@ import com.google.common.base.Splitter;
 import ec.nbdemetra.sa.output.AbstractOutputNode;
 import ec.nbdemetra.sa.output.INbOutputFactory;
 import ec.nbdemetra.sa.output.Series;
-import ec.nbdemetra.ui.BeanHandler;
-import ec.nbdemetra.ui.Config;
-import ec.nbdemetra.ui.Configurator;
-import ec.nbdemetra.ui.IConfigurable;
-import ec.nbdemetra.ui.IResetable;
-import ec.nbdemetra.ui.properties.PropertySheetDialogBuilder;
+import ec.nbdemetra.ui.*;
 import ec.nbdemetra.ui.properties.IBeanEditor;
 import ec.nbdemetra.ui.properties.NodePropertySetBuilder;
+import ec.nbdemetra.ui.properties.PropertySheetDialogBuilder;
 import ec.tss.sa.ISaOutputFactory;
 import ec.tss.sa.output.CsvLayout;
 import ec.tss.sa.output.CsvOutputConfiguration;
 import ec.tss.sa.output.CsvOutputFactory;
 import ec.tss.tsproviders.utils.IParam;
 import ec.tss.tsproviders.utils.Params;
-import java.beans.IntrospectionException;
-import java.io.File;
-import java.util.List;
-import java.util.stream.Collectors;
 import org.openide.nodes.Sheet;
 import org.openide.util.lookup.ServiceProvider;
+
+import java.beans.IntrospectionException;
+import java.io.File;
+import java.nio.file.Paths;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -118,7 +116,7 @@ public final class CsvOutputBuddy implements INbOutputFactory, IConfigurable, IR
     private static final class CsvOutputConverter extends Converter<CsvOutputConfiguration, Config> {
 
         private final IParam<Config, CsvLayout> presentationParam = Params.onEnum(CsvLayout.List, "presentation");
-        private final IParam<Config, File> folderParam = Params.onFile(new File(""), "folder");
+        private final IParam<Config, File> folderParam = Params.onFile(Paths.get("").toFile(), "folder");
         private final IParam<Config, String> filePrefixParam = Params.onString("series", "filePrefix");
         private final IParam<Config, String> seriesParam = Params.onString("y,t,sa,s,i,ycal", "series");
         private final IParam<Config, Boolean> fullNameParam = Params.onBoolean(true, "fullName");

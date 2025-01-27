@@ -29,6 +29,7 @@ import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.List;
 import java.util.Locale;
@@ -95,7 +96,7 @@ public class FileBroker extends InterchangeBroker {
 
     private File enforceExtension(File input) {
         int index = input.getPath().toLowerCase(Locale.ROOT).indexOf(".cfgx");
-        return index != -1 ? input : new File(input.getPath() + ".cfgx");
+        return index != -1 ? input : Paths.get(input.getPath() + ".cfgx").toFile();
     }
 
     @NonNull

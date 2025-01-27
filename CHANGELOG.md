@@ -11,6 +11,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - ![UI] Fix unreadable Excel files on Java 21 [#791](https://github.com/jdemetra/jdemetra-app/issues/791)
 
+### Changed
+
+- Modernize use of NIO API
+
 ## [2.2.5] - 2024-07-15
 
 This the release of JDemetra+ v2.2.5.  
