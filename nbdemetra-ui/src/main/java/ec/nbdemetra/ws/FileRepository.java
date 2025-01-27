@@ -33,14 +33,6 @@ import ec.tstoolkit.utilities.Paths;
 import ec.util.desktop.Desktop;
 import ec.util.desktop.Desktop.KnownFolder;
 import ec.util.desktop.DesktopManager;
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.InvalidPathException;
-import java.nio.file.Path;
-import java.util.Collection;
-import java.util.Optional;
-import java.util.function.UnaryOperator;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.openide.DialogDisplayer;
@@ -51,6 +43,13 @@ import org.openide.util.Lookup;
 import org.openide.util.LookupEvent;
 import org.openide.util.LookupListener;
 import org.openide.util.lookup.ServiceProvider;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.InvalidPathException;
+import java.util.Collection;
+import java.util.Optional;
+import java.util.function.UnaryOperator;
 
 /**
  *
@@ -98,7 +97,7 @@ public class FileRepository extends AbstractWorkspaceRepository implements Looku
         if (source.getVersion().equals(VERSION)) {
             String file = source.get(FILENAME);
             if (file != null) {
-                return new File(file);
+                return java.nio.file.Paths.get(file).toFile();
             }
         }
         return null;
@@ -270,7 +269,7 @@ public class FileRepository extends AbstractWorkspaceRepository implements Looku
     @Deprecated
     public static String getRepositoryFolder(Workspace ws, String repository, boolean create) {
         String root = getRepositoryRootFolder(ws);
-        File frepo = new File(root, repository);
+        File frepo = java.nio.file.Paths.get(root, repository).toFile();
         if (frepo.exists() && !frepo.isDirectory()) {
             return null;
         }
@@ -348,7 +347,7 @@ public class FileRepository extends AbstractWorkspaceRepository implements Looku
 
     private static File getDefaultWorkingDirectory(Desktop desktop, UnaryOperator<String> properties) {
         File documents = getDocumentsDirectory(desktop).orElseGet(() -> getUserHome(properties));
-        return new File(documents, "Demetra+");
+        return documents.toPath().resolve("Demetra+").toFile();
     }
 
     private static Optional<File> getDocumentsDirectory(Desktop desktop) {
@@ -363,6 +362,6 @@ public class FileRepository extends AbstractWorkspaceRepository implements Looku
     }
 
     private static File getUserHome(UnaryOperator<String> properties) {
-        return new File(properties.apply(StandardSystemProperty.USER_HOME.key()));
+        return java.nio.file.Paths.get(properties.apply(StandardSystemProperty.USER_HOME.key())).toFile();
     }
 }

@@ -25,6 +25,7 @@ import ec.util.completion.swing.JAutoCompletion;
 import java.beans.PropertyEditor;
 import java.beans.PropertyEditorManager;
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Supplier;
@@ -97,7 +98,7 @@ public final class DesktopFilePropertyEditor extends ForwardingPropertyEditor im
 
         @Override
         public Object getValue() {
-            return new File(component.getText());
+            return Paths.get(component.getText()).toFile();
         }
 
         @Override

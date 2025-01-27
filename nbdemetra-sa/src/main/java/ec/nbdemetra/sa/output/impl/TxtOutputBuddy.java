@@ -38,6 +38,7 @@ import ec.tss.tsproviders.utils.Params;
 import java.awt.Image;
 import java.beans.IntrospectionException;
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.openide.nodes.Sheet;
@@ -123,7 +124,7 @@ public class TxtOutputBuddy implements INbOutputFactory, IConfigurable, IResetab
 
     private static final class TxtOutputConverter extends Converter<TxtOutputConfiguration, Config> {
 
-        private final IParam<Config, File> folderParam = Params.onFile(new File(""), "folder");
+        private final IParam<Config, File> folderParam = Params.onFile(Paths.get("").toFile(), "folder");
         private final IParam<Config, String> seriesParam = Params.onString("y,t,sa,s,i,ycal", "series");
         private final IParam<Config, Boolean> fullNameParam = Params.onBoolean(true, "fullName");
 

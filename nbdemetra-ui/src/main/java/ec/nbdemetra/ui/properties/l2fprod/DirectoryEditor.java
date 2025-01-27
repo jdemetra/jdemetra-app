@@ -9,6 +9,7 @@ import com.l2fprod.common.beans.editor.AbstractPropertyEditor;
 import ec.tstoolkit.utilities.Directory;
 import java.awt.event.ActionEvent;
 import java.io.File;
+import java.nio.file.Paths;
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -26,7 +27,7 @@ public class DirectoryEditor extends AbstractPropertyEditor {
             @Override
             public void actionPerformed(ActionEvent e) {
                 JFileChooser comp = new JFileChooser();
-                comp.setCurrentDirectory(new File("."));
+                comp.setCurrentDirectory(Paths.get(".").toFile());
                 comp.setDialogTitle("Choose Folder");
                 comp.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
                 comp.setAcceptAllFileFilterUsed(false);
