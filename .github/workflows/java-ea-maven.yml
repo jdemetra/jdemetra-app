@@ -6,6 +6,9 @@ on:
       - develop
   workflow_dispatch:
 
+env:
+  MAVEN_ARGS: "-B -ntp"
+
 jobs:
   build-and-test-job:
     strategy:
@@ -33,8 +36,8 @@ jobs:
 
       - name: Build and (headless) test with Maven (Linux)
         if: ${{ runner.os == 'Linux' }}
-        run: xvfb-run mvn -U -B -ntp verify
+        run: xvfb-run mvn -U verify
 
       - name: Build and (headless) test with Maven (Windows and macOS)
         if: ${{ runner.os != 'Linux' }}
-        run: mvn -U -B -ntp verify
+        run: mvn -U verify

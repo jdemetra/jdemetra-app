@@ -2,6 +2,9 @@ name: Java8+ with Maven
 
 on: [ push, pull_request ]
 
+env:
+  MAVEN_ARGS: "-B -ntp"
+
 jobs:
   build-and-test-job:
     if: github.event_name == 'pull_request' || startsWith(github.ref, 'refs/heads/develop') || startsWith(github.ref, 'refs/tags/v')
@@ -31,17 +34,17 @@ jobs:
       - name: Pre-download dependencies with Maven
         uses: nick-fields/retry@v3
         with:
-          command: mvn -U -B -ntp dependency:go-offline
+          command: mvn -U dependency:go-offline
           max_attempts: 3
           timeout_minutes: 5
 
       - name: Build and (headless) test with Maven (Linux)
         if: ${{ runner.os == 'Linux' }}
-        run: xvfb-run mvn -U -B -ntp verify
+        run: xvfb-run mvn -U verify
 
       - name: Build and (headless) test with Maven (Windows and macOS)
         if: ${{ runner.os != 'Linux' }}
-        run: mvn -U -B -ntp verify
+        run: mvn -U verify
 
   auto-merge-job:
     needs: build-and-test-job
@@ -90,7 +93,7 @@ jobs:
           cache: 'maven'
 
       - name: Deploy snapshot with Maven if settings defined
-        run: test ! -f ci.settings.xml || mvn -B -ntp deploy -DskipTests -s ci.settings.xml -P base-deploy,snapshot-deploy,!non-deployable-modules
+        run: test ! -f ci.settings.xml || mvn deploy -DskipTests -s ci.settings.xml -P base-deploy,snapshot-deploy,!non-deployable-modules
         env:
           OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           OSSRH_TOKEN: ${{ secrets.OSSRH_TOKEN }}
@@ -98,7 +101,7 @@ jobs:
           SIGN_KEY_PASS: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
 
       - name: Dryrun release assets with Maven
-        run: mvn -B -ntp install -DskipTests -P full-release -Djreleaser.output.directory=$PWD/out/jreleaser -Djreleaser.dry.run
+        run: mvn install -DskipTests -P full-release -Djreleaser.output.directory=$PWD/out/jreleaser -Djreleaser.dry.run
         env:
           JRELEASER_GITHUB_TOKEN: ${{ secrets.JRELEASER_GITHUB_TOKEN }}
           JRELEASER_GPG_PUBLIC_KEY: ${{ secrets.MAVEN_GPG_PUBLIC_KEY }}
@@ -140,7 +143,7 @@ jobs:
           cache: 'maven'
 
       - name: Deploy with Maven if settings defined
-        run: test ! -f ci.settings.xml || mvn -B -ntp deploy -DskipTests -s ci.settings.xml -P base-deploy,release-deploy,!non-deployable-modules
+        run: test ! -f ci.settings.xml || mvn deploy -DskipTests -s ci.settings.xml -P base-deploy,release-deploy,!non-deployable-modules
         env:
           OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
           OSSRH_TOKEN: ${{ secrets.OSSRH_TOKEN }}
@@ -150,7 +153,7 @@ jobs:
           MAVEN_OPTS: "--add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED --add-opens=java.base/java.text=ALL-UNNAMED --add-opens=java.desktop/java.awt.font=ALL-UNNAMED"
 
       - name: Release assets with Maven
-        run: mvn -B -ntp install -DskipTests -P full-release -Djreleaser.output.directory=$PWD/out/jreleaser
+        run: mvn install -DskipTests -P full-release -Djreleaser.output.directory=$PWD/out/jreleaser
         env:
           JRELEASER_GITHUB_TOKEN: ${{ secrets.JRELEASER_GITHUB_TOKEN }}
           JRELEASER_GPG_PUBLIC_KEY: ${{ secrets.MAVEN_GPG_PUBLIC_KEY }}
