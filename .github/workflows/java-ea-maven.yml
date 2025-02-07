@@ -14,30 +14,35 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        java: [ 21 ]
-        os: [ ubuntu-latest, macos-latest ]
+        java: [ 23 ]
+        os:
+          - ubuntu-latest     # Linux x64
+          - ubuntu-24.04-arm  # Linux arm64
+          - macos-latest      # macOS arm64
 
     name: JDK${{ matrix.java }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
 
     steps:
-      - name: Checkout source code
-        uses: actions/checkout@v4
+      - name: Checkout and Setup Maven
+        uses: s4u/setup-maven-action@v1.18.0
         with:
-          submodules: true
-          fetch-depth: 0
-
-      - name: Setup Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
+          checkout-submodules: true
+          checkout-fetch-depth: 0
+          java-distribution: 'temurin'
           java-version: ${{ matrix.java }}
-          cache: 'maven'
+
+      - name: Pre-download dependencies with Maven
+        uses: nick-fields/retry@v3
+        with:
+          command: mvn -U dependency:go-offline
+          max_attempts: 3
+          timeout_minutes: 5
 
       - name: Build and (headless) test with Maven (Linux)
         if: ${{ runner.os == 'Linux' }}
-        run: xvfb-run mvn -U verify
+        run: xvfb-run mvn verify
 
       - name: Build and (headless) test with Maven (Windows and macOS)
         if: ${{ runner.os != 'Linux' }}
-        run: mvn -U verify
+        run: mvn verify
