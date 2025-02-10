@@ -512,6 +512,17 @@
             </properties>
         </profile>
 
+        <!-- Fix explicit search for annotation processors on JDK23+ -->
+        <profile>
+            <id>fix-proc-jdk23</id>
+            <activation>
+                <jdk>[23,)</jdk>
+            </activation>
+            <properties>
+                <maven.compiler.proc>full</maven.compiler.proc>
+            </properties>
+        </profile>
+
         <!-- Enforce dependency & Maven-central rules -->
         <profile>
             <id>enforce-dependency-rules</id>
