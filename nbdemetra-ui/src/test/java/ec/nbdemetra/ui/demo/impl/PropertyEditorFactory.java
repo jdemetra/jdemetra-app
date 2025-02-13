@@ -36,6 +36,7 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.io.File;
 import java.nio.charset.Charset;
+import java.nio.file.Paths;
 import java.util.Date;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
@@ -220,7 +221,7 @@ public final class PropertyEditorFactory extends DemoComponentFactory {
         public String fileAsString = "";
         public Day day = new Day(new Date());
         public int offset = 0;
-        public File file = new File("");
+        public File file = Paths.get("").toFile();
         public final int readOnly = 123;
         public StateValue stateValue = StateValue.DONE;
         public double weight = 0.3;

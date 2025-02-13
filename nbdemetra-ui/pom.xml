@@ -4,7 +4,7 @@
     <parent>
         <groupId>eu.europa.ec.joinup.sat</groupId>
         <artifactId>nbdemetra-parent</artifactId>
-        <version>2.2.5</version>
+        <version>2.2.6</version>
     </parent>
 
     <artifactId>nbdemetra-ui</artifactId>
@@ -53,7 +53,7 @@
             <artifactId>lombok</artifactId>
             <scope>provided</scope>
             <!-- Force version to override the one defined in java-desktop-util imports -->
-            <version>1.18.34</version>
+            <version>1.18.36</version>
         </dependency>
         <dependency>
             <groupId>org.checkerframework</groupId>

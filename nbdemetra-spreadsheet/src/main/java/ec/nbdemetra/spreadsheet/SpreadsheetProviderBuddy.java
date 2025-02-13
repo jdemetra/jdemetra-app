@@ -36,6 +36,8 @@ import java.beans.IntrospectionException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import ec.util.spreadsheet.BookFactoryLoader;
 import org.openide.nodes.Sheet.Set;
 import org.openide.util.ImageUtilities;
 import org.openide.util.NbBundle.Messages;
@@ -47,6 +49,11 @@ import org.openide.util.lookup.ServiceProvider;
  */
 @ServiceProvider(service = IDataSourceProviderBuddy.class)
 public class SpreadsheetProviderBuddy extends AbstractDataSourceProviderBuddy {
+
+    static {
+        // Force instantiation and/or reloading to prevent strange class loading issues on Java 21
+        BookFactoryLoader.reload();
+    }
 
     @Override
     public String getProviderName() {

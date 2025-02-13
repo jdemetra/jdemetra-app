@@ -13,18 +13,20 @@ import ec.tstoolkit.information.InformationSet;
 import ec.tstoolkit.information.InformationSetSerializable;
 import ec.tstoolkit.utilities.IModifiable;
 import ec.tstoolkit.utilities.Paths;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.InvalidPathException;
-import java.util.function.Consumer;
+import org.openide.util.Exceptions;
+
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-import org.openide.util.Exceptions;
+import java.io.File;
+import java.io.IOException;
+import java.io.Writer;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
+import java.nio.file.Path;
+import java.util.function.Consumer;
 
 /**
  *
@@ -111,7 +113,7 @@ public abstract class AbstractFileItemRepository<D> extends AbstractWorkspaceIte
 
     @Deprecated
     public static <S, X extends IXmlConverter<S>> S loadLegacy(String sfile, Class<X> xclass) {
-        File file = new File(sfile);
+        File file = java.nio.file.Paths.get(sfile).toFile();
         if (!file.exists()) {
             return null;
         }
@@ -132,7 +134,7 @@ public abstract class AbstractFileItemRepository<D> extends AbstractWorkspaceIte
 
     @Deprecated
     public static <X> X loadXmlLegacy(String sfile, Class<X> xclass) {
-        File file = new File(sfile);
+        File file = java.nio.file.Paths.get(sfile).toFile();
         if (!file.exists()) {
             return null;
         }
@@ -153,7 +155,7 @@ public abstract class AbstractFileItemRepository<D> extends AbstractWorkspaceIte
 
     @Deprecated
     public static <X extends InformationSetSerializable> X loadInfo(String sfile, Class<X> xclass) {
-        File file = new File(sfile);
+        File file = java.nio.file.Paths.get(sfile).toFile();
         if (!file.exists()) {
             return null;
         }
@@ -176,20 +178,17 @@ public abstract class AbstractFileItemRepository<D> extends AbstractWorkspaceIte
 
     @Deprecated
     public static <T, X extends IXmlConverter<T>> boolean saveLegacy(String sfile, WorkspaceItem item, Class<X> xclass) {
-        File file = new File(sfile);
-        try (FileOutputStream stream = new FileOutputStream(file)) {
-            try (OutputStreamWriter writer = new OutputStreamWriter(stream, StandardCharsets.UTF_8)) {
-
-                JAXBContext context = JAXBContext.newInstance(xclass);
-                Marshaller marshaller = context.createMarshaller();
-                marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-                X x = xclass.newInstance();
-                x.copy((T) item.getElement());
-                marshaller.marshal(x, writer);
-                item.resetDirty();
-                writer.flush();
-                return true;
-            }
+        Path file = java.nio.file.Paths.get(sfile);
+        try (Writer writer = Files.newBufferedWriter(file, StandardCharsets.UTF_8)) {
+            JAXBContext context = JAXBContext.newInstance(xclass);
+            Marshaller marshaller = context.createMarshaller();
+            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+            X x = xclass.newInstance();
+            x.copy((T) item.getElement());
+            marshaller.marshal(x, writer);
+            item.resetDirty();
+            writer.flush();
+            return true;
         } catch (Exception ex) {
             return false;
         }
@@ -197,20 +196,17 @@ public abstract class AbstractFileItemRepository<D> extends AbstractWorkspaceIte
 
     @Deprecated
     public static <T extends IModifiable, X extends IXmlConverter<T>> boolean saveLegacy(String sfile, T item, Class<X> xclass) {
-        File file = new File(sfile);
-        try (FileOutputStream stream = new FileOutputStream(file)) {
-            try (OutputStreamWriter writer = new OutputStreamWriter(stream, StandardCharsets.UTF_8)) {
-
-                JAXBContext context = JAXBContext.newInstance(xclass);
-                Marshaller marshaller = context.createMarshaller();
-                marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-                X x = xclass.newInstance();
-                x.copy(item);
-                marshaller.marshal(x, writer);
-                writer.flush();
-                item.resetDirty();
-                return true;
-            }
+        Path file = java.nio.file.Paths.get(sfile);
+        try (Writer writer = Files.newBufferedWriter(file, StandardCharsets.UTF_8)) {
+            JAXBContext context = JAXBContext.newInstance(xclass);
+            Marshaller marshaller = context.createMarshaller();
+            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+            X x = xclass.newInstance();
+            x.copy(item);
+            marshaller.marshal(x, writer);
+            writer.flush();
+            item.resetDirty();
+            return true;
         } catch (Exception ex) {
             return false;
         }
@@ -218,10 +214,8 @@ public abstract class AbstractFileItemRepository<D> extends AbstractWorkspaceIte
 
     @Deprecated
     public static <T extends InformationSetSerializable> boolean saveInfo(String sfile, T item) {
-        File file = new File(sfile);
-        try (FileOutputStream stream = new FileOutputStream(file)) {
-            try (OutputStreamWriter writer = new OutputStreamWriter(stream, StandardCharsets.UTF_8)) {
-
+        Path file = java.nio.file.Paths.get(sfile);
+        try (Writer writer = Files.newBufferedWriter(file, StandardCharsets.UTF_8)) {
                 Marshaller marshaller = XML_INFORMATION_SET_CONTEXT.createMarshaller();
                 marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
                 InformationSet info = item.write(false);
@@ -233,7 +227,6 @@ public abstract class AbstractFileItemRepository<D> extends AbstractWorkspaceIte
                 marshaller.marshal(x, writer);
                 writer.flush();
                 return true;
-            }
         } catch (Exception ex) {
             return false;
         }
@@ -245,7 +238,7 @@ public abstract class AbstractFileItemRepository<D> extends AbstractWorkspaceIte
         if (sfile == null) {
             return false;
         }
-        File file = new File(sfile);
+        File file = java.nio.file.Paths.get(sfile).toFile();
         if (file.exists()) {
             file.delete();
             return true;

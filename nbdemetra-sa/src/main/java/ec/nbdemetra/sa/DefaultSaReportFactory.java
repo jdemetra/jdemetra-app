@@ -23,6 +23,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.nio.file.Files;
 import java.text.DecimalFormat;
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -90,7 +91,7 @@ public class DefaultSaReportFactory implements ISaReportFactory {
                     try {
                         String sfile = file.getAbsolutePath();
                         sfile = Paths.changeExtension(sfile, "txt");
-                        try (FileWriter writer = new FileWriter(sfile)) {
+                        try (Writer writer = Files.newBufferedWriter(java.nio.file.Paths.get(sfile))) {
                             writer.append(report);
                         }
                     } catch (Exception ex) {
