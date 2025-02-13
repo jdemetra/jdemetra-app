@@ -1,4 +1,3 @@
-
 # Changelog
 
 All notable changes to this project will be documented in this file.
@@ -6,6 +5,8 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
+
+## [2.2.6] - 2025-02-13
 
 ### Fixed
 
@@ -104,6 +105,7 @@ The main changes of this release are the addition of a new revision policy and t
 - ![OTHER] Fix native library issues in some restricted environments
 
 #### Some explanations on the new revision policy: current[AO]
+
 The new revision policy fixes the model (including all the parameters) and handle any new observation as an additive outlier.
 Those “pseudo outliers” are in fact introduced in the model as intervention variables (to avoid possible confusion).
 
@@ -161,8 +163,8 @@ This the release of JDemetra+ v2.2.2.
 
 ## [1.5.4] - 2014-12-18
 
-
-[Unreleased]: https://github.com/jdemetra/jdemetra-app/compare/v2.2.5...HEAD
+[Unreleased]: https://github.com/jdemetra/jdemetra-app/compare/v2.2.6...HEAD
+[2.2.6]: https://github.com/jdemetra/jdemetra-app/compare/v2.2.5...v2.2.6
 [2.2.5]: https://github.com/jdemetra/jdemetra-app/compare/v2.2.4...v2.2.5
 [2.2.4]: https://github.com/jdemetra/jdemetra-app/compare/v2.2.3...v2.2.4
 [2.2.3]: https://github.com/jdemetra/jdemetra-app/compare/v2.2.2...v2.2.3
@@ -172,7 +174,6 @@ This the release of JDemetra+ v2.2.2.
 [2.1.0]: https://github.com/jdemetra/jdemetra-app/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/jdemetra/jdemetra-app/compare/v1.5.4...v2.0.0
 [1.5.4]: https://github.com/jdemetra/jdemetra-app/releases/tag/v1.5.4
-
 [STAT]: https://img.shields.io/badge/-STAT-068C09
 [OTHER]: https://img.shields.io/badge/-OTHER-e4e669
 [IO]: https://img.shields.io/badge/-IO-F813F7
