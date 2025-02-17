@@ -29,7 +29,6 @@ jobs:
         with:
           checkout-submodules: true
           checkout-fetch-depth: 0
-          java-distribution: 'temurin'
           java-version: ${{ matrix.java }}
 
       - name: Pre-download dependencies with Maven
