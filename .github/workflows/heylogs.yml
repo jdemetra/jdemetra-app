@@ -14,7 +14,7 @@ jobs:
         uses: s4u/setup-maven-action@v1.18.0
 
       - name: Scan changelog
-        run: mvn -U com.github.nbbrd.heylogs:heylogs-maven-plugin::scan -Dheylogs.output.file=scan.json -Dheylogs.format.id=json
+        run: mvn -U com.github.nbbrd.heylogs:heylogs-maven-plugin::scan -Dheylogs.outputFile=scan.json
 
       - name: Create badges endpoint json
         run: |
