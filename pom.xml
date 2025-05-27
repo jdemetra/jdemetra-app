@@ -427,11 +427,12 @@
                             <goal>check</goal>
                         </goals>
                         <inherited>false</inherited>
-                        <configuration>
-                            <semver>true</semver>
-                        </configuration>
                     </execution>
                 </executions>
+                <configuration>
+                    <semver>true</semver>
+                    <tagPrefix>v</tagPrefix>
+                </configuration>
             </plugin>
 
             <plugin>
