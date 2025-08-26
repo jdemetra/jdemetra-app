@@ -430,7 +430,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <semver>true</semver>
+                    <versioning>semver</versioning>
                     <tagPrefix>v</tagPrefix>
                 </configuration>
             </plugin>
