@@ -11,7 +11,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        java: [ 8, 21 ]
+        java: [ 17, 21 ]
         os: [ ubuntu-latest, macos-13, windows-latest ]
 
     name: JDK${{ matrix.java }} on ${{ matrix.os }}
