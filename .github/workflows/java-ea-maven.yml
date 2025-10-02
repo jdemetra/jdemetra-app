@@ -14,14 +14,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        java: [ 24 ]
+        java: [ 25 ]
         os:
           - ubuntu-latest     # Linux x64
           - ubuntu-24.04-arm  # Linux arm64
           - macos-latest      # macOS arm64
-        include:
-          - os: windows-11-arm    # Windows arm64
-            java: 21
+          - windows-11-arm    # Windows arm64
 
     name: JDK${{ matrix.java }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
