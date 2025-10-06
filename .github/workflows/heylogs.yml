@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout and Setup Maven
-        uses: s4u/setup-maven-action@v1.18.0
+        uses: s4u/setup-maven-action@v1.19.0
 
       - name: Scan changelog
         run: mvn -U com.github.nbbrd.heylogs:heylogs-maven-plugin::scan -Dheylogs.outputFile=scan.json

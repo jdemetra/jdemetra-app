@@ -26,7 +26,7 @@ jobs:
 
     steps:
       - name: Checkout and Setup Maven
-        uses: s4u/setup-maven-action@v1.18.0
+        uses: s4u/setup-maven-action@v1.19.0
         with:
           checkout-submodules: true
           checkout-fetch-depth: 0
