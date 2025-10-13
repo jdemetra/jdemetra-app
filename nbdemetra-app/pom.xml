@@ -140,21 +140,6 @@
             </properties>
             <build>
                 <plugins>
-                    <!-- Generate setups -->
-                    <plugin>
-                        <groupId>org.apache.netbeans.utilities</groupId>
-                        <artifactId>nbm-maven-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>generate-setup</id>
-                                <phase>install</phase>
-                                <goals>
-                                    <goal>build-installers</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-
                     <!-- Extract changelog -->
                     <plugin>
                         <groupId>com.github.nbbrd.heylogs</groupId>
@@ -335,26 +320,6 @@
                                                     </artifact>
                                                 </artifacts>
                                             </jdemetra>
-                                            <jdemetra-setup>
-                                                <type>JAVA_BINARY</type>
-                                                <artifacts>
-                                                    <artifact>
-                                                        <path>${project.x.src}-linux.sh</path>
-                                                        <transform>${project.x.dst}-setup-linux.sh</transform>
-                                                        <platform>linux</platform>
-                                                    </artifact>
-                                                    <artifact>
-                                                        <path>${project.x.src}-macosx.tgz</path>
-                                                        <transform>${project.x.dst}-setup-macosx.tgz</transform>
-                                                        <platform>osx</platform>
-                                                    </artifact>
-                                                    <artifact>
-                                                        <path>${project.x.src}-windows.exe</path>
-                                                        <transform>${project.x.dst}-setup-windows.exe</transform>
-                                                        <platform>windows</platform>
-                                                    </artifact>
-                                                </artifacts>
-                                            </jdemetra-setup>
                                         </distributions>
                                     </jreleaser>
                                 </configuration>
