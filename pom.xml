@@ -32,7 +32,7 @@
     <scm>
         <connection>scm:git:git://github.com/${x.github.user}/${x.github.repo}.git</connection>
         <developerConnection>scm:git:ssh://github.com:${x.github.user}/${x.github.repo}.git</developerConnection>
-        <url>http://github.com/${x.github.user}/${x.github.repo}/tree/master</url>
+        <url>https://github.com/${x.github.user}/${x.github.repo}/tree/master</url>
     </scm>
 
     <properties>
@@ -41,6 +41,7 @@
         <project.build.outputTimestamp>2025-02-13T13:10:38Z</project.build.outputTimestamp>
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.compiler.source>1.8</maven.compiler.source>
+        <requiredMavenVersion>3.9.11</requiredMavenVersion>
 
         <!-- GitHub hosting -->
         <x.github.user>jdemetra</x.github.user>
@@ -555,7 +556,7 @@
                                         <dependencyConvergence/>
                                         <reactorModuleConvergence/>
                                         <requireMavenVersion>
-                                            <version>3.6.0</version>
+                                            <version>${requiredMavenVersion}</version>
                                         </requireMavenVersion>
                                         <requireNoRepositories>
                                             <allowedRepositories>central</allowedRepositories>
