@@ -24,7 +24,7 @@ public class RuntimeDependenciesTest {
                 .satisfies(RuntimeDependenciesTest::checkSlf4j)
                 .satisfies(RuntimeDependenciesTest::checkLog4j)
                 .satisfies(RuntimeDependenciesTest::checkGuava)
-                .hasSize(18);
+                .hasSize(19);
     }
 
     private static void checkGuava(List<? extends NbmMavenClassPath.GAV> coordinates) {
@@ -50,6 +50,34 @@ public class RuntimeDependenciesTest {
                         "spreadsheet-api",
                         "spreadsheet-standalone",
                         "spreadsheet-poi");
+
+        assertThatGroupId(coordinates, "commons-codec")
+                .has(sameVersion())
+                .extracting(NbmMavenClassPath.GAV::getArtifactId)
+                .containsExactlyInAnyOrder("commons-codec");
+
+        assertThatGroupId(coordinates, "commons-io")
+                .has(sameVersion())
+                .extracting(NbmMavenClassPath.GAV::getArtifactId)
+                .containsExactlyInAnyOrder("commons-io");
+
+        assertThatGroupId(coordinates, "org.apache.commons")
+                .extracting(NbmMavenClassPath.GAV::getArtifactId)
+                .containsExactlyInAnyOrder(
+                        "commons-collections4",
+                        "commons-compress",
+                        "commons-lang3",
+                        "commons-math3"
+                );
+
+        assertThatGroupId(coordinates, "org.apache.poi")
+                .has(sameVersion())
+                .extracting(NbmMavenClassPath.GAV::getArtifactId)
+                .containsExactlyInAnyOrder(
+                        "poi",
+                        "poi-ooxml",
+                        "poi-ooxml-lite"
+                );
     }
 
     private static void checkJavaIoUtil(List<? extends NbmMavenClassPath.GAV> coordinates) {
