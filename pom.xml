@@ -760,6 +760,18 @@
                 </plugins>
             </build>
         </profile>
+
+        <!-- Skip all checks for local builds -->
+        <profile>
+            <id>yolo</id>
+            <properties>
+                <enforcer.skip>true</enforcer.skip>
+                <modernizer.skip>true</modernizer.skip>
+                <forbiddenapis.skip>true</forbiddenapis.skip>
+                <jacoco.skip>true</jacoco.skip>
+                <heylogs.skip>true</heylogs.skip>
+            </properties>
+        </profile>
     </profiles>
 
     <!-- Custom repositories: order matters! -->
