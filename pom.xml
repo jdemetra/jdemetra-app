@@ -403,7 +403,7 @@
                 <plugin>
                     <groupId>org.jreleaser</groupId>
                     <artifactId>jdks-maven-plugin</artifactId>
-                    <version>1.22.0</version>
+                    <version>1.23.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.netbeans.utilities</groupId>
