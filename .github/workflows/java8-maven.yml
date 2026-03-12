@@ -32,11 +32,7 @@ jobs:
           cache: 'maven'
 
       - name: Pre-download dependencies with Maven
-        uses: nick-fields/retry@v3
-        with:
-          command: mvn -U dependency:go-offline
-          max_attempts: 3
-          timeout_minutes: 5
+        run: mvn -U dependency:go-offline
 
       - name: Build and (headless) test with Maven (Linux)
         if: ${{ runner.os == 'Linux' }}
