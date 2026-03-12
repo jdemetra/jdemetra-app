@@ -35,10 +35,5 @@ jobs:
       - name: Pre-download dependencies with Maven
         run: mvn -U dependency:go-offline
 
-      - name: Build and (headless) test with Maven (Linux)
-        if: ${{ runner.os == 'Linux' }}
-        run: xvfb-run mvn install
-
-      - name: Build and (headless) test with Maven (Windows and macOS)
-        if: ${{ runner.os != 'Linux' }}
-        run: mvn install
+      - name: Build and (headless) test with Maven
+        run: ${{ runner.os == 'Linux' && 'xvfb-run' || '' }} mvn install
