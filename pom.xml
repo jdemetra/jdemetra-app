@@ -432,7 +432,8 @@
                 </executions>
                 <configuration>
                     <versioning>semver</versioning>
-                    <tagPrefix>v</tagPrefix>
+                    <tagging>prefix:v</tagging>
+                    <rules>no-empty-release:OFF</rules>
                 </configuration>
             </plugin>
 
