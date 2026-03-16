@@ -143,7 +143,6 @@ This the release of JDemetra+ v2.2.2.
 - ![IO] Improved file type detection of spreadsheets
 - ![IO] Improved performance and memory consumption of big Excel files
 - ![UI] Information of the input time series in the SaItemNode
-- ![UI] Error reporting when message is null
 
 ### Fixed
 
