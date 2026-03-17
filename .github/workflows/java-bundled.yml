@@ -15,18 +15,12 @@ jobs:
       DEP_REPO: adoptium/temurin21-binaries
 
     steps:
-      - name: Checkout source code
-        uses: actions/checkout@v6
+      - name: Checkout and Setup Maven
+        uses: s4u/setup-maven-action@v1.19.0
         with:
-          submodules: true
-          fetch-depth: 0
-
-      - name: Setup Java
-        uses: actions/setup-java@v5
-        with:
-          distribution: 'zulu'
+          checkout-submodules: true
+          checkout-fetch-depth: 0
           java-version: 21
-          cache: 'maven'
 
       - name: Get latest release version
         id: lr

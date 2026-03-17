@@ -18,18 +18,12 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - name: Checkout source code
-        uses: actions/checkout@v6
+      - name: Checkout and Setup Maven
+        uses: s4u/setup-maven-action@v1.19.0
         with:
-          submodules: true
-          fetch-depth: 0
-
-      - name: Setup Java
-        uses: actions/setup-java@v5
-        with:
-          distribution: 'zulu'
+          checkout-submodules: true
+          checkout-fetch-depth: 0
           java-version: ${{ matrix.java }}
-          cache: 'maven'
 
       - name: Pre-download dependencies with Maven
         run: mvn -U dependency:go-offline
@@ -70,18 +64,12 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - name: Checkout source code
-        uses: actions/checkout@v6
+      - name: Checkout and Setup Maven
+        uses: s4u/setup-maven-action@v1.19.0
         with:
-          submodules: true
-          fetch-depth: 0
-
-      - name: Setup Java
-        uses: actions/setup-java@v5
-        with:
-          distribution: 'zulu'
+          checkout-submodules: true
+          checkout-fetch-depth: 0
           java-version: ${{ matrix.java }}
-          cache: 'maven'
 
       - name: Deploy snapshot with Maven if settings defined
         run: test ! -f ci.settings.xml || mvn deploy -DskipTests -s ci.settings.xml -P base-deploy,snapshot-deploy,!non-deployable-modules
@@ -120,18 +108,12 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - name: Checkout source code
-        uses: actions/checkout@v6
+      - name: Checkout and Setup Maven
+        uses: s4u/setup-maven-action@v1.19.0
         with:
-          submodules: true
-          fetch-depth: 0
-
-      - name: Setup Java
-        uses: actions/setup-java@v5
-        with:
-          distribution: 'zulu'
+          checkout-submodules: true
+          checkout-fetch-depth: 0
           java-version: ${{ matrix.java }}
-          cache: 'maven'
 
       - name: Deploy with Maven if settings defined
         run: test ! -f ci.settings.xml || mvn deploy -DskipTests -s ci.settings.xml -P base-deploy,release-deploy,!non-deployable-modules
