@@ -43,7 +43,7 @@ jobs:
 
     steps:
       - name: Merge PR
-        uses: nick-fields/retry@v3
+        uses: nick-fields/retry@v4
         with:
           command: gh pr merge --auto --rebase "$PR_URL"
           max_attempts: 3
