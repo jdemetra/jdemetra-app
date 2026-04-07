@@ -430,11 +430,6 @@
                         <inherited>false</inherited>
                     </execution>
                 </executions>
-                <configuration>
-                    <versioning>semver</versioning>
-                    <tagging>prefix:v</tagging>
-                    <rules>no-empty-release:OFF</rules>
-                </configuration>
             </plugin>
 
             <plugin>
