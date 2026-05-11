@@ -119,7 +119,7 @@ public final class SpreadsheetTsSave implements ITsSave {
     }
 
     private static Optional<? extends Book.Factory> getFactoryByFile(File file) {
-        return BookFactoryLoader.get()
+        return BookFactoryLoader.load()
                 .stream()
                 .filter(factory -> factory.canStore() && factory.accept(file))
                 .findFirst();

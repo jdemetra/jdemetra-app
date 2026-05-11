@@ -51,8 +51,9 @@ import org.openide.util.lookup.ServiceProvider;
 public class SpreadsheetProviderBuddy extends AbstractDataSourceProviderBuddy {
 
     static {
+        // Update: No need to force reload because BookFactoryLoader is not a singleton anymore since java-service-util v2.0.0
         // Force instantiation and/or reloading to prevent strange class loading issues on Java 21
-        BookFactoryLoader.reload();
+        // BookFactoryLoader.reload();
     }
 
     @Override
