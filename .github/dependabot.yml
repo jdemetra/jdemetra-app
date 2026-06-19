@@ -7,6 +7,9 @@ updates:
       interval: "weekly"
       day: "saturday"
     open-pull-requests-limit: 10
+    ignore:
+      - dependency-name: "org.jreleaser:jdks-maven-plugin"
+        versions: ["1.24.0"]
   - package-ecosystem: "github-actions"
     target-branch: "develop"
     directory: "/"
