@@ -15,13 +15,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 This the release of JDemetra+ v2.2.6.
 [Java SE 17 or later](https://whichjdk.com/) version is required to run it.
 
-### Fixed
-
-- ![UI] Fix unreadable Excel files on Java 21 [#791](https://github.com/jdemetra/jdemetra-app/issues/791)
-
 ### Changed
 
 - Modernize use of NIO API
+
+### Fixed
+
+- ![UI] Fix unreadable Excel files on Java 21 [#791](https://github.com/jdemetra/jdemetra-app/issues/791)
 
 ## [2.2.5] - 2024-07-15
 
@@ -33,14 +33,14 @@ This the release of JDemetra+ v2.2.5.
 - ![UI] Add link to online help documentation [#891](https://github.com/jdemetra/jdemetra-app/issues/891)
 - ![OTHER] Add Windows binaries to release [#885](https://github.com/jdemetra/jdemetra-app/issues/885)
 
+### Changed
+
+- ![OTHER] Remove Solaris setup
+
 ### Fixed
 
 - ![IO] Fix parsing of .ods files [#881](https://github.com/jdemetra/jdemetra-app/issues/881)
 - ![UI] Fix missing log menu item [#889](https://github.com/jdemetra/jdemetra-app/issues/889)
-
-### Changed
-
-- ![OTHER] Remove Solaris setup
 
 ## [2.2.4] - 2023-01-31
 
@@ -180,7 +180,7 @@ This the release of JDemetra+ v2.2.2.
 [2.1.0]: https://github.com/jdemetra/jdemetra-app/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/jdemetra/jdemetra-app/compare/v1.5.4...v2.0.0
 [1.5.4]: https://github.com/jdemetra/jdemetra-app/releases/tag/v1.5.4
-[STAT]: https://img.shields.io/badge/-STAT-068C09
-[OTHER]: https://img.shields.io/badge/-OTHER-e4e669
 [IO]: https://img.shields.io/badge/-IO-F813F7
+[OTHER]: https://img.shields.io/badge/-OTHER-e4e669
+[STAT]: https://img.shields.io/badge/-STAT-068C09
 [UI]: https://img.shields.io/badge/-UI-5319E7
