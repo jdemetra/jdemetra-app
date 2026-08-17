@@ -1,34 +1,50 @@
-name: Java8+ with Maven
+name: ⚡ Java with Maven
 
 on: [ push, pull_request ]
 
 env:
   MAVEN_ARGS: "-B -ntp"
+  JAVA_VERSION: 21
 
 jobs:
-  build-and-test-job:
-    if: github.event_name == 'pull_request' || startsWith(github.ref, 'refs/heads/develop') || startsWith(github.ref, 'refs/tags/v')
-    strategy:
-      fail-fast: false
-      matrix:
-        java: [ 17, 21 ]
-        os: [ ubuntu-latest, macos-15-intel, windows-latest ]
-
-    name: JDK${{ matrix.java }} on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
+  validate-job:
+    name: 🔍 Validation
+    runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout and Setup Maven
+      - name: ⚙️ Checkout and Setup Maven
         uses: s4u/setup-maven-action@v1.20.0
         with:
           checkout-submodules: true
           checkout-fetch-depth: 0
-          java-version: ${{ matrix.java }}
+          java-version: ${{ env.JAVA_VERSION }}
 
-      - name: Pre-download dependencies with Maven
+      - name: ☕ Validate project with Maven
+        run: mvn validate
+
+  build-and-test-job:
+    needs: validate-job
+    if: github.event_name == 'pull_request' || startsWith(github.ref, 'refs/heads/develop') || startsWith(github.ref, 'refs/tags/v')
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest, macos-15-intel, macos-latest, windows-latest ]
+
+    name: 🧪 Tests on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: ⚙️ Checkout and Setup Maven
+        uses: s4u/setup-maven-action@v1.20.0
+        with:
+          checkout-submodules: true
+          checkout-fetch-depth: 0
+          java-version: ${{ env.JAVA_VERSION }}
+
+      - name: ☕ Pre-download dependencies with Maven
         run: mvn -U dependency:go-offline
 
-      - name: Build and (headless) test with Maven
+      - name: ☕ Build and (headless) test with Maven
         run: ${{ runner.os == 'Linux' && 'xvfb-run' || '' }} mvn install
 
   auto-merge-job:
@@ -38,11 +54,11 @@ jobs:
       contents: write
       pull-requests: write
 
-    name: Auto-merge on dependabot PR
+    name: 🤖 Merge on dependabot PR
     runs-on: ubuntu-latest
 
     steps:
-      - name: Merge PR
+      - name: 🔀 Merge PR
         uses: nick-fields/retry@v4
         with:
           command: gh pr merge --auto --rebase "$PR_URL"
@@ -55,23 +71,19 @@ jobs:
   snapshot-job:
     needs: build-and-test-job
     if: startsWith(github.repository, 'jdemetra/') && startsWith(github.ref, 'refs/heads/develop')
-    strategy:
-      matrix:
-        java: [ 21 ]
-        os: [ ubuntu-latest ]
 
-    name: Snapshot on develop
-    runs-on: ${{ matrix.os }}
+    name: 🚀 Snapshot on develop
+    runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout and Setup Maven
+      - name: ⚙️ Checkout and Setup Maven
         uses: s4u/setup-maven-action@v1.20.0
         with:
           checkout-submodules: true
           checkout-fetch-depth: 0
-          java-version: ${{ matrix.java }}
+          java-version: ${{ env.JAVA_VERSION }}
 
-      - name: Deploy snapshot with Maven if settings defined
+      - name: ☕ Deploy snapshot with Maven if settings defined
         run: test ! -f ci.settings.xml || mvn deploy -DskipTests -s ci.settings.xml -P base-deploy,snapshot-deploy,!non-deployable-modules
         env:
           CENTRAL_PORTAL_USERNAME: ${{ secrets.CENTRAL_PORTAL_USERNAME }}
@@ -79,7 +91,7 @@ jobs:
           SIGN_KEY: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
           SIGN_KEY_PASS: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
 
-      - name: Dryrun release assets with Maven
+      - name: ☕ Dry-run release assets with Maven
         run: mvn install -DskipTests -P full-release -Djreleaser.output.directory=$PWD/out/jreleaser -Djreleaser.dry.run
         env:
           JRELEASER_GITHUB_TOKEN: ${{ secrets.JRELEASER_GITHUB_TOKEN }}
@@ -87,7 +99,7 @@ jobs:
           JRELEASER_GPG_SECRET_KEY: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
           JRELEASER_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
 
-      - name: Upload JReleaser output
+      - name: ⬆️ Upload JReleaser output
         if: always()
         uses: actions/upload-artifact@v7
         with:
@@ -99,23 +111,19 @@ jobs:
   release-job:
     needs: build-and-test-job
     if: startsWith(github.repository, 'jdemetra/') && startsWith(github.ref, 'refs/tags/v')
-    strategy:
-      matrix:
-        java: [ 21 ]
-        os: [ ubuntu-latest ]
 
-    name: Release on tag
-    runs-on: ${{ matrix.os }}
+    name: 🚀 Release on tag
+    runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout and Setup Maven
+      - name: ⚙️ Checkout and Setup Maven
         uses: s4u/setup-maven-action@v1.20.0
         with:
           checkout-submodules: true
           checkout-fetch-depth: 0
-          java-version: ${{ matrix.java }}
+          java-version: ${{ env.JAVA_VERSION }}
 
-      - name: Deploy with Maven if settings defined
+      - name: ☕ Deploy with Maven if settings defined
         run: test ! -f ci.settings.xml || mvn deploy -DskipTests -s ci.settings.xml -P base-deploy,release-deploy,!non-deployable-modules
         env:
           CENTRAL_PORTAL_USERNAME: ${{ secrets.CENTRAL_PORTAL_USERNAME }}
@@ -125,7 +133,7 @@ jobs:
           # Fix https://issues.sonatype.org/browse/OSSRH-66257
           MAVEN_OPTS: "--add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED --add-opens=java.base/java.text=ALL-UNNAMED --add-opens=java.desktop/java.awt.font=ALL-UNNAMED"
 
-      - name: Release assets with Maven
+      - name: ☕ Release assets with Maven
         run: mvn install -DskipTests -P full-release -Djreleaser.output.directory=$PWD/out/jreleaser
         env:
           JRELEASER_GITHUB_TOKEN: ${{ secrets.JRELEASER_GITHUB_TOKEN }}
@@ -133,7 +141,7 @@ jobs:
           JRELEASER_GPG_SECRET_KEY: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
           JRELEASER_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
 
-      - name: Upload JReleaser output
+      - name: ⬆️ Upload JReleaser output
         if: always()
         uses: actions/upload-artifact@v7
         with:

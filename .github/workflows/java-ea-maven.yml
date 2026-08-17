@@ -1,4 +1,4 @@
-name: Java-EA with Maven
+name: 🧪 Java-EA with Maven
 
 on:
   push:
@@ -14,26 +14,27 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        java: [ 25 ]
-        os:
-          - ubuntu-latest     # Linux x64
-          - ubuntu-24.04-arm  # Linux arm64
-          - macos-latest      # macOS arm64
-          - windows-11-arm    # Windows arm64
+        include:
+          - os: ubuntu-latest     # Linux x64
+            java: 25
+          - os: ubuntu-24.04-arm  # Linux arm64
+            java: 21
+          - os: windows-11-arm    # Windows arm64
+            java: 21
 
-    name: JDK${{ matrix.java }} on ${{ matrix.os }}
+    name: 🧪 Tests with ${{ matrix.java }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
 
     steps:
-      - name: Checkout and Setup Maven
+      - name: ⚙️ Checkout and Setup Maven
         uses: s4u/setup-maven-action@v1.20.0
         with:
           checkout-submodules: true
           checkout-fetch-depth: 0
           java-version: ${{ matrix.java }}
 
-      - name: Pre-download dependencies with Maven
+      - name: ☕ Pre-download dependencies with Maven
         run: mvn -U dependency:go-offline
 
-      - name: Build and (headless) test with Maven
+      - name: ☕ Build and (headless) test with Maven
         run: ${{ runner.os == 'Linux' && 'xvfb-run' || '' }} mvn install
