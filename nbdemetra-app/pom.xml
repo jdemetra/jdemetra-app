@@ -134,6 +134,20 @@
                     <etcConfFile>src/main/resources/nbdemetra.conf</etcConfFile>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <configuration combine.children="merge">
+                    <rules>
+                        <banDuplicateClasses>
+                            <ignoreClasses>
+                                <ignoreClass>org.apache.commons.logging.*</ignoreClass>
+                                <ignoreClass>org.apache.commons.codec.*</ignoreClass>
+                            </ignoreClasses>
+                        </banDuplicateClasses>
+                    </rules>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 

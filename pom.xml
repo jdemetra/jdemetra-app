@@ -533,7 +533,7 @@
                         </dependencies>
                         <executions>
                             <execution>
-                                <id>enforce</id>
+                                <id>enforce-on-validate</id>
                                 <goals>
                                     <goal>enforce</goal>
                                 </goals>
@@ -556,23 +556,35 @@
                                         </requireReleaseDeps>
                                         <requireUpperBoundDeps/>
                                         <!-- pomchecker-enforcer-rules -->
-                                        <checkMavenCentral
-                                                implementation="org.kordamp.maven.enforcer.checker.CheckMavenCentral">
+                                        <checkMavenCentral>
                                             <release>false</release>
                                             <strict>false</strict>
                                         </checkMavenCentral>
+                                        <!-- heylogs-enforcer-rules -->
+                                        <checkChangelog/>
+                                        <formatChangelog/>
+                                    </rules>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>enforce-on-verify</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>enforce</goal>
+                                </goals>
+                                <configuration>
+                                    <rules>
                                         <!-- extra-enforcer-rules -->
                                         <banCircularDependencies/>
-                                        <!--                                        <banDuplicateClasses/>-->
+                                        <banDuplicateClasses>
+                                            <ignoredScopes>test</ignoredScopes>
+                                        </banDuplicateClasses>
                                         <enforceBytecodeVersion>
                                             <maxJdkVersion>8</maxJdkVersion>
                                             <ignoredScopes>
                                                 <ignoreScope>test</ignoreScope>
                                             </ignoredScopes>
                                         </enforceBytecodeVersion>
-                                        <!-- heylogs-enforcer-rules -->
-                                        <checkChangelog/>
-                                        <formatChangelog/>
                                     </rules>
                                 </configuration>
                             </execution>
