@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>eu.europa.ec.joinup.sat</groupId>
@@ -12,7 +11,6 @@
     <description>Econometric software for seasonal adjustment and other time series methods (JDemetra+)</description>
     <url>https://github.com/${x.github.user}/${x.github.repo}</url>
     <inceptionYear>2013</inceptionYear>
-
     <licenses>
         <license>
             <name>European Union Public Licence (EUPL)</name>
@@ -28,6 +26,20 @@
             <organizationUrl>https://www.nbb.be</organizationUrl>
         </developer>
     </developers>
+
+    <modules>
+        <module>nbdemetra-branding</module>
+        <module>nbdemetra-app</module>
+        <module>nbdemetra-core</module>
+        <module>nbdemetra-ui</module>
+        <module>nbdemetra-odbc</module>
+        <module>nbdemetra-jdbc</module>
+        <module>nbdemetra-common</module>
+        <module>nbdemetra-spreadsheet</module>
+        <module>nbdemetra-sa</module>
+        <module>nbdemetra-sdmx</module>
+        <module>nbdemetra-anomalydetection</module>
+    </modules>
 
     <scm>
         <connection>scm:git:git://github.com/${x.github.user}/${x.github.repo}.git</connection>
@@ -52,20 +64,6 @@
         <jdemetra.version>${project.version}</jdemetra.version>
         <heylogs.version>0.19.1</heylogs.version>
     </properties>
-
-    <modules>
-        <module>nbdemetra-branding</module>
-        <module>nbdemetra-app</module>
-        <module>nbdemetra-core</module>
-        <module>nbdemetra-ui</module>
-        <module>nbdemetra-odbc</module>
-        <module>nbdemetra-jdbc</module>
-        <module>nbdemetra-common</module>
-        <module>nbdemetra-spreadsheet</module>
-        <module>nbdemetra-sa</module>
-        <module>nbdemetra-sdmx</module>
-        <module>nbdemetra-anomalydetection</module>
-    </modules>
 
     <dependencyManagement>
         <dependencies>
@@ -282,7 +280,6 @@
             <!-- < nbdemetra modules -->
         </dependencies>
     </dependencyManagement>
-
     <dependencies>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -295,6 +292,38 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <!-- Custom repositories: order matters! -->
+    <!-- Maven Central is enforced at top to prevent dependabot to use snapshots as releases -->
+    <repositories>
+        <repository>
+            <id>central</id>
+            <url>https://repo.maven.apache.org/maven2</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>central-snapshots</id>
+            <url>https://central.sonatype.com/repository/maven-snapshots/</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>old-snapshots</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
 
     <build>
         <pluginManagement>
@@ -397,6 +426,11 @@
                     <version>0.8.15</version>
                 </plugin>
                 <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>tidy-maven-plugin</artifactId>
+                    <version>1.4.0</version>
+                </plugin>
+                <plugin>
                     <groupId>org.jreleaser</groupId>
                     <artifactId>jreleaser-maven-plugin</artifactId>
                     <version>1.25.0</version>
@@ -419,6 +453,18 @@
             </plugins>
         </pluginManagement>
         <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>tidy-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
@@ -794,39 +840,8 @@
                 <forbiddenapis.skip>true</forbiddenapis.skip>
                 <jacoco.skip>true</jacoco.skip>
                 <heylogs.skip>true</heylogs.skip>
+                <tidy.skip>true</tidy.skip>
             </properties>
         </profile>
     </profiles>
-
-    <!-- Custom repositories: order matters! -->
-    <!-- Maven Central is enforced at top to prevent dependabot to use snapshots as releases -->
-    <repositories>
-        <repository>
-            <id>central</id>
-            <url>https://repo.maven.apache.org/maven2</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>central-snapshots</id>
-            <url>https://central.sonatype.com/repository/maven-snapshots/</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>old-snapshots</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
 </project>
