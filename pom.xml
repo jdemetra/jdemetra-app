@@ -533,6 +533,27 @@
                         </dependencies>
                         <executions>
                             <execution>
+                                <id>enforce-root-on-validate</id>
+                                <goals>
+                                    <goal>enforce</goal>
+                                </goals>
+                                <inherited>false</inherited>
+                                <configuration>
+                                    <rules>
+                                        <!-- Required project files -->
+                                        <requireFilesExist>
+                                            <files>
+                                                <file>${project.basedir}/.gitignore</file>
+                                                <file>${project.basedir}/CHANGELOG.md</file>
+                                                <file>${project.basedir}/LICENSE</file>
+                                                <file>${project.basedir}/lombok.config</file>
+                                                <file>${project.basedir}/README.md</file>
+                                            </files>
+                                        </requireFilesExist>
+                                    </rules>
+                                </configuration>
+                            </execution>
+                            <execution>
                                 <id>enforce-on-validate</id>
                                 <goals>
                                     <goal>enforce</goal>
