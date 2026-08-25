@@ -84,7 +84,7 @@ jobs:
           java-version: ${{ env.JAVA_VERSION }}
 
       - name: ☕ Deploy snapshot with Maven if settings defined
-        run: test ! -f ci.settings.xml || mvn deploy -DskipTests -s ci.settings.xml -P base-deploy,snapshot-deploy,!non-deployable-modules
+        run: test ! -f ci.settings.xml || mvn deploy -DskipTests -s ci.settings.xml -P base-deploy,snapshot-deploy
         env:
           CENTRAL_PORTAL_USERNAME: ${{ secrets.CENTRAL_PORTAL_USERNAME }}
           CENTRAL_PORTAL_TOKEN: ${{ secrets.CENTRAL_PORTAL_TOKEN }}
@@ -124,7 +124,7 @@ jobs:
           java-version: ${{ env.JAVA_VERSION }}
 
       - name: ☕ Deploy with Maven if settings defined
-        run: test ! -f ci.settings.xml || mvn deploy -DskipTests -s ci.settings.xml -P base-deploy,release-deploy,!non-deployable-modules
+        run: test ! -f ci.settings.xml || mvn deploy -DskipTests -s ci.settings.xml -P base-deploy,release-deploy
         env:
           CENTRAL_PORTAL_USERNAME: ${{ secrets.CENTRAL_PORTAL_USERNAME }}
           CENTRAL_PORTAL_TOKEN: ${{ secrets.CENTRAL_PORTAL_TOKEN }}
