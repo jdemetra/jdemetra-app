@@ -13,7 +13,7 @@ jobs:
 
     steps:
       - name: ⚙️ Checkout and Setup Maven
-        uses: s4u/setup-maven-action@v1.20.0
+        uses: s4u/setup-maven-action@v1.21.0
         with:
           checkout-submodules: true
           checkout-fetch-depth: 0
@@ -35,7 +35,7 @@ jobs:
 
     steps:
       - name: ⚙️ Checkout and Setup Maven
-        uses: s4u/setup-maven-action@v1.20.0
+        uses: s4u/setup-maven-action@v1.21.0
         with:
           checkout-submodules: true
           checkout-fetch-depth: 0
@@ -77,7 +77,7 @@ jobs:
 
     steps:
       - name: ⚙️ Checkout and Setup Maven
-        uses: s4u/setup-maven-action@v1.20.0
+        uses: s4u/setup-maven-action@v1.21.0
         with:
           checkout-submodules: true
           checkout-fetch-depth: 0
@@ -117,7 +117,7 @@ jobs:
 
     steps:
       - name: ⚙️ Checkout and Setup Maven
-        uses: s4u/setup-maven-action@v1.20.0
+        uses: s4u/setup-maven-action@v1.21.0
         with:
           checkout-submodules: true
           checkout-fetch-depth: 0
