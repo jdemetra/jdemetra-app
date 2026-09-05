@@ -460,7 +460,7 @@
                 <plugin>
                     <groupId>org.jreleaser</groupId>
                     <artifactId>jreleaser-maven-plugin</artifactId>
-                    <version>1.25.0</version>
+                    <version>1.26.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.jreleaser</groupId>
