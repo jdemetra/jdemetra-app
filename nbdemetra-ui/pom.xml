@@ -52,7 +52,7 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <!-- Force version to override the one defined in java-desktop-util imports -->
-            <version>1.18.46</version>
+            <version>1.18.48</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
