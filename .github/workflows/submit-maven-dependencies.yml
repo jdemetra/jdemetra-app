@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: ⚙️ Checkout and Setup Maven
-        uses: s4u/setup-maven-action@v1.21.0
+        uses: s4u/setup-maven-action@v1.22.0
 
       - name: 📤 Submit Dependency Graph
         uses: advanced-security/maven-dependency-submission-action@v6
