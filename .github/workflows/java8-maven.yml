@@ -68,11 +68,11 @@ jobs:
           PR_URL: ${{github.event.pull_request.html_url}}
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
-  snapshot-job:
+  dry-run-job:
     needs: build-and-test-job
     if: github.event.repository.fork == false && startsWith(github.ref, 'refs/heads/develop')
 
-    name: 🚀 Snapshot on develop
+    name: 🚀 Dry-run on develop
     runs-on: ubuntu-latest
 
     steps:
@@ -83,11 +83,9 @@ jobs:
           checkout-fetch-depth: 0
           java-version: ${{ env.JAVA_VERSION }}
 
-      - name: ☕ Deploy snapshot with Maven if settings defined
-        run: test ! -f ci.settings.xml || mvn deploy -DskipTests -Dmaven.repository.credentialScope=id -s ci.settings.xml -P base-deploy,snapshot-deploy
+      - name: ☕ Dry-run deploy with Maven if settings defined
+        run: test ! -f ci.settings.xml || mvn deploy -DskipTests -P base-deploy -DaltDeploymentRepository=dryrun::file:$PWD/out/deploy
         env:
-          CENTRAL_PORTAL_USERNAME: ${{ secrets.CENTRAL_PORTAL_USERNAME }}
-          CENTRAL_PORTAL_TOKEN: ${{ secrets.CENTRAL_PORTAL_TOKEN }}
           MAVEN_GPG_KEY: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
           MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
 
@@ -103,7 +101,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: assets-snapshot-log
+          name: assets-dry-run-log
           path: |
             out/jreleaser/trace.log
             out/jreleaser/output.properties
