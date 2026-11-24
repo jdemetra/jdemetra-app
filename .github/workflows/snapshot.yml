@@ -39,18 +39,18 @@ jobs:
           echo "Current: $GITHUB_SHA"
           echo "Last snapshot: ${LAST:-none}"
           if [ "$LAST" = "$GITHUB_SHA" ]; then
-            echo "No change since last snapshot" >> $GITHUB_STEP_SUMMARY
-            echo "deploy=false" >> $GITHUB_OUTPUT
+            echo "No change since last snapshot" >> "$GITHUB_STEP_SUMMARY"
+            echo "deploy=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
           CI=$(gh run list -R "$GITHUB_REPOSITORY" -w java-maven.yml -b develop -c "$GITHUB_SHA" -s success -L 1 --json databaseId -q 'length')
           if [ "$CI" = "0" ]; then
-            echo "CI has not succeeded on $GITHUB_SHA" >> $GITHUB_STEP_SUMMARY
-            echo "deploy=false" >> $GITHUB_OUTPUT
+            echo "CI has not succeeded on $GITHUB_SHA" >> "$GITHUB_STEP_SUMMARY"
+            echo "deploy=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
-          echo "Deploying snapshot of $GITHUB_SHA" >> $GITHUB_STEP_SUMMARY
-          echo "deploy=true" >> $GITHUB_OUTPUT
+          echo "Deploying snapshot of $GITHUB_SHA" >> "$GITHUB_STEP_SUMMARY"
+          echo "deploy=true" >> "$GITHUB_OUTPUT"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
